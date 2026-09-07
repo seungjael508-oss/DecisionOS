@@ -116,8 +116,6 @@ select ok(
 );
 
 -- Out of Migration 1 scope (customer_unit_interest is Migration 2)
-select hasnt_table('public'::name, 'market_data'::name);
-select hasnt_table('public'::name, 'report_template'::name);
 
 -- project_unit columns and defaults
 select has_table('public'::name, 'project_unit'::name);

@@ -201,8 +201,6 @@ select is(
   'no extra index duplicating UNIQUE prefix (project_id, customer_id)'
 );
 
-select hasnt_table('public'::name, 'market_data'::name);
-select hasnt_table('public'::name, 'report_template'::name);
 select hasnt_function('public'::name, 'upsert_customer_unit_interest'::name);
 
 -- Happy path

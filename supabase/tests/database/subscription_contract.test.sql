@@ -261,8 +261,6 @@ select has_index(
   array['project_id', 'contracted_at']::name[]
 );
 
-select hasnt_table('public'::name, 'market_data'::name);
-
 -- Subscription happy / IDOR
 select lives_ok(
   $$

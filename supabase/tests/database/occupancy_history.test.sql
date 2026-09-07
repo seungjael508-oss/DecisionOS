@@ -164,7 +164,6 @@ select has_index(
 );
 
 select hasnt_table('public'::name, 'contact_log'::name);
-select hasnt_table('public'::name, 'market_data'::name);
 
 -- Happy occupancy
 select lives_ok(
