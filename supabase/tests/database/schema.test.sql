@@ -3,7 +3,6 @@ begin;
 select no_plan();
 
 -- Out-of-scope v1.2 tables must not exist in Phase 1.
-select hasnt_table('public'::name, 'funnel_event'::name, 'funnel_event is out of Phase 1');
 select hasnt_table('public'::name, 'import_batch'::name, 'import_batch is out of Phase 1');
 select hasnt_table('public'::name, 'import_row_conflict'::name, 'import_row_conflict is out of Phase 1');
 

@@ -363,6 +363,105 @@ select throws_ok(
   '23514'
 );
 
+select lives_ok(
+  $$
+    insert into public.consultation (
+      project_id, customer_id, counselor_id, consulted_at, content, created_by,
+      next_action_at, channel, contact_type, stage, purpose, structured_tags
+    ) values (
+      '20000000-0000-4000-8000-000000000001',
+      '54000000-0000-4000-8000-000000000001',
+      '40000000-0000-4000-8000-00000000000a',
+      now(),
+      'channel and next_action with null tags',
+      '40000000-0000-4000-8000-00000000000a',
+      now() + interval '1 day',
+      'KAKAO',
+      null,
+      null,
+      null,
+      null
+    );
+  $$,
+  'next_action_at, channel, and null purpose/tags succeed'
+);
+
+select lives_ok(
+  $$
+    insert into public.consultation (
+      project_id, customer_id, counselor_id, consulted_at, content, created_by,
+      contact_type
+    ) values
+      (
+        '20000000-0000-4000-8000-000000000001',
+        '54000000-0000-4000-8000-000000000001',
+        '40000000-0000-4000-8000-00000000000a',
+        now(), 'type CONSULTATION',
+        '40000000-0000-4000-8000-00000000000a', 'CONSULTATION'
+      ),
+      (
+        '20000000-0000-4000-8000-000000000001',
+        '54000000-0000-4000-8000-000000000001',
+        '40000000-0000-4000-8000-00000000000a',
+        now(), 'type MESSAGE',
+        '40000000-0000-4000-8000-00000000000a', 'MESSAGE'
+      ),
+      (
+        '20000000-0000-4000-8000-000000000001',
+        '54000000-0000-4000-8000-000000000001',
+        '40000000-0000-4000-8000-00000000000a',
+        now(), 'type VISIT',
+        '40000000-0000-4000-8000-00000000000a', 'VISIT'
+      );
+  $$,
+  'CONSULTATION, MESSAGE, and VISIT contact_type succeed'
+);
+
+select lives_ok(
+  $$
+    insert into public.consultation (
+      project_id, customer_id, counselor_id, consulted_at, content, created_by,
+      stage
+    ) values
+      (
+        '20000000-0000-4000-8000-000000000001',
+        '54000000-0000-4000-8000-000000000001',
+        '40000000-0000-4000-8000-00000000000a',
+        now(), 'stage PRE_SALES',
+        '40000000-0000-4000-8000-00000000000a', 'PRE_SALES'
+      ),
+      (
+        '20000000-0000-4000-8000-000000000001',
+        '54000000-0000-4000-8000-000000000001',
+        '40000000-0000-4000-8000-00000000000a',
+        now(), 'stage OPEN_SUBSCRIPTION',
+        '40000000-0000-4000-8000-00000000000a', 'OPEN_SUBSCRIPTION'
+      ),
+      (
+        '20000000-0000-4000-8000-000000000001',
+        '54000000-0000-4000-8000-000000000001',
+        '40000000-0000-4000-8000-00000000000a',
+        now(), 'stage SUBSCRIPTION_CONTRACT',
+        '40000000-0000-4000-8000-00000000000a', 'SUBSCRIPTION_CONTRACT'
+      ),
+      (
+        '20000000-0000-4000-8000-000000000001',
+        '54000000-0000-4000-8000-000000000001',
+        '40000000-0000-4000-8000-00000000000a',
+        now(), 'stage POST_CONTRACT',
+        '40000000-0000-4000-8000-00000000000a', 'POST_CONTRACT'
+      ),
+      (
+        '20000000-0000-4000-8000-000000000001',
+        '54000000-0000-4000-8000-000000000001',
+        '40000000-0000-4000-8000-00000000000a',
+        now(), 'stage PRE_INSPECTION',
+        '40000000-0000-4000-8000-00000000000a', 'PRE_INSPECTION'
+      );
+  $$,
+  'remaining lifecycle stage labels succeed'
+);
+
 -- History contact_id
 select lives_ok(
   $$

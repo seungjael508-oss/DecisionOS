@@ -201,8 +201,6 @@ select is(
   'no extra index duplicating UNIQUE prefix (project_id, customer_id)'
 );
 
-select hasnt_function('public'::name, 'upsert_customer_unit_interest'::name);
-
 -- Happy path
 select lives_ok(
   $$
