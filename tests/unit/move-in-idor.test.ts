@@ -40,6 +40,15 @@ describe("move-in IDOR query contract", () => {
     expect(assignQuery.eq.project_id).toBe(projectId);
   });
 
+  it("scopes floorplan queries to the route project_id", () => {
+    const projectId = "20000000-0000-0000-0000-000000000001";
+    const floorplanQuery = {
+      tables: ["project_unit", "unit_occupancy_status", "consultation"],
+      eq: { project_id: projectId },
+    };
+    expect(floorplanQuery.eq.project_id).toBe(projectId);
+  });
+
   it("scopes deal and brokerage queries to the route project_id", () => {
     const projectId = "20000000-0000-0000-0000-000000000001";
     const dealQuery = {

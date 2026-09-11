@@ -3,6 +3,7 @@ import {
   type CallListRow,
 } from "@/lib/move-in/calls";
 import { extractLegacyGrade } from "@/lib/move-in/consultation";
+import type { FloorplanUnit } from "@/lib/move-in/floorplan";
 import {
   isBrokerageContactRole,
   type BrokerageOfficeOption,
@@ -144,6 +145,63 @@ export async function loadUnitRows(
   });
 
   return { rows: sortUnits(rows), error: false };
+}
+
+export async function loadFloorplanRows(
+  projectId: string,
+): Promise<
+  | { rows: FloorplanUnit[]; error: true }
+  | { rows: FloorplanUnit[]; error: false }
+> {
+  const supabase = await createServerClient();
+
+  const [unitsResult, occupancyResult, consultationResult] = await Promise.all([
+    supabase
+      .from("project_unit")
+      .select("unit_id, building_no, unit_no, floor")
+      .eq("project_id", projectId),
+    supabase
+      .from("unit_occupancy_status")
+      .select("unit_id, occupancy_intent, funding_status, move_in_status")
+      .eq("project_id", projectId),
+    supabase
+      .from("consultation")
+      .select("unit_id, consulted_at, structured_tags")
+      .eq("project_id", projectId)
+      .order("consulted_at", { ascending: false }),
+  ]);
+
+  if (unitsResult.error || occupancyResult.error || consultationResult.error) {
+    return { rows: [], error: true };
+  }
+
+  const occupancyByUnit = new Map(
+    (occupancyResult.data ?? []).map((row) => [row.unit_id, row]),
+  );
+  const latestGradeByUnit = new Map<
+    string,
+    ReturnType<typeof extractLegacyGrade>
+  >();
+  for (const row of consultationResult.data ?? []) {
+    if (!row.unit_id || latestGradeByUnit.has(row.unit_id)) continue;
+    latestGradeByUnit.set(row.unit_id, extractLegacyGrade(row.structured_tags));
+  }
+
+  const rows: FloorplanUnit[] = (unitsResult.data ?? []).map((unit) => {
+    const occupancy = occupancyByUnit.get(unit.unit_id);
+    return {
+      unitId: unit.unit_id,
+      buildingNo: unit.building_no,
+      unitNo: unit.unit_no,
+      floor: unit.floor,
+      occupancyIntent: occupancy?.occupancy_intent ?? null,
+      fundingStatus: occupancy?.funding_status ?? null,
+      moveInStatus: occupancy?.move_in_status ?? null,
+      latestGrade: latestGradeByUnit.get(unit.unit_id) ?? null,
+    };
+  });
+
+  return { rows, error: false };
 }
 
 export async function loadUnitDetail(

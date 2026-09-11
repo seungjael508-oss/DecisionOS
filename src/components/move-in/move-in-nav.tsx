@@ -23,6 +23,7 @@ export function MoveInNav({
   const items = [
     { href: base, label: "입주 현황", exact: true },
     { href: `${base}/units`, label: "동호수 관리", exact: false },
+    { href: `${base}/floorplan`, label: "동호배치도", exact: true },
     { href: `${base}/today`, label: "오늘 관리대상", exact: true },
     { href: `${base}/calls`, label: "상담·콜 관리", exact: true },
     { href: `${base}/deals`, label: "매도·임대 관리", exact: true },

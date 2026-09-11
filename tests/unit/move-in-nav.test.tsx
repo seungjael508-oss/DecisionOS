@@ -31,6 +31,18 @@ describe("move-in navigation", () => {
     expect(screen.queryByText("데이터 가져오기")).toBeNull();
   });
 
+  it("shows 동호배치도 for COUNSELOR and PROJECT_ADMIN", () => {
+    const { rerender } = render(
+      <MoveInNav projectId="p1" projectName="현장" role="COUNSELOR" />,
+    );
+    expect(screen.getByRole("link", { name: "동호배치도" }).getAttribute("href")).toBe(
+      "/projects/p1/move-in/floorplan",
+    );
+
+    rerender(<MoveInNav projectId="p1" projectName="현장" role="PROJECT_ADMIN" />);
+    expect(screen.getByText("동호배치도")).toBeTruthy();
+  });
+
   it("shows 상담·콜 관리 for COUNSELOR and PROJECT_ADMIN", () => {
     const { rerender } = render(
       <MoveInNav projectId="p1" projectName="현장" role="COUNSELOR" />,
