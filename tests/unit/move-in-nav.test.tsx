@@ -1,8 +1,8 @@
 /** @vitest-environment jsdom */
 
 import type { ReactNode } from "react";
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
   usePathname: () => "/projects/p1/move-in",
@@ -16,7 +16,11 @@ vi.mock("next/link", () => ({
 
 import { MoveInNav } from "@/components/move-in/move-in-nav";
 
-describe("move-in import navigation", () => {
+afterEach(() => {
+  cleanup();
+});
+
+describe("move-in navigation", () => {
   it("shows import only for PROJECT_ADMIN", () => {
     const { rerender } = render(
       <MoveInNav projectId="p1" projectName="현장" role="PROJECT_ADMIN" />,
@@ -25,5 +29,49 @@ describe("move-in import navigation", () => {
 
     rerender(<MoveInNav projectId="p1" projectName="현장" role="COUNSELOR" />);
     expect(screen.queryByText("데이터 가져오기")).toBeNull();
+  });
+
+  it("shows 상담·콜 관리 for COUNSELOR and PROJECT_ADMIN", () => {
+    const { rerender } = render(
+      <MoveInNav projectId="p1" projectName="현장" role="COUNSELOR" />,
+    );
+    expect(screen.getByText("상담·콜 관리")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "상담·콜 관리" }).getAttribute("href")).toBe(
+      "/projects/p1/move-in/calls",
+    );
+
+    rerender(<MoveInNav projectId="p1" projectName="현장" role="PROJECT_ADMIN" />);
+    expect(screen.getByText("상담·콜 관리")).toBeTruthy();
+  });
+
+  it("shows 상담사 배정 only for PROJECT_ADMIN", () => {
+    const { rerender } = render(
+      <MoveInNav projectId="p1" projectName="현장" role="PROJECT_ADMIN" />,
+    );
+    expect(screen.getByText("상담사 배정")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "상담사 배정" }).getAttribute("href")).toBe(
+      "/projects/p1/move-in/assign",
+    );
+
+    rerender(<MoveInNav projectId="p1" projectName="현장" role="COUNSELOR" />);
+    expect(screen.queryByText("상담사 배정")).toBeNull();
+  });
+
+  it("shows 매도·임대 관리 for COUNSELOR and PROJECT_ADMIN", () => {
+    const { rerender } = render(
+      <MoveInNav projectId="p1" projectName="현장" role="COUNSELOR" />,
+    );
+    expect(screen.getByText("매도·임대 관리")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "매도·임대 관리" }).getAttribute("href")).toBe(
+      "/projects/p1/move-in/deals",
+    );
+    expect(screen.queryByText("중개업소 관리")).toBeNull();
+
+    rerender(<MoveInNav projectId="p1" projectName="현장" role="PROJECT_ADMIN" />);
+    expect(screen.getByText("매도·임대 관리")).toBeTruthy();
+    expect(screen.getByText("중개업소 관리")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "중개업소 관리" }).getAttribute("href")).toBe(
+      "/projects/p1/move-in/brokerages",
+    );
   });
 });

@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest"
+    "test": "vitest",
+    "legacy:export": "node --experimental-strip-types --no-warnings scripts/legacy-portal-export.ts",
+    "legacy:preview": "node --experimental-strip-types --no-warnings scripts/legacy-migration-preview.ts"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.5",

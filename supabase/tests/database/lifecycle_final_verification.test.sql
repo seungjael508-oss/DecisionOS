@@ -213,7 +213,9 @@ select is(
         'create_contract','cancel_contract','transfer_contract_holder',
         'update_unit_occupancy_status','generate_report','create_cs_ticket',
         'update_cs_ticket','promote_entry_to_customer',
-        'upsert_customer_unit_interest','apply_move_in_import_row'
+        'upsert_customer_unit_interest','apply_move_in_import_row',
+        'create_move_in_consultation','assign_move_in_customers',
+        'save_move_in_unit_deal','save_brokerage_office'
       )
       and (
         p.prosecdef is not true
@@ -239,7 +241,9 @@ select ok(
         'create_contract','cancel_contract','transfer_contract_holder',
         'update_unit_occupancy_status','generate_report','create_cs_ticket',
         'update_cs_ticket','promote_entry_to_customer',
-        'upsert_customer_unit_interest','apply_move_in_import_row'
+        'upsert_customer_unit_interest','apply_move_in_import_row',
+        'create_move_in_consultation','assign_move_in_customers',
+        'save_move_in_unit_deal','save_brokerage_office'
       )
   ),
   'lifecycle RPCs: no PUBLIC/anon EXECUTE, authenticated EXECUTE'

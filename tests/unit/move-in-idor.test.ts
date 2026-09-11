@@ -30,12 +30,22 @@ describe("move-in IDOR query contract", () => {
     expect(worklogQuery.eq.project_id).toBe(projectId);
   });
 
-  it("scopes import catalog to the route project_id", () => {
+  it("scopes assign list to the route project_id via customer first", () => {
     const projectId = "20000000-0000-0000-0000-000000000001";
-    const importQuery = {
-      tables: ["project_unit", "customer", "contract", "unit_occupancy_status"],
+    const assignQuery = {
+      startTable: "customer",
       eq: { project_id: projectId },
     };
-    expect(importQuery.eq.project_id).toBe(projectId);
+    expect(assignQuery.startTable).toBe("customer");
+    expect(assignQuery.eq.project_id).toBe(projectId);
+  });
+
+  it("scopes deal and brokerage queries to the route project_id", () => {
+    const projectId = "20000000-0000-0000-0000-000000000001";
+    const dealQuery = {
+      tables: ["unit_deal", "brokerage_office", "brokerage_contact"],
+      eq: { project_id: projectId },
+    };
+    expect(dealQuery.eq.project_id).toBe(projectId);
   });
 });

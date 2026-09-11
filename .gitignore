@@ -35,6 +35,12 @@ yarn-error.log*
 .env*
 !.env.example
 
+# legacy portal PII export / staging (P0-3)
+/migration-data/raw/
+/migration-data/normalized/
+/migration-data/reports/
+/migration-data/*.local.json
+
 # playwright
 /test-results/
 /playwright-report/

@@ -24,10 +24,16 @@ export function MoveInNav({
     { href: base, label: "입주 현황", exact: true },
     { href: `${base}/units`, label: "동호수 관리", exact: false },
     { href: `${base}/today`, label: "오늘 관리대상", exact: true },
+    { href: `${base}/calls`, label: "상담·콜 관리", exact: true },
+    { href: `${base}/deals`, label: "매도·임대 관리", exact: true },
     { href: `${base}/market`, label: "시장동향", exact: true },
     { href: `${base}/worklog`, label: "업무일지", exact: true },
     ...(role === "PROJECT_ADMIN"
-      ? [{ href: `${base}/import`, label: "데이터 가져오기", exact: true }]
+      ? [
+          { href: `${base}/assign`, label: "상담사 배정", exact: true },
+          { href: `${base}/brokerages`, label: "중개업소 관리", exact: true },
+          { href: `${base}/import`, label: "데이터 가져오기", exact: true },
+        ]
       : []),
   ];
 

@@ -34,6 +34,91 @@ export type Database = {
   }
   public: {
     Tables: {
+      brokerage_contact: {
+        Row: {
+          active: boolean
+          brokerage_office_id: string
+          created_at: string
+          id: string
+          name: string
+          phone: string | null
+          project_id: string
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          brokerage_office_id: string
+          created_at?: string
+          id?: string
+          name: string
+          phone?: string | null
+          project_id: string
+          role: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          brokerage_office_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          project_id?: string
+          role?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brokerage_contact_brokerage_office_id_project_id_fkey"
+            columns: ["brokerage_office_id", "project_id"]
+            isOneToOne: false
+            referencedRelation: "brokerage_office"
+            referencedColumns: ["id", "project_id"]
+          },
+        ]
+      }
+      brokerage_office: {
+        Row: {
+          active: boolean
+          address: string | null
+          created_at: string
+          id: string
+          main_phone: string | null
+          name: string
+          project_id: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          address?: string | null
+          created_at?: string
+          id?: string
+          main_phone?: string | null
+          name: string
+          project_id: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          address?: string | null
+          created_at?: string
+          id?: string
+          main_phone?: string | null
+          name?: string
+          project_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brokerage_office_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_notice: {
         Row: {
           content: string
@@ -1291,6 +1376,145 @@ export type Database = {
           },
         ]
       }
+      unit_deal: {
+        Row: {
+          consent_status: string
+          contract_id: string
+          created_at: string
+          customer_id: string
+          deal_status: string
+          details: string | null
+          id: string
+          jeonse_enabled: boolean
+          jeonse_note: string | null
+          monthly_rent_enabled: boolean
+          monthly_rent_note: string | null
+          project_id: string
+          sale_enabled: boolean
+          sale_note: string | null
+          unit_id: string
+          updated_at: string
+          updated_by_project_member_id: string
+        }
+        Insert: {
+          consent_status: string
+          contract_id: string
+          created_at?: string
+          customer_id: string
+          deal_status: string
+          details?: string | null
+          id?: string
+          jeonse_enabled?: boolean
+          jeonse_note?: string | null
+          monthly_rent_enabled?: boolean
+          monthly_rent_note?: string | null
+          project_id: string
+          sale_enabled?: boolean
+          sale_note?: string | null
+          unit_id: string
+          updated_at?: string
+          updated_by_project_member_id: string
+        }
+        Update: {
+          consent_status?: string
+          contract_id?: string
+          created_at?: string
+          customer_id?: string
+          deal_status?: string
+          details?: string | null
+          id?: string
+          jeonse_enabled?: boolean
+          jeonse_note?: string | null
+          monthly_rent_enabled?: boolean
+          monthly_rent_note?: string | null
+          project_id?: string
+          sale_enabled?: boolean
+          sale_note?: string | null
+          unit_id?: string
+          updated_at?: string
+          updated_by_project_member_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unit_deal_contract_id_project_id_unit_id_fkey"
+            columns: ["contract_id", "project_id", "unit_id"]
+            isOneToOne: false
+            referencedRelation: "contract"
+            referencedColumns: ["contract_id", "project_id", "unit_id"]
+          },
+          {
+            foreignKeyName: "unit_deal_customer_id_project_id_fkey"
+            columns: ["customer_id", "project_id"]
+            isOneToOne: false
+            referencedRelation: "customer"
+            referencedColumns: ["id", "project_id"]
+          },
+          {
+            foreignKeyName: "unit_deal_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "unit_deal_project_id_unit_id_fkey"
+            columns: ["project_id", "unit_id"]
+            isOneToOne: true
+            referencedRelation: "project_unit"
+            referencedColumns: ["project_id", "unit_id"]
+          },
+          {
+            foreignKeyName: "unit_deal_updated_by_project_member_id_project_id_fkey"
+            columns: ["updated_by_project_member_id", "project_id"]
+            isOneToOne: false
+            referencedRelation: "project_member"
+            referencedColumns: ["id", "project_id"]
+          },
+        ]
+      }
+      unit_deal_brokerage: {
+        Row: {
+          brokerage_contact_id: string | null
+          brokerage_office_id: string
+          created_at: string
+          unit_deal_id: string
+        }
+        Insert: {
+          brokerage_contact_id?: string | null
+          brokerage_office_id: string
+          created_at?: string
+          unit_deal_id: string
+        }
+        Update: {
+          brokerage_contact_id?: string | null
+          brokerage_office_id?: string
+          created_at?: string
+          unit_deal_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unit_deal_brokerage_brokerage_contact_id_fkey"
+            columns: ["brokerage_contact_id"]
+            isOneToOne: false
+            referencedRelation: "brokerage_contact"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "unit_deal_brokerage_brokerage_office_id_fkey"
+            columns: ["brokerage_office_id"]
+            isOneToOne: false
+            referencedRelation: "brokerage_office"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "unit_deal_brokerage_unit_deal_id_fkey"
+            columns: ["unit_deal_id"]
+            isOneToOne: false
+            referencedRelation: "unit_deal"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       unit_occupancy_status: {
         Row: {
           actual_move_in_date: string | null
@@ -1398,6 +1622,14 @@ export type Database = {
         }
         Returns: Json
       }
+      assign_move_in_customers: {
+        Args: {
+          p_assignee_project_member_id: string
+          p_customer_ids: string[]
+          p_project_id: string
+        }
+        Returns: number
+      }
       cancel_contract: {
         Args: {
           p_cancellation_reason: string
@@ -1427,6 +1659,25 @@ export type Database = {
         }
         Returns: string
       }
+      create_move_in_consultation: {
+        Args: {
+          p_actual_move_in_date?: string
+          p_balance_paid_at?: string
+          p_consultation_type: string
+          p_content: string
+          p_customer_id: string
+          p_funding_status?: Database["public"]["Enums"]["funding_status"]
+          p_legacy_grade?: string
+          p_move_in_status?: Database["public"]["Enums"]["move_in_status"]
+          p_next_contact_at?: string
+          p_occupancy_intent?: Database["public"]["Enums"]["occupancy_intent"]
+          p_planned_move_in_date?: string
+          p_project_id: string
+          p_reason?: string
+          p_unit_id: string
+        }
+        Returns: string
+      }
       generate_report: {
         Args: {
           p_generated_data: Json
@@ -1440,6 +1691,37 @@ export type Database = {
       }
       promote_entry_to_customer: {
         Args: { p_entry_id: string; p_project_id: string }
+        Returns: string
+      }
+      save_brokerage_office: {
+        Args: {
+          p_active?: boolean
+          p_address?: string
+          p_contacts?: Json
+          p_main_phone?: string
+          p_name: string
+          p_office_id?: string
+          p_project_id: string
+        }
+        Returns: string
+      }
+      save_move_in_unit_deal: {
+        Args: {
+          p_brokerages?: Json
+          p_consent_status: string
+          p_contract_id: string
+          p_customer_id: string
+          p_deal_status: string
+          p_details?: string
+          p_jeonse_enabled: boolean
+          p_jeonse_note?: string
+          p_monthly_rent_enabled: boolean
+          p_monthly_rent_note?: string
+          p_project_id: string
+          p_sale_enabled: boolean
+          p_sale_note?: string
+          p_unit_id: string
+        }
         Returns: string
       }
       transfer_contract_holder: {

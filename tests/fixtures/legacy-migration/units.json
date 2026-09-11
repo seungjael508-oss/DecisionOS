@@ -1,0 +1,181 @@
+[
+  {
+    "dong": "101",
+    "ho": "1001",
+    "name": "고객A",
+    "phone": "010-0000-0001",
+    "address1": "익명시 익명구",
+    "address2": "101동 1001호",
+    "areaSupply": "84A",
+    "areaExclusive": 59.1,
+    "price": 100000000,
+    "dueAmount": 0,
+    "paidAmount": 100000000,
+    "overdue": 0,
+    "counselor": "상담사A",
+    "contractType": "분양",
+    "balancePaid": "완납",
+    "evaluation": "C",
+    "summary": "원본 summary는 대체하지 않음",
+    "history": [
+      {
+        "date": "2026-08-01T10:00:00.000Z",
+        "counselor": "상담사A",
+        "type": "아웃바운드",
+        "content": "1회차 상담 원문",
+        "evaluation": "C"
+      },
+      {
+        "date": "2026-08-10T10:00:00.000Z",
+        "counselor": "상담사A",
+        "type": "아웃바운드",
+        "content": "2회차 부재",
+        "evaluation": "부재"
+      },
+      {
+        "date": "2026-09-01T10:00:00.000Z",
+        "counselor": "상담사A",
+        "type": "방문",
+        "content": "3회차 전세 문의",
+        "evaluation": "C"
+      }
+    ],
+    "resale": [
+      {
+        "date": "2024-01-15",
+        "seller": "이전계약자",
+        "buyer": "고객A",
+        "reason": "전매"
+      }
+    ],
+    "deal": null
+  },
+  {
+    "dong": "102",
+    "ho": "1503",
+    "name": "고객A",
+    "phone": "010-0000-0001",
+    "address1": "익명시 익명구",
+    "address2": "102동 1503호",
+    "areaSupply": "84A",
+    "areaExclusive": 59.1,
+    "price": 110000000,
+    "dueAmount": 1000000,
+    "paidAmount": 5000000,
+    "overdue": 200000,
+    "counselor": "상담사A",
+    "contractType": "분양",
+    "balancePaid": "",
+    "evaluation": "A",
+    "summary": "다른 세대 요약",
+    "history": [
+      {
+        "date": "2026-07-01T10:00:00.000Z",
+        "counselor": "상담사A",
+        "type": "인바운드",
+        "content": "1회차 상담거절",
+        "evaluation": "상담거절"
+      },
+      {
+        "date": "2026-08-20T10:00:00.000Z",
+        "counselor": "상담사A",
+        "type": "문자",
+        "content": "2회차 재통화",
+        "evaluation": "B"
+      }
+    ],
+    "resale": [],
+    "deal": {
+      "consent": "동의",
+      "status": "진행중",
+      "jeonse": true,
+      "wolse": false,
+      "maemae": false,
+      "notes": "전세 후보",
+      "features": "남향",
+      "realtyList": [{ "bizName": "익명공인중개사" }]
+    }
+  },
+  {
+    "dong": "103",
+    "ho": "804",
+    "name": "고객A",
+    "phone": "010-0000-0099",
+    "address1": "익명시 익명구",
+    "address2": "103동 804호",
+    "areaSupply": "59B",
+    "areaExclusive": 49,
+    "price": 90000000,
+    "dueAmount": 0,
+    "paidAmount": 0,
+    "overdue": 0,
+    "counselor": "미매핑상담사",
+    "contractType": "분양",
+    "balancePaid": "",
+    "evaluation": "A",
+    "summary": "",
+    "history": [
+      {
+        "date": "2026-09-10T10:00:00.000Z",
+        "counselor": "미매핑상담사",
+        "type": "아웃바운드",
+        "content": "자금부족 명시",
+        "evaluation": "A"
+      }
+    ],
+    "resale": [],
+    "deal": null
+  },
+  {
+    "dong": "999",
+    "ho": "1",
+    "name": "고객B",
+    "phone": "010-0000-0002",
+    "address1": "",
+    "address2": "",
+    "areaSupply": "",
+    "areaExclusive": null,
+    "price": null,
+    "dueAmount": null,
+    "paidAmount": null,
+    "overdue": null,
+    "counselor": "상담사A",
+    "contractType": "",
+    "balancePaid": "",
+    "evaluation": "",
+    "summary": "",
+    "history": [
+      {
+        "date": "",
+        "counselor": "상담사A",
+        "type": "아웃바운드",
+        "content": "날짜 없는 이력",
+        "evaluation": ""
+      }
+    ],
+    "resale": [],
+    "deal": null
+  },
+  {
+    "dong": "104",
+    "ho": "201",
+    "name": "고객C",
+    "phone": "",
+    "address1": "",
+    "address2": "",
+    "areaSupply": "84A",
+    "areaExclusive": null,
+    "price": null,
+    "dueAmount": null,
+    "paidAmount": null,
+    "overdue": null,
+    "counselor": "상담사A",
+    "contractType": "",
+    "balancePaid": "",
+    "evaluation": "",
+    "summary": "",
+    "history": [],
+    "resale": [],
+    "deal": null
+  }
+]
