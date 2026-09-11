@@ -5,6 +5,12 @@ import {
 import { extractLegacyGrade } from "@/lib/move-in/consultation";
 import type { FloorplanUnit } from "@/lib/move-in/floorplan";
 import {
+  MOVE_IN_DAILY_REPORT_TYPE,
+  MOVE_IN_REPORT_PHASE,
+  sortMoveInReports,
+  type MoveInReportRow,
+} from "@/lib/move-in/reports";
+import {
   isBrokerageContactRole,
   type BrokerageOfficeOption,
 } from "@/lib/move-in/brokerages";
@@ -202,6 +208,39 @@ export async function loadFloorplanRows(
   });
 
   return { rows, error: false };
+}
+
+export async function loadMoveInReports(
+  projectId: string,
+): Promise<
+  | { rows: MoveInReportRow[]; error: true }
+  | { rows: MoveInReportRow[]; error: false }
+> {
+  const supabase = await createServerClient();
+  const result = await supabase
+    .from("report")
+    .select(
+      "report_id, report_date, version, supersedes_report_id, generated_at, generated_by, generated_data",
+    )
+    .eq("project_id", projectId)
+    .eq("report_phase", MOVE_IN_REPORT_PHASE)
+    .eq("report_type", MOVE_IN_DAILY_REPORT_TYPE)
+    .order("report_date", { ascending: false })
+    .order("version", { ascending: false });
+
+  if (result.error) return { rows: [], error: true };
+
+  const rows: MoveInReportRow[] = (result.data ?? []).map((row) => ({
+    reportId: row.report_id,
+    reportDate: row.report_date,
+    version: row.version,
+    supersedesReportId: row.supersedes_report_id,
+    generatedAt: row.generated_at,
+    generatedBy: row.generated_by,
+    generatedData: row.generated_data,
+  }));
+
+  return { rows: sortMoveInReports(rows), error: false };
 }
 
 export async function loadUnitDetail(

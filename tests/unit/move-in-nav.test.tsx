@@ -56,6 +56,18 @@ describe("move-in navigation", () => {
     expect(screen.getByText("상담·콜 관리")).toBeTruthy();
   });
 
+  it("shows 보고서 for COUNSELOR and PROJECT_ADMIN", () => {
+    const { rerender } = render(
+      <MoveInNav projectId="p1" projectName="현장" role="COUNSELOR" />,
+    );
+    expect(screen.getByRole("link", { name: "보고서" }).getAttribute("href")).toBe(
+      "/projects/p1/move-in/reports",
+    );
+
+    rerender(<MoveInNav projectId="p1" projectName="현장" role="PROJECT_ADMIN" />);
+    expect(screen.getByText("보고서")).toBeTruthy();
+  });
+
   it("shows 상담사 배정 only for PROJECT_ADMIN", () => {
     const { rerender } = render(
       <MoveInNav projectId="p1" projectName="현장" role="PROJECT_ADMIN" />,

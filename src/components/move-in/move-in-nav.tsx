@@ -29,6 +29,7 @@ export function MoveInNav({
     { href: `${base}/deals`, label: "매도·임대 관리", exact: true },
     { href: `${base}/market`, label: "시장동향", exact: true },
     { href: `${base}/worklog`, label: "업무일지", exact: true },
+    { href: `${base}/reports`, label: "보고서", exact: true },
     ...(role === "PROJECT_ADMIN"
       ? [
           { href: `${base}/assign`, label: "상담사 배정", exact: true },
