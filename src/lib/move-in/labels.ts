@@ -5,6 +5,9 @@ export type FundingStatus = Database["public"]["Enums"]["funding_status"];
 export type MoveInStatus = Database["public"]["Enums"]["move_in_status"];
 export type ProjectMemberRole = Database["public"]["Enums"]["project_member_role"];
 
+/** Existing holder/sibling contract policy: completed contracts remain sold. */
+export const VALID_HOLDER_CONTRACT_STATUSES = ["ACTIVE", "COMPLETED"] as const;
+
 export const OCCUPANCY_INTENT_LABELS: Record<OccupancyIntent, string> = {
   SELF_MOVE_IN: "실입주",
   SALE: "매도",

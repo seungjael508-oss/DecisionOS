@@ -1,5 +1,6 @@
 import { createServerClient } from "@/lib/supabase/server";
 import type { MarketRow } from "@/lib/market/select-latest";
+import { readAllRows } from "@/lib/supabase/read-all";
 
 function toCount(value: number | string | null | undefined): number | null {
   if (value === null || value === undefined) return null;
@@ -7,17 +8,18 @@ function toCount(value: number | string | null | undefined): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-export async function loadMarketRows(projectId: string): Promise<
+export async function loadMarketRows(projectId: string, before?: string): Promise<
   { error: true; rows: MarketRow[] } | { error: false; rows: MarketRow[] }
 > {
   const supabase = await createServerClient();
-  const { data, error } = await supabase
-    .from("market_data")
-    .select(
+  const { data, error } = await readAllRows((from, to) => {
+    let query = supabase.from("market_data").select(
       "market_data_id, project_id, data_scope, complex_name, period, unit_type, sale_listing_count, jeonse_listing_count, monthly_rent_listing_count, transaction_count, price_avg, move_in_date, move_in_units, source, collected_at",
-    )
-    .eq("project_id", projectId)
-    .order("period", { ascending: false });
+      { count: "exact" },
+    ).eq("project_id", projectId);
+    if (before) query = query.lt("collected_at", before);
+    return query.order("period", { ascending: false }).order("market_data_id").range(from, to);
+  });
 
   if (error) return { error: true, rows: [] };
 

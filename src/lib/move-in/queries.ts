@@ -3,6 +3,7 @@ import {
   type CallListRow,
 } from "@/lib/move-in/calls";
 import { extractLegacyGrade } from "@/lib/move-in/consultation";
+import { VALID_HOLDER_CONTRACT_STATUSES } from "@/lib/move-in/labels";
 import type { FloorplanUnit } from "@/lib/move-in/floorplan";
 import {
   MOVE_IN_DAILY_REPORT_TYPE,
@@ -310,7 +311,7 @@ export async function loadUnitDetail(
         .select("unit_id, contract_status")
         .eq("project_id", projectId)
         .eq("customer_id", customerId)
-        .in("contract_status", ["ACTIVE", "COMPLETED"]);
+        .in("contract_status", [...VALID_HOLDER_CONTRACT_STATUSES]);
 
       if (siblingContracts.error) return { kind: "error" };
       const siblingUnitIds = [

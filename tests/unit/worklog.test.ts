@@ -286,6 +286,13 @@ describe("buildMoveInWorklogSnapshot", () => {
       consultations: snapshot.consultations,
       byBuilding: snapshot.byBuilding,
       byUnitType: snapshot.byUnitType,
+      version: snapshot.version,
+      overview: snapshot.overview,
+      salesConsultation: snapshot.salesConsultation,
+      managementTargets: snapshot.managementTargets,
+      consultationActivity: snapshot.consultationActivity,
+      marketSummary: snapshot.marketSummary,
+      otherActivities: snapshot.otherActivities,
     });
   });
 
