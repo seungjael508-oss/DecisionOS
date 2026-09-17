@@ -1,7 +1,7 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { readAllRows } from "@/lib/supabase/read-all";
 import { loadMarketRows } from "@/lib/market/queries";
-import { extractLegacyGrade } from "@/lib/move-in/consultation";
+import { extractLegacyGrade, confirmedLegacyVisitKey } from "@/lib/move-in/consultation";
 import {
   isWorklogDateYmd,
   resolveWorklogTimeZone,
@@ -97,18 +97,9 @@ export async function loadMoveInWorklog(
     }
 
     // Audited F003 visit worksheet: 29 valid events at rows 2–30.
-    // This is a read projection only; never infer a channel from purpose.
+    // Read projection: current Hwayang operations classify other legacy consultations as CALL.
+    // Never infer a channel from purpose or rewrite the source.
     const unitIds = new Set(unitsResult.data.map(row => row.unit_id));
-    const visitKey = (tags: unknown): string | null => {
-      if (!tags || typeof tags !== "object" || Array.isArray(tags)) return null;
-      const t = tags as Record<string, unknown>;
-      const row = t.legacy_row_number;
-      if (t.legacy_source !== "hwayang_legacy" || t.legacy_file_id !== "F003" ||
-          t.legacy_sheet_index !== 4 || typeof row !== "number" ||
-          !Number.isInteger(row) || row < 2 || row > 30) return null;
-      const key = `hwayang-260915:F003:4:${row}`;
-      return t.legacy_source_key === key ? key : null;
-    };
     const keyCounts = new Map<string, number>();
     for (const row of consultationResult.data) {
       const tags = row.structured_tags;
@@ -118,11 +109,11 @@ export async function loadMoveInWorklog(
       }
     }
     const projectedContactType = (row: (typeof consultationResult.data)[number]) => {
-      const key = visitKey(row.structured_tags);
+      const key = confirmedLegacyVisitKey(projectId, row.structured_tags);
       return projectId === "1283e198-5043-4027-96d6-edcc7a6686c6" &&
         row.contact_type === "CONSULTATION" && row.channel === "LEGACY_IMPORT" &&
         row.unit_id !== null && unitIds.has(row.unit_id) && key !== null && keyCounts.get(key) === 1
-        ? "VISIT" : row.contact_type;
+        ? "VISIT" : projectId === "1283e198-5043-4027-96d6-edcc7a6686c6" && row.channel === "LEGACY_IMPORT" && row.contact_type === "CONSULTATION" && row.unit_id !== null && unitIds.has(row.unit_id) ? "CALL" : row.contact_type;
     };
 
     const holderContracts = contractsResult.data.filter(c => c.contract_status === "ACTIVE" || c.contract_status === "COMPLETED");

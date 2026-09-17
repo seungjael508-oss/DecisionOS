@@ -98,12 +98,12 @@ export function buildCreateMoveInConsultationArgs(
   const content = input.content.trim();
   if (!content) return { error: "empty_content" };
 
-  if (!input.purpose || !(CONSULTATION_PURPOSES as readonly string[]).includes(input.purpose)) {
+  if (input.purpose && !(CONSULTATION_PURPOSES as readonly string[]).includes(input.purpose)) {
     return { error: "invalid_purpose" };
   }
 
   const args: CreateMoveInConsultationArgs = {
-    p_business_purpose: input.purpose,
+    ...(input.purpose ? { p_business_purpose: input.purpose } : {}),
     p_project_id: input.projectId,
     p_unit_id: input.unitId,
     p_customer_id: input.customerId,
@@ -125,4 +125,15 @@ export function buildCreateMoveInConsultationArgs(
   if (reason) args.p_reason = reason;
 
   return args;
+}
+
+
+// Only audited visit-sheet coordinates may establish a legacy channel.
+export function confirmedLegacyVisitKey(projectId: string, tags: Json | null): string | null {
+  if (projectId !== "1283e198-5043-4027-96d6-edcc7a6686c6" || !tags || typeof tags !== "object" || Array.isArray(tags)) return null;
+  const row = tags.legacy_row_number;
+  if (tags.legacy_source !== "hwayang_legacy" || tags.legacy_file_id !== "F003" ||
+      tags.legacy_sheet_index !== 4 || typeof row !== "number" || !Number.isInteger(row) || row < 2 || row > 30) return null;
+  const key = `hwayang-260915:F003:4:${row}`;
+  return tags.legacy_source_key === key ? key : null;
 }

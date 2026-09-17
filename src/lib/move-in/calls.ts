@@ -8,6 +8,7 @@ export type CallListRow = {
   unitNo: string;
   customerId: string;
   customerName: string | null;
+  phoneQuality?: string | null;
   customerPhone: string | null;
   phoneNormalized: string | null;
   assignedCounselorId: string | null;

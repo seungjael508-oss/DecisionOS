@@ -6,7 +6,8 @@ import {
   TODAY_REASON_LABELS,
   todayReasons,
 } from "@/lib/move-in/filters";
-import { computeMoveInKpis } from "@/lib/move-in/kpis";
+import { computeMoveInKpis, HWAYANG_DASHBOARD_PROJECT } from "@/lib/move-in/kpis";
+import { DashboardSummary } from "@/components/move-in/dashboard-summary";
 import {
   FUNDING_STATUS_LABELS,
   FUNDING_STATUS_VALUES,
@@ -17,7 +18,7 @@ import {
   formatUnitLabel,
 } from "@/lib/move-in/labels";
 import { requireMoveInAccess } from "@/lib/move-in/access";
-import { loadUnitRows } from "@/lib/move-in/queries";
+import { loadUnitRows, loadDashboard } from "@/lib/move-in/queries";
 
 export default async function MoveInDashboardPage({
   params,
@@ -27,6 +28,12 @@ export default async function MoveInDashboardPage({
   const { projectId } = await params;
   const access = await requireMoveInAccess(projectId);
   if (!access.ok) return null;
+
+  if (projectId === HWAYANG_DASHBOARD_PROJECT) {
+    const dashboard = await loadDashboard(projectId);
+    if (dashboard.error) return <QueryError />;
+    return <DashboardSummary projectName={access.projectName} projectId={projectId} data={dashboard.data} />;
+  }
 
   const result = await loadUnitRows(projectId);
   if (result.error) return <QueryError />;

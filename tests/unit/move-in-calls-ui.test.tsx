@@ -37,7 +37,7 @@ describe("call list and timeline UI", () => {
     render(<CallTable projectId="p1" rows={rows} currentMemberId="member-a" />);
     expect(screen.getByText("최근등급")).toBeTruthy();
     expect(screen.getAllByText("C").length).toBeGreaterThan(0);
-    expect(screen.getByText("010-1234-5678")).toBeTruthy();
+    expect(screen.getAllByText("010-1234-5678")).toHaveLength(2);
   });
 
   it("renders timeline newest-first with counselor, type, and grade", () => {

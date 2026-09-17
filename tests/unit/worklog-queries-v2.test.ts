@@ -68,7 +68,7 @@ it("does not silently drop null contract dates or exclude phone-invalid holders"
  if(!result.error){expect(result.snapshot.salesConsultation?.total).toMatchObject({supply:1,sold:null,unsold:null});expect(result.snapshot.sourceReadiness?.phoneInvalid).toBe(1);}
 });
 
-it('maps only the audited Hwayang visit source in the read projection without writes or purpose inference',async()=>{
+it('maps only the audited Hwayang visit source in the read projection under the approved default CALL policy without writes or purpose inference',async()=>{
  const project='1283e198-5043-4027-96d6-edcc7a6686c6';
  state.tables.project_unit=[{project_id:project,unit_id:'u',building_no:'1',unit_type:'SYNTHETIC'}];
  const tags={legacy_source:'hwayang_legacy',legacy_file_id:'F003',legacy_sheet_index:4,legacy_row_number:2,legacy_source_key:'hwayang-260915:F003:4:2'};
@@ -76,7 +76,7 @@ it('maps only the audited Hwayang visit source in the read projection without wr
  const before=JSON.stringify(state.tables.consultation);
  const result=await loadMoveInWorklog(project,'2026-09-10');
  expect(result.error).toBe(false);
- if(!result.error)expect(result.snapshot.consultationActivity?.today).toMatchObject({total:71,call:0,visit:1,message:0,unknown:70});
+ if(!result.error)expect(result.snapshot.consultationActivity?.today).toMatchObject({total:71,call:70,visit:1,message:0,unknown:0});
  expect(JSON.stringify(state.tables.consultation)).toBe(before);
  state.tables.consultation[0].structured_tags={...tags,legacy_source_key:'hwayang-260915:F003:4:999'};
  const mismatch=await loadMoveInWorklog(project,'2026-09-10');
@@ -91,7 +91,7 @@ it('fails closed for duplicate visit provenance and preserves explicit channels'
  state.tables.consultation=[{...event,id:'a'},{...event,id:'b'}];
  const duplicate=await loadMoveInWorklog(project,'2026-09-10');
  expect(duplicate.error).toBe(false);
- if(!duplicate.error)expect(duplicate.snapshot.consultationActivity?.today).toMatchObject({total:2,visit:0,unknown:2});
+ if(!duplicate.error)expect(duplicate.snapshot.consultationActivity?.today).toMatchObject({total:2,call:2,visit:0,unknown:0});
  state.tables.consultation=[{...event,id:'a',contact_type:'CALL'}];
  const explicit=await loadMoveInWorklog(project,'2026-09-10');
  expect(explicit.error).toBe(false);

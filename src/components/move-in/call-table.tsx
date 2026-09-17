@@ -1,3 +1,4 @@
+import { CustomerPhone } from "@/components/move-in/customer-phone";
 import {
   FUNDING_STATUS_LABELS,
   MOVE_IN_STATUS_LABELS,
@@ -53,7 +54,7 @@ export function CallTable({
                   </Link>
                 </td>
                 <td className="py-2 pr-3">{row.customerName ?? "—"}</td>
-                <td className="py-2 pr-3">{row.customerPhone ?? "—"}</td>
+                <td className="py-2 pr-3"><CustomerPhone raw={row.customerPhone} status={row.phoneQuality} /></td>
                 <td className="py-2 pr-3">
                   {counselorDisplayName(row.assignedCounselorId, currentMemberId)}
                 </td>
@@ -84,7 +85,7 @@ export function CallTable({
               {formatUnitLabel(row.buildingNo, row.unitNo)}
             </Link>
             <p className="mt-1">계약자 {row.customerName ?? "—"}</p>
-            <p>전화번호 {row.customerPhone ?? "—"}</p>
+            <div>전화번호 <CustomerPhone raw={row.customerPhone} status={row.phoneQuality} /></div>
             <p>
               담당상담사{" "}
               {counselorDisplayName(row.assignedCounselorId, currentMemberId)}

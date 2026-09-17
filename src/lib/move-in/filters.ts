@@ -5,6 +5,11 @@ export type UnitListRow = {
   buildingNo: string;
   unitNo: string;
   customerName: string | null;
+  phoneQuality?: string | null;
+  customerPhone?: string | null;
+  latestGrade?: string | null;
+  latestConsultation?: string | null;
+  latestPreviousHolder?: boolean;
   occupancyIntent: OccupancyIntent | null;
   fundingStatus: FundingStatus | null;
   moveInStatus: MoveInStatus | null;
@@ -26,9 +31,9 @@ export type UnitListFilters = {
 
 export function sortUnits(rows: UnitListRow[]) {
   return [...rows].sort((a, b) => {
-    const building = a.buildingNo.localeCompare(b.buildingNo, "ko");
+    const building = a.buildingNo.localeCompare(b.buildingNo, "ko", { numeric: true });
     if (building !== 0) return building;
-    return a.unitNo.localeCompare(b.unitNo, "ko");
+    return a.unitNo.localeCompare(b.unitNo, "ko", { numeric: true });
   });
 }
 

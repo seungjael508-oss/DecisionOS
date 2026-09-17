@@ -4,9 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { createMoveInConsultation } from "@/app/projects/[projectId]/move-in/units/[unitId]/actions";
 import {
-  CONSULTATION_PURPOSES,
-  CONSULTATION_TYPE_LABELS,
-  CONSULTATION_TYPES,
   LEGACY_GRADE_VALUES,
   type ConsultationType,
   type LegacyGrade,
@@ -73,7 +70,6 @@ export function ConsultationCreateForm({
       customerId,
       consultationType,
       content,
-      purpose: String(formData.get("purpose") ?? ""),
       legacyGrade,
       nextContactAt: dateToTimestamptz(nextDate),
       occupancyIntent,
@@ -107,28 +103,21 @@ export function ConsultationCreateForm({
     >
       <h3 className="text-lg font-semibold">새 상담 등록</h3>
       <label className="flex flex-col gap-1 text-sm">
-        상담유형
+        접촉방법
         <select
           name="consultation_type"
           defaultValue="OUTBOUND"
           className="border border-neutral-400 px-2 py-1"
         >
-          {CONSULTATION_TYPES.map((value) => (
+          {(["OUTBOUND", "VISIT", "MESSAGE"] as const).map((value) => (
             <option key={value} value={value}>
-              {CONSULTATION_TYPE_LABELS[value]}
+              {{ OUTBOUND: "전화 (CALL)", VISIT: "방문 (VISIT)", MESSAGE: "문자 (MESSAGE)" }[value]}
             </option>
           ))}
         </select>
       </label>
       <label className="flex flex-col gap-1 text-sm">
-        업무 목적 *
-        <select name="purpose" required defaultValue="" className="border border-neutral-400 px-2 py-1">
-          <option value="" disabled>선택하세요</option>
-          {CONSULTATION_PURPOSES.map(value => <option key={value} value={value}>{value}</option>)}
-        </select>
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        평가
+        상담결과
         <select name="legacy_grade" defaultValue="" className="border border-neutral-400 px-2 py-1">
           <option value="">선택 안 함</option>
           {LEGACY_GRADE_VALUES.map((value) => (
@@ -155,6 +144,8 @@ export function ConsultationCreateForm({
           className="border border-neutral-400 px-2 py-1"
         />
       </label>
+      <details>
+        <summary className="cursor-pointer text-sm">관리상태 변경 (선택)</summary>
       <fieldset className="border border-neutral-200 p-3">
         <legend className="text-sm font-medium">필요 시 상태변경</legend>
         <div className="mt-2 grid gap-3 md:grid-cols-3">
@@ -232,6 +223,7 @@ export function ConsultationCreateForm({
           <input name="reason" className="border border-neutral-400 px-2 py-1" />
         </label>
       </fieldset>
+      </details>
       {error ? <p className="text-sm text-red-700">{error}</p> : null}
       <button
         type="submit"

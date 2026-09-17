@@ -1,3 +1,4 @@
+import { CustomerPhone } from "@/components/move-in/customer-phone";
 import Link from "next/link";
 import { ConsultationCreateForm } from "@/components/move-in/consultation-create-form";
 import { ConsultationHistory } from "@/components/move-in/consultation-history";
@@ -12,6 +13,7 @@ import {
   MOVE_IN_STATUS_LABELS,
   OCCUPANCY_INTENT_LABELS,
   formatUnitLabel,
+  formatDateTime,
 } from "@/lib/move-in/labels";
 import {
   loadBrokerageOffices,
@@ -41,10 +43,9 @@ export default async function MoveInUnitDetailPage({
     loadUnitDeal(projectId, unitId),
     loadBrokerageOffices(projectId),
   ]);
-  if (dealResult.error || officesResult.error) return <QueryError />;
 
   const { detail, consultations } = result;
-  const latestGrade = consultations[0]?.legacyGrade ?? null;
+  const latestGrade = consultations.find(row => !row.previousHolder && row.legacyGrade)?.legacyGrade ?? null;
 
   return (
     <main className="p-8">
@@ -55,13 +56,17 @@ export default async function MoveInUnitDetailPage({
         <dt className="text-neutral-600">계약자</dt>
         <dd>{detail.customerName ?? "—"}</dd>
         <dt className="text-neutral-600">전화번호</dt>
-        <dd>{detail.customerPhone ?? "—"}</dd>
-        <dt className="text-neutral-600">담당</dt>
+        <dd>{detail.customerId ? <CustomerPhone raw={detail.customerPhone} status={detail.phoneQuality} /> : "—"}</dd>
+        <dt className="text-neutral-600">담당상담사</dt>
         <dd>
           {counselorDisplayName(detail.assignedCounselorId, access.memberId)}
         </dd>
-        <dt className="text-neutral-600">최근등급</dt>
-        <dd>{latestGrade ?? "—"}</dd>
+        <dt className="text-neutral-600">현재등급</dt>
+        <dd>{latestGrade ?? "미확인"}<span className="block text-xs text-neutral-600">현재 계약자의 최근 유효 상담평가 기준</span></dd>
+        <dt className="text-neutral-600">최근접촉</dt>
+        <dd>{formatDateTime(consultations[0]?.consultedAt ?? detail.occupancy?.last_contact_at ?? null)}</dd>
+        <dt className="text-neutral-600">다음접촉</dt>
+        <dd>{formatDateTime(detail.occupancy ? detail.occupancy.next_contact_at : consultations[0]?.nextActionAt ?? null)}</dd>
         <dt className="text-neutral-600">총 상담</dt>
         <dd>{consultations.length}회</dd>
       </dl>
@@ -78,6 +83,18 @@ export default async function MoveInUnitDetailPage({
         <p className="mt-4 text-neutral-700">등록된 입주 상태가 없습니다.</p>
       )}
 
+      {consultations[0] ? <section className="mt-6 border-2 border-neutral-800 bg-neutral-50 p-4">
+        <h2 className="mb-3 text-lg font-semibold">최근 상담</h2>
+        <ConsultationHistory rows={[consultations[0]]} currentMemberId={access.memberId}/>
+      </section> : null}
+      <section className="mt-10">
+        <h2 className="mb-3 text-lg font-semibold">상담/콜 이력</h2>
+        <ConsultationHistory
+          rows={consultations}
+          currentMemberId={access.memberId}
+        />
+      </section>
+
       {detail.customerId ? (
         <ConsultationCreateForm
           projectId={projectId}
@@ -87,7 +104,7 @@ export default async function MoveInUnitDetailPage({
       ) : null}
 
       {detail.customerId && detail.contractId ? (
-        <DealEditor
+        dealResult.error || officesResult.error ? <QueryError /> : <DealEditor
           projectId={projectId}
           unitId={unitId}
           contractId={detail.contractId}
@@ -126,13 +143,7 @@ export default async function MoveInUnitDetailPage({
         </section>
       ) : null}
 
-      <section className="mt-10">
-        <h2 className="mb-3 text-lg font-semibold">상담/콜 이력</h2>
-        <ConsultationHistory
-          rows={consultations}
-          currentMemberId={access.memberId}
-        />
-      </section>
+
     </main>
   );
 }
