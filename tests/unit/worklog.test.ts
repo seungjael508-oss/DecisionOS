@@ -288,6 +288,8 @@ describe("buildMoveInWorklogSnapshot", () => {
       byUnitType: snapshot.byUnitType,
       version: snapshot.version,
       overview: snapshot.overview,
+      sourceReadiness: snapshot.sourceReadiness,
+      balanceManagement: snapshot.balanceManagement,
       salesConsultation: snapshot.salesConsultation,
       managementTargets: snapshot.managementTargets,
       consultationActivity: snapshot.consultationActivity,

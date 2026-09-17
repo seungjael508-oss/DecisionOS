@@ -81,7 +81,7 @@ describe("daily and cumulative consultation activity", () => {
   });
   it("separates CALL, VISIT and other channels without treating MESSAGE as a call", () => {
     const s = build([], [event("1", null, null), event("2", null, null, range.startIso, "VISIT"), event("3", null, null, range.startIso, "MESSAGE"), event("4", null, null, range.startIso, "CONSULTATION"), event("5", null, null, range.startIso, null)]);
-    expect(s.consultationActivity?.today).toMatchObject({ call: 1, visit: 1, other: 3, total: 5 });
+    expect(s.consultationActivity?.today).toMatchObject({ call: 1, visit: 1, message: 1, other: 2, total: 5 });
   });
   it.each(["성향파악", "입주안내", "잔금독촉", "매칭안내", "기타"])("maps explicit purpose %s", purpose => {
     const s = build([], [event("1", null, null, range.startIso, "CALL", purpose)]);
@@ -162,4 +162,11 @@ describe("evidence-based other activities and immutable aggregate snapshots", ()
     for (const value of Object.values(secret)) expect(data).not.toContain(value);
     expect(data).not.toContain('"unitId"');
   });
+});
+
+it('does not classify a source-confirmed contract with unknown historical date as unsold', () => {
+  const snapshot=buildMoveInWorklogSnapshot([unit('unknown-date')],[],[],range,{contracts:[{unitId:'unknown-date',status:'ACTIVE',contractedAt:null}]});
+  expect(snapshot.salesConsultation?.total.sold).toBeNull();
+  expect(snapshot.salesConsultation?.total.unsold).toBeNull();
+  expect(snapshot.salesConsultation?.soldSource).toBe('UNAVAILABLE');
 });

@@ -14,7 +14,7 @@ const snapshot = () => buildMoveInWorklogSnapshot([{ unitId: "u", buildingNo: "1
 describe("daily worklog v2 tables", () => {
   it("renders exactly the five field report sections in order", () => {
     render(<WorklogSnapshotView snapshot={snapshot()} />);
-    expect(screen.getAllByRole("heading", { level: 2 }).map(n => n.textContent)).toEqual(["1. 분양/상담 현황", "2. 관리대상 동호 현황", "3. 상담 세부 현황", "4. 매물현황", "5. 기타업무"]);
+    expect(screen.getAllByRole("heading", { level: 2 }).map(n => n.textContent)).toEqual(["1. 분양/상담 현황", "2. 관리대상 동호 현황", "3. 상담 세부 현황", "4. 매물현황", "5. 오늘 업무 요약"]);
     expect(screen.getByText("UNIQUE-TYPE")).toBeTruthy();
     expect(screen.getByText("부재 제외시")).toBeTruthy();
     expect(screen.getByText("미분류")).toBeTruthy();
@@ -40,7 +40,7 @@ describe("daily worklog v2 tables", () => {
   it("shows actual message activity and does not offer unsaved memo controls", () => {
     render(<WorklogSnapshotView snapshot={snapshot()} />);
     expect(screen.getByText("문자상담")).toBeTruthy();
-    expect(screen.getByText("수동 메모 저장 연결 대기")).toBeTruthy();
+    expect(screen.getByText("오늘 상담 1건")).toBeTruthy();
     expect(screen.queryByRole("textbox")).toBeNull();
   });
   it("renders saved v2 generated_data without live queries", () => {

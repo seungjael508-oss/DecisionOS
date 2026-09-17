@@ -656,6 +656,7 @@ export type Database = {
           id: string
           name: string
           phone: string
+          phone_quality: string | null
           phone_normalized: string
           project_id: string
           source: string | null
@@ -1661,6 +1662,7 @@ export type Database = {
       }
       create_move_in_consultation: {
         Args: {
+          p_business_purpose?: string
           p_actual_move_in_date?: string
           p_balance_paid_at?: string
           p_consultation_type: string

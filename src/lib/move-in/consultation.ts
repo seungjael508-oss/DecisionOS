@@ -1,6 +1,8 @@
 import type { Database, Json } from "@/lib/supabase/types";
 import type { FundingStatus, MoveInStatus, OccupancyIntent } from "@/lib/move-in/labels";
 
+export const CONSULTATION_PURPOSES = ["성향파악", "입주안내", "잔금독촉", "매칭안내", "기타"] as const;
+
 export const CONSULTATION_TYPES = [
   "OUTBOUND",
   "INBOUND",
@@ -75,6 +77,7 @@ export type CreateMoveInConsultationInput = {
   customerId: string;
   consultationType: ConsultationType;
   content: string;
+  purpose?: string;
   legacyGrade?: LegacyGrade | "";
   nextContactAt?: string;
   occupancyIntent?: OccupancyIntent | "";
@@ -91,11 +94,16 @@ export type CreateMoveInConsultationArgs =
 
 export function buildCreateMoveInConsultationArgs(
   input: CreateMoveInConsultationInput,
-): CreateMoveInConsultationArgs | { error: "empty_content" } {
+): CreateMoveInConsultationArgs | { error: "empty_content" | "invalid_purpose" } {
   const content = input.content.trim();
   if (!content) return { error: "empty_content" };
 
+  if (!input.purpose || !(CONSULTATION_PURPOSES as readonly string[]).includes(input.purpose)) {
+    return { error: "invalid_purpose" };
+  }
+
   const args: CreateMoveInConsultationArgs = {
+    p_business_purpose: input.purpose,
     p_project_id: input.projectId,
     p_unit_id: input.unitId,
     p_customer_id: input.customerId,

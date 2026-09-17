@@ -20,6 +20,7 @@ export const WORKLOG_QUERY_TABLES = [
   "consultation",
   "contract",
   "market_data",
+  "customer",
 ] as const;
 
 export function worklogSourceFilter(projectId: string) {
@@ -67,7 +68,7 @@ export async function loadMoveInWorklog(
         : todayYmd(timeZone);
     const range = worklogDayRange(dateYmd, timeZone);
 
-    const [unitsResult, occupancyResult, consultationResult, contractsResult, marketResult] = await Promise.all([
+    const [unitsResult, occupancyResult, consultationResult, contractsResult, marketResult, customersResult] = await Promise.all([
       readAllRows((from, to) => supabase
         .from("project_unit")
         .select("unit_id, building_no, unit_type", { count: "exact" })
@@ -81,19 +82,52 @@ export async function loadMoveInWorklog(
         .eq("project_id", projectId).order("unit_id").range(from, to)),
       readAllRows((from, to) => supabase
         .from("consultation")
-        .select("id, unit_id, consulted_at, contact_type, purpose, structured_tags, next_action_at", { count: "exact" })
+        .select("id, unit_id, consulted_at, contact_type, channel, purpose, structured_tags, next_action_at", { count: "exact" })
         .eq("project_id", projectId)
         .lt("consulted_at", range.endIso).order("consulted_at").order("id").range(from, to)),
       readAllRows((from, to) => supabase.from("contract")
-        .select("contract_id, unit_id, contract_status, contracted_at", { count: "exact" })
-        .eq("project_id", projectId).lt("contracted_at", range.endIso).order("contract_id").range(from, to)),
+        .select("contract_id, unit_id, customer_id, contract_status, contracted_at", { count: "exact" })
+        .eq("project_id", projectId).order("contract_id").range(from, to)),
       loadMarketRows(projectId, range.endIso).catch(() => ({ error: true as const, rows: [] })),
+      readAllRows((from, to) => supabase.from("customer").select("id, phone_quality", { count: "exact" }).eq("project_id", projectId).order("id").range(from,to)),
     ]);
 
     if (unitsResult.error || occupancyResult.error || consultationResult.error || contractsResult.error) {
       return { error: true };
     }
 
+    // Audited F003 visit worksheet: 29 valid events at rows 2–30.
+    // This is a read projection only; never infer a channel from purpose.
+    const unitIds = new Set(unitsResult.data.map(row => row.unit_id));
+    const visitKey = (tags: unknown): string | null => {
+      if (!tags || typeof tags !== "object" || Array.isArray(tags)) return null;
+      const t = tags as Record<string, unknown>;
+      const row = t.legacy_row_number;
+      if (t.legacy_source !== "hwayang_legacy" || t.legacy_file_id !== "F003" ||
+          t.legacy_sheet_index !== 4 || typeof row !== "number" ||
+          !Number.isInteger(row) || row < 2 || row > 30) return null;
+      const key = `hwayang-260915:F003:4:${row}`;
+      return t.legacy_source_key === key ? key : null;
+    };
+    const keyCounts = new Map<string, number>();
+    for (const row of consultationResult.data) {
+      const tags = row.structured_tags;
+      if (tags && typeof tags === "object" && !Array.isArray(tags) && typeof tags.legacy_source_key === "string") {
+        const key = tags.legacy_source_key;
+        keyCounts.set(key, (keyCounts.get(key) ?? 0) + 1);
+      }
+    }
+    const projectedContactType = (row: (typeof consultationResult.data)[number]) => {
+      const key = visitKey(row.structured_tags);
+      return projectId === "1283e198-5043-4027-96d6-edcc7a6686c6" &&
+        row.contact_type === "CONSULTATION" && row.channel === "LEGACY_IMPORT" &&
+        row.unit_id !== null && unitIds.has(row.unit_id) && key !== null && keyCounts.get(key) === 1
+        ? "VISIT" : row.contact_type;
+    };
+
+    const holderContracts = contractsResult.data.filter(c => c.contract_status === "ACTIVE" || c.contract_status === "COMPLETED");
+    const phoneByCustomer = new Map(customersResult.data.map(c => [c.id,c.phone_quality]));
+    const phonesComplete = !customersResult.error && holderContracts.every(c => phoneByCustomer.has(c.customer_id));
     const snapshot = buildMoveInWorklogSnapshot(
       (unitsResult.data ?? []).map((row) => ({
         unitId: row.unit_id,
@@ -113,7 +147,7 @@ export async function loadMoveInWorklog(
       (consultationResult.data ?? []).map((row) => ({
         id: row.id,
         consultedAt: row.consulted_at,
-        contactType: row.contact_type,
+        contactType: projectedContactType(row),
         unitId: row.unit_id,
         legacyGrade: extractLegacyGrade(row.structured_tags),
         purpose: row.purpose,
@@ -121,6 +155,7 @@ export async function loadMoveInWorklog(
       })),
       range,
       {
+        phoneQualities: phonesComplete ? holderContracts.map(c => ({unitId:c.unit_id, invalid:phoneByCustomer.get(c.customer_id) === "PHONE_INVALID"})) : undefined,
         contracts: contractsResult.data.map(row => ({ unitId: row.unit_id, status: row.contract_status, contractedAt: row.contracted_at })),
         marketRows: marketResult.rows,
         marketError: marketResult.error,

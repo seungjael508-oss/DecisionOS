@@ -326,6 +326,62 @@ select is(
   'occupancy unchanged after rollback'
 );
 
+
+-- Explicit business purpose must remain independent of channel/content.
+select pg_temp.impersonate('30000000-0000-4000-8000-0000000000c1');
+set local role authenticated;
+
+select public.create_move_in_consultation(
+ p_project_id := '20000000-0000-4000-8000-000000000001',
+ p_unit_id := '8c000000-0000-4000-8000-000000000001',
+ p_customer_id := '50000000-0000-4000-8000-0000000000a1',
+ p_consultation_type := 'OUTBOUND', p_content := 'purpose test 0',
+ p_business_purpose := '성향파악');
+select is((select purpose::text from public.consultation where content = 'purpose test 0'), '성향파악', 'explicit purpose 0');
+
+select public.create_move_in_consultation(
+ p_project_id := '20000000-0000-4000-8000-000000000001',
+ p_unit_id := '8c000000-0000-4000-8000-000000000001',
+ p_customer_id := '50000000-0000-4000-8000-0000000000a1',
+ p_consultation_type := 'INBOUND', p_content := 'purpose test 1',
+ p_business_purpose := '입주안내');
+select is((select purpose::text from public.consultation where content = 'purpose test 1'), '입주안내', 'explicit purpose 1');
+
+select public.create_move_in_consultation(
+ p_project_id := '20000000-0000-4000-8000-000000000001',
+ p_unit_id := '8c000000-0000-4000-8000-000000000001',
+ p_customer_id := '50000000-0000-4000-8000-0000000000a1',
+ p_consultation_type := 'VISIT', p_content := 'purpose test 2',
+ p_business_purpose := '잔금독촉');
+select is((select purpose::text from public.consultation where content = 'purpose test 2'), '잔금독촉', 'explicit purpose 2');
+
+select public.create_move_in_consultation(
+ p_project_id := '20000000-0000-4000-8000-000000000001',
+ p_unit_id := '8c000000-0000-4000-8000-000000000001',
+ p_customer_id := '50000000-0000-4000-8000-0000000000a1',
+ p_consultation_type := 'MESSAGE', p_content := 'purpose test 3',
+ p_business_purpose := '매칭안내');
+select is((select purpose::text from public.consultation where content = 'purpose test 3'), '매칭안내', 'explicit purpose 3');
+
+select public.create_move_in_consultation(
+ p_project_id := '20000000-0000-4000-8000-000000000001',
+ p_unit_id := '8c000000-0000-4000-8000-000000000001',
+ p_customer_id := '50000000-0000-4000-8000-0000000000a1',
+ p_consultation_type := 'OUTBOUND', p_content := 'purpose test 4',
+ p_business_purpose := '기타');
+select is((select purpose::text from public.consultation where content = 'purpose test 4'), '기타', 'explicit purpose 4');
+
+select is((select contact_type::text from public.consultation where content='purpose test 2'), 'VISIT', 'business purpose does not change VISIT');
+select is((select contact_type::text from public.consultation where content='purpose test 3'), 'MESSAGE', 'business purpose does not change MESSAGE');
+select is((select structured_tags->>'consultation_type' from public.consultation where content='purpose test 1'), 'INBOUND', 'call direction preserved');
+select throws_ok($$select public.create_move_in_consultation(
+ p_project_id := '20000000-0000-4000-8000-000000000001',
+ p_unit_id := '8c000000-0000-4000-8000-000000000001',
+ p_customer_id := '50000000-0000-4000-8000-0000000000a1',
+ p_consultation_type := 'OUTBOUND', p_content := 'invalid purpose must not save',
+ p_business_purpose := 'CALL')$$, '23514', 'invalid business purpose', 'invalid purpose rejected');
+select is((select count(*)::integer from public.consultation where content='invalid purpose must not save'), 0, 'invalid purpose writes nothing');
+
 select finish();
 
 rollback;

@@ -58,3 +58,47 @@ describe("worklog v2 read boundaries", () => {
     expect(await loadMoveInWorklog("p", "2026-09-16")).toEqual({ error: true });
   });
 });
+
+it("does not silently drop null contract dates or exclude phone-invalid holders", async () => {
+ state.tables.project_unit=[{project_id:"p",unit_id:"u",building_no:"1",unit_type:"TYPE"}];
+ state.tables.contract=[{project_id:"p",contract_id:"c",unit_id:"u",customer_id:"customer",contract_status:"ACTIVE",contracted_at:null}];
+ state.tables.customer=[{project_id:"p",id:"customer",phone_quality:"PHONE_INVALID"}];
+ const result=await loadMoveInWorklog("p","2026-09-17");
+ expect(result.error).toBe(false);
+ if(!result.error){expect(result.snapshot.salesConsultation?.total).toMatchObject({supply:1,sold:null,unsold:null});expect(result.snapshot.sourceReadiness?.phoneInvalid).toBe(1);}
+});
+
+it('maps only the audited Hwayang visit source in the read projection without writes or purpose inference',async()=>{
+ const project='1283e198-5043-4027-96d6-edcc7a6686c6';
+ state.tables.project_unit=[{project_id:project,unit_id:'u',building_no:'1',unit_type:'SYNTHETIC'}];
+ const tags={legacy_source:'hwayang_legacy',legacy_file_id:'F003',legacy_sheet_index:4,legacy_row_number:2,legacy_source_key:'hwayang-260915:F003:4:2'};
+ state.tables.consultation=Array.from({length:71},(_,i)=>({project_id:project,id:String(i),unit_id:'u',consulted_at:'2026-09-10T01:00:00Z',contact_type:'CONSULTATION',channel:'LEGACY_IMPORT',purpose:'성향파악',structured_tags:i===0?tags:null,next_action_at:null}));
+ const before=JSON.stringify(state.tables.consultation);
+ const result=await loadMoveInWorklog(project,'2026-09-10');
+ expect(result.error).toBe(false);
+ if(!result.error)expect(result.snapshot.consultationActivity?.today).toMatchObject({total:71,call:0,visit:1,message:0,unknown:70});
+ expect(JSON.stringify(state.tables.consultation)).toBe(before);
+ state.tables.consultation[0].structured_tags={...tags,legacy_source_key:'hwayang-260915:F003:4:999'};
+ const mismatch=await loadMoveInWorklog(project,'2026-09-10');
+ if(!mismatch.error)expect(mismatch.snapshot.consultationActivity?.today.visit).toBe(0);
+});
+
+it('fails closed for duplicate visit provenance and preserves explicit channels',async()=>{
+ const project='1283e198-5043-4027-96d6-edcc7a6686c6';
+ state.tables.project_unit=[{project_id:project,unit_id:'u',building_no:'1',unit_type:'SYNTHETIC'}];
+ const tags={legacy_source:'hwayang_legacy',legacy_file_id:'F003',legacy_sheet_index:4,legacy_row_number:2,legacy_source_key:'hwayang-260915:F003:4:2'};
+ const event={project_id:project,unit_id:'u',consulted_at:'2026-09-10T01:00:00Z',contact_type:'CONSULTATION',channel:'LEGACY_IMPORT',purpose:'입주안내',structured_tags:tags,next_action_at:null};
+ state.tables.consultation=[{...event,id:'a'},{...event,id:'b'}];
+ const duplicate=await loadMoveInWorklog(project,'2026-09-10');
+ expect(duplicate.error).toBe(false);
+ if(!duplicate.error)expect(duplicate.snapshot.consultationActivity?.today).toMatchObject({total:2,visit:0,unknown:2});
+ state.tables.consultation=[{...event,id:'a',contact_type:'CALL'}];
+ const explicit=await loadMoveInWorklog(project,'2026-09-10');
+ expect(explicit.error).toBe(false);
+ if(!explicit.error)expect(explicit.snapshot.consultationActivity?.today).toMatchObject({total:1,call:1,visit:0});
+ state.tables.consultation=[{...event,id:'a',project_id:'another-project'}];
+ state.tables.project_unit=[{project_id:'another-project',unit_id:'u',building_no:'1',unit_type:'SYNTHETIC'}];
+ const other=await loadMoveInWorklog('another-project','2026-09-10');
+ expect(other.error).toBe(false);
+ if(!other.error)expect(other.snapshot.consultationActivity?.today).toMatchObject({total:1,visit:0,unknown:1});
+});

@@ -18,6 +18,7 @@ vi.mock("@/app/projects/[projectId]/move-in/units/[unitId]/actions", () => ({
 import { ConsultationCreateForm } from "@/components/move-in/consultation-create-form";
 
 function submitForm() {
+  fireEvent.change(screen.getByLabelText("업무 목적 *"), { target: { value: "잔금독촉" } });
   fireEvent.change(screen.getByLabelText("상담내용 *"), {
     target: { value: "현장 콜" },
   });
@@ -54,6 +55,7 @@ describe("consultation create form", () => {
       expect(createMoveInConsultation).toHaveBeenCalledWith(
         expect.objectContaining({
           content: "현장 콜",
+          purpose: "잔금독촉",
           occupancyIntent: "",
           fundingStatus: "",
           moveInStatus: "",

@@ -28,15 +28,18 @@ function SalesCells({ counts }: { counts: WorklogSalesCount }) {
 }
 
 function ActivityCells({ counts }: { counts: WorklogActivityCount }) {
-  return <>{[counts.call, counts.visit, counts.other].map((n, i) => <td key={i} className={cellClass}>{numeric(n)}</td>)}</>;
+  return <>{[counts.call, counts.visit, ...(counts.message === undefined ? [] : [counts.message]), (counts.unknown ?? counts.other)].map((n, i) => <td key={i} className={cellClass}>{numeric(n)}</td>)}</>;
 }
 
 function DailyWorklogTables({ snapshot }: { snapshot: MoveInWorklogSnapshot & WorklogDailySections }) {
   const sales = snapshot.salesConsultation, activity = snapshot.consultationActivity, market = snapshot.marketSummary;
   const automatic = snapshot.otherActivities.automatic;
+  const channels = activity.today.message === undefined ? ["전화", "방문", "기타"] : ["전화", "방문", "문자", activity.today.unknown === undefined ? "기타" : "채널 미확인"];
+  const marketKeys = market.rows.some(row => row.current.other !== undefined) ? ["sale", "jeonse", "monthlyRent", "other", "total"] as const : ["sale", "jeonse", "monthlyRent", "total"] as const;
+  const marketLabels = marketKeys.map(k => ({ sale: "매매", jeonse: "전세", monthlyRent: "월세", other: "기타", total: "계" })[k]);
   const activities: Array<[string, number]> = [
     ["부재 재접촉", automatic.absenceRecontacts], ["상담거절 재접촉", automatic.refusalRecontacts],
-    ["30일 이상 경과 C/D 재접촉", automatic.staleCDRecontacts], ["방문상담", automatic.visits],
+    [automatic.cdRecontacts === undefined ? "30일 이상 경과 C/D 재접촉" : "C/D 재접촉", automatic.cdRecontacts ?? automatic.staleCDRecontacts], ["방문상담", automatic.visits],
     ["문자상담", automatic.messages], ["금일 상담에 다음접촉 설정", automatic.nextContactSettings],
   ];
   const ratio = (n: number | null, denominator: number) => n === null ? null : denominator ? n / denominator * 100 : 0;
@@ -44,6 +47,8 @@ function DailyWorklogTables({ snapshot }: { snapshot: MoveInWorklogSnapshot & Wo
     <section aria-label="1. 분양/상담 현황">
       <h2 className="mb-3 text-lg font-semibold">1. 분양/상담 현황</h2>
       <p className="mb-3 text-sm text-neutral-600"><span>총 대상세대</span> <strong className="tabular-nums">{sales.total.supply}</strong> · 현재 공급 및 유효 계약, 상담등급은 선택일 종료 전 최근 유효 등급 기준</p>
+      {snapshot.sourceReadiness && snapshot.sourceReadiness.master !== "READY" ? <p role="status" className="mb-3 text-sm">현재 등급 원장 연결 전: 상담 이력에서 확인 가능한 등급만 표시합니다. 전체 현재 등급과 다를 수 있습니다.</p> : null}
+      {snapshot.sourceReadiness?.phoneInvalid != null ? <p className="mb-3 text-sm">전화번호 확인필요 {snapshot.sourceReadiness.phoneInvalid}세대 · 현황 집계에 포함</p> : null}
       {sales.total.supply === 0 ? <p className="mb-3 text-sm text-neutral-600">공급 세대 데이터가 없습니다.</p> : null}
       {sales.soldSource === "UNAVAILABLE" ? <p className="mb-3 text-sm text-neutral-600">분양·미분양 자료 연결 대기</p> : null}
       <div className="overflow-x-auto">
@@ -61,7 +66,7 @@ function DailyWorklogTables({ snapshot }: { snapshot: MoveInWorklogSnapshot & Wo
             </tr>
             <tr><th scope="row" className={headingClass}>부재 제외시</th><td colSpan={3} className={cellClass}>—</td>
               {LEGACY_GRADE_VALUES.map(g => <td key={g} className={cellClass}>{percent(sales.absenceExcludedRatios[g])}</td>)}
-              <td colSpan={4} className={cellClass}>—</td>
+              <td colSpan={marketKeys.length} className={cellClass}>—</td>
             </tr>
           </tfoot>
         </table>
@@ -71,43 +76,50 @@ function DailyWorklogTables({ snapshot }: { snapshot: MoveInWorklogSnapshot & Wo
     </section>
     <section aria-label="2. 관리대상 동호 현황">
       <h2 className="mb-3 text-lg font-semibold">2. 관리대상 동호 현황</h2>
-      <p className="border border-neutral-300 p-4 text-sm">관리대상 데이터 연결 대기</p>
-      <p className="mt-2 text-xs text-neutral-600">계약금대여·기타연체의 공식 자료가 연결되면 집계할 수 있습니다.</p>
+      {snapshot.managementTargets.status === "READY" ? <div className="overflow-x-auto"><table className={tableClass}>
+        <thead><tr>{["구분", "대상", ...LEGACY_GRADE_VALUES, "상담진행", "미진행", "진행률"].map(h => <th key={h} className={headingClass}>{h}</th>)}</tr></thead>
+        <tbody>{[...snapshot.managementTargets.rows, { category: "계 (중복 제외)", ...snapshot.managementTargets.total }].map(row => <tr key={row.category}><th className={headingClass}>{row.category}</th>{[row.supply, ...LEGACY_GRADE_VALUES.map(g => row.grades[g]), row.consulted, row.notConsulted].map((n,i) => <td key={i} className={cellClass}>{numeric(n)}</td>)}<td className={cellClass}>{percent(row.progressPercent)}</td></tr>)}</tbody>
+      </table></div> : <p className="border border-neutral-300 p-4 text-sm">관리대상 데이터 연결 대기</p>}
+      <p className="mt-2 text-xs text-neutral-600">현장에서 확정한 관리대상 분류만 사용합니다. 연체금액·연체료·약정금·납부원금으로 대상을 임의 추정하지 않습니다.</p>
     </section>
     <section aria-label="3. 상담 세부 현황">
       <h2 className="mb-3 text-lg font-semibold">3. 상담 세부 현황</h2>
       {activity.cumulative.total === 0 ? <p className="mb-3 text-sm text-neutral-600">상담 데이터가 없습니다.</p> : null}
       <div className="overflow-x-auto"><table className={tableClass}>
         <caption className="sr-only">목적별 금일상담과 누계</caption>
-        <thead><tr><th rowSpan={2} className={headingClass}>상담 목적</th><th colSpan={3} className={headingClass}>금일상담</th><th colSpan={3} className={headingClass}>누계</th></tr>
-          <tr>{["전화", "방문", "기타", "전화", "방문", "기타"].map((label, i) => <th key={i} scope="col" className={headingClass}>{label}</th>)}</tr>
+        <thead><tr><th rowSpan={2} className={headingClass}>상담 목적</th><th colSpan={channels.length} className={headingClass}>금일상담</th><th colSpan={channels.length} className={headingClass}>누계</th></tr>
+          <tr>{[...channels, ...channels].map((label, i) => <th key={i} scope="col" className={headingClass}>{label}</th>)}</tr>
         </thead><tbody>{activity.rows.map(row => <tr key={row.purpose}><th scope="row" className={headingClass}>{row.purpose}</th><ActivityCells counts={row.today} /><ActivityCells counts={row.cumulative} /></tr>)}</tbody>
         <tfoot><tr className="font-semibold"><th scope="row" className={headingClass}>계</th><ActivityCells counts={activity.today} /><ActivityCells counts={activity.cumulative} /></tr></tfoot>
       </table></div>
-      <p className="mt-2 text-xs text-neutral-600">금일 총 {activity.today.total}건 · 누계 총 {activity.cumulative.total}건. 누계는 선택일 종료 전 전체 상담입니다. 같은 세대의 복수 상담도 각각 집계합니다. MESSAGE·일반상담·미지정 접촉은 기타에 포함합니다.</p>
+      <p className="mt-2 text-xs text-neutral-600">금일 총 {activity.today.total}건 · 누계 총 {activity.cumulative.total}건. 누계는 선택일 종료 전 전체 상담입니다. 같은 세대의 복수 상담도 각각 집계합니다. {activity.today.message === undefined ? "이 저장 보고서는 문자를 기타에 포함한 이전 집계입니다." : "문자는 별도 집계하며 일반상담·미지정 채널은 기타에 포함합니다."}</p>
     </section>
     <section aria-label="4. 매물현황">
       <h2 className="mb-3 text-lg font-semibold">4. 매물현황</h2>
-      {market.status === "ERROR" ? <p className="border border-neutral-300 p-4 text-sm">매물현황을 불러오지 못했습니다.</p> : market.rows.length === 0 ? <p className="border border-neutral-300 p-4 text-sm">매물 데이터가 없습니다.</p> : <div className="overflow-x-auto"><table className={tableClass}>
+      {market.status === "ERROR" ? <p className="border border-neutral-300 p-4 text-sm">매물현황을 불러오지 못했습니다.</p> : market.rows.length === 0 ? <div><p className="border border-neutral-300 p-4 text-sm">매물 데이터가 없습니다.</p><p className="text-xs">DATA_UNAVAILABLE</p></div> : <div className="overflow-x-auto"><table className={tableClass}>
         <caption className="sr-only">단지별 매물과 전일대비</caption>
-        <thead><tr><th rowSpan={2} className={headingClass}>단지 / 범위</th><th rowSpan={2} className={headingClass}>수집 기준</th><th colSpan={4} className={headingClass}>금일 기준</th><th colSpan={4} className={headingClass}>전일대비</th></tr>
-          <tr>{["매매", "전세", "월세", "계", "매매", "전세", "월세", "계"].map((label, i) => <th key={i} scope="col" className={headingClass}>{label}</th>)}</tr></thead>
+        <thead><tr><th rowSpan={2} className={headingClass}>단지 / 범위</th><th rowSpan={2} className={headingClass}>수집 기준</th><th colSpan={marketKeys.length} className={headingClass}>금일 기준</th><th colSpan={marketKeys.length} className={headingClass}>전일대비</th></tr>
+          <tr>{[...marketLabels, ...marketLabels].map((label, i) => <th key={i} scope="col" className={headingClass}>{label}</th>)}</tr></thead>
         <tbody>{market.rows.map(row => <tr key={row.groupKey}>
           <th scope="row" className={headingClass}>{row.complexName ?? MARKET_SCOPE_LABELS[row.scope]}<span className="block text-xs font-normal text-neutral-600">{MARKET_SCOPE_LABELS[row.scope]}</span></th>
           <td className={cellClass}>{row.collectedAt ? new Intl.DateTimeFormat("ko-KR", { timeZone: snapshot.timeZone, month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).format(new Date(row.collectedAt)) : "전체 합계 자료 없음"}{row.carriedForward ? <span className="block text-xs text-neutral-600">이전 수집 자료</span> : null}</td>
-          {(["sale", "jeonse", "monthlyRent", "total"] as const).map(k => <td key={k} className={cellClass}>{numeric(row.current[k])}</td>)}
-          {(["sale", "jeonse", "monthlyRent", "total"] as const).map(k => <td key={k} className={cellClass}>{row.delta[k] !== null && row.delta[k]! > 0 ? "+" : ""}{numeric(row.delta[k])}</td>)}
+          {marketKeys.map(k => <td key={k} className={cellClass}>{numeric(row.current[k] ?? null)}</td>)}
+          {marketKeys.map(k => <td key={k} className={cellClass}>{row.delta[k] !== null && row.delta[k]! > 0 ? "+" : ""}{numeric(row.delta[k] ?? null)}</td>)}
         </tr>)}</tbody>
       </table></div>}
-      <p className="mt-2 text-xs text-neutral-600">선택일 종료 전 최근 전체합계 자료를 사용합니다. 전일대비는 선택일 시작 전 최근 자료와 비교합니다. 이전 자료가 없거나 금일 수집이 없으면 —로 표시하며 타입별 자료를 중복 합산하지 않습니다.</p>
+      <p className="mt-2 text-xs text-neutral-600">선택일 종료 전 최근 전체합계 자료를 사용합니다. 전일대비는 선택일 시작 전 최근 자료와 비교합니다. 관측 매물 수 증감이며 신규 매물 수가 아닙니다. 이전 자료가 없거나 금일 수집이 없으면 —로 표시하며 타입별 자료를 중복 합산하지 않습니다.</p>
     </section>
-    <section aria-label="5. 기타업무">
-      <h2 className="mb-3 text-lg font-semibold">5. 기타업무</h2>
-      <h3 className="mb-2 text-sm font-medium">자동집계</h3>
-      {activities.some(([, n]) => n > 0) ? <table className={tableClass}><thead><tr><th className={headingClass}>확인된 활동</th><th className={headingClass}>건수</th></tr></thead><tbody>{activities.filter(([, n]) => n > 0).map(([label, n]) => <tr key={label}><th scope="row" className={headingClass}>{label}</th><td className={cellClass}>{n}</td></tr>)}</tbody></table> : <p className="text-sm text-neutral-600">집계할 기타 활동이 없습니다.</p>}
+    <section aria-label="5. 오늘 업무 요약">
+      <h2 className="mb-3 text-lg font-semibold">5. 오늘 업무 요약</h2>
+      <p className="text-2xl font-semibold">오늘 상담 {activity.today.total}건</p>
+      <p className="mt-2">전화 {activity.today.call} · 방문 {activity.today.visit} · 문자 {activity.today.message ?? automatic.messages} · {activity.today.unknown === undefined ? "기타" : "채널 미확인"} {activity.today.unknown ?? activity.today.other}</p>
+      <h3 className="mt-4 mb-2 text-sm font-medium">주요 상담내용</h3>
+      <ul>{activity.rows.map(row => <li key={row.purpose}>{row.purpose} {row.today.total}건</li>)}</ul>
+      {snapshot.balanceManagement ? <p className="mt-4">잔금완납 {snapshot.balanceManagement.paid} · 잔금미납 {snapshot.balanceManagement.unpaid} · 상태 미확인 {snapshot.balanceManagement.unknown} · 금일 잔금독촉 {snapshot.balanceManagement.remindersToday}건</p> : null}
+      <h3 className="mt-4 mb-2 text-sm font-medium">후속관리</h3>
+      {activities.length > 0 ? <table className={tableClass}><thead><tr><th className={headingClass}>확인된 활동</th><th className={headingClass}>건수</th></tr></thead><tbody>{activities.map(([label, n]) => <tr key={label}><th scope="row" className={headingClass}>{label}</th><td className={cellClass}>{n}</td></tr>)}</tbody></table> : <p className="text-sm text-neutral-600">집계할 기타 활동이 없습니다.</p>}
       <p className="mt-2 text-xs text-neutral-600">재접촉은 직전 상담 이력으로 확인한 건수이며 활동 간 중복 가능합니다.</p>
-      <h3 className="mt-4 mb-2 text-sm font-medium">수동 메모</h3>
-      <p className="border border-neutral-300 p-4 text-sm">수동 메모 저장 연결 대기</p>
+
     </section>
   </div>;
 }

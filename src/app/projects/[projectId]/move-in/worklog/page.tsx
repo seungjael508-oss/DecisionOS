@@ -27,6 +27,7 @@ export default async function MoveInWorklogPage({
   return (
     <main className="p-8">
       <header className="mb-8">
+        <p className="mb-2 text-xl">{access.projectName}</p>
         <h1 className="text-3xl font-semibold">일일 업무현황</h1>
         <p className="mt-2 text-xl tabular-nums">{formatWorklogDateLabel(snapshot.date)}</p>
         <p className="mt-1 text-sm text-neutral-600">

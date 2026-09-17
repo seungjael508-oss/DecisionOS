@@ -121,6 +121,7 @@ describe("legacy grade and consultation args", () => {
       unitId: "u1",
       customerId: "c1",
       consultationType: "OUTBOUND",
+      purpose: "기타",
       content: "상황변동 없음",
     });
     expect(args).toMatchObject({
@@ -140,6 +141,7 @@ describe("legacy grade and consultation args", () => {
         unitId: "u1",
         customerId: "c1",
         consultationType: "OUTBOUND",
+      purpose: "기타",
         content: "   ",
       }),
     ).toEqual({ error: "empty_content" });

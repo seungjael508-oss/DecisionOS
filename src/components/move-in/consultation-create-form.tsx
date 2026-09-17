@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { createMoveInConsultation } from "@/app/projects/[projectId]/move-in/units/[unitId]/actions";
 import {
+  CONSULTATION_PURPOSES,
   CONSULTATION_TYPE_LABELS,
   CONSULTATION_TYPES,
   LEGACY_GRADE_VALUES,
@@ -72,6 +73,7 @@ export function ConsultationCreateForm({
       customerId,
       consultationType,
       content,
+      purpose: String(formData.get("purpose") ?? ""),
       legacyGrade,
       nextContactAt: dateToTimestamptz(nextDate),
       occupancyIntent,
@@ -116,6 +118,13 @@ export function ConsultationCreateForm({
               {CONSULTATION_TYPE_LABELS[value]}
             </option>
           ))}
+        </select>
+      </label>
+      <label className="flex flex-col gap-1 text-sm">
+        업무 목적 *
+        <select name="purpose" required defaultValue="" className="border border-neutral-400 px-2 py-1">
+          <option value="" disabled>선택하세요</option>
+          {CONSULTATION_PURPOSES.map(value => <option key={value} value={value}>{value}</option>)}
         </select>
       </label>
       <label className="flex flex-col gap-1 text-sm">
