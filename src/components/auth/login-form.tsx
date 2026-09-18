@@ -1,14 +1,20 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
 
 export function safeLoginNextPath(next: string | null) {
-  if (!next || !next.startsWith("/") || next.startsWith("//")) {
+  if (!next || !next.startsWith("/") || next.startsWith("//") || /[\\\u0000-\u0020\u007f]/.test(next)) {
     return "/";
   }
-  return next;
+  try {
+    const url = new URL(next, "https://stayj.co.kr");
+    return url.origin === "https://stayj.co.kr" ? `${url.pathname}${url.search}${url.hash}` : "/";
+  } catch {
+    return "/";
+  }
 }
 
 export function LoginForm() {
@@ -73,6 +79,7 @@ export function LoginForm() {
       >
         {pending ? "로그인 중…" : "로그인"}
       </button>
+      <Link href="/forgot-password" className="mt-2 text-sm underline">비밀번호를 잊으셨나요?</Link>
     </form>
   );
 }
