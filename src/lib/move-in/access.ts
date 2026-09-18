@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createServerClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/types";
 
@@ -17,7 +18,9 @@ export type MoveInAccess =
     }
   | { ok: false; kind: "unauthenticated" | "forbidden" | "unavailable" };
 
-export async function requireMoveInAccess(
+// 레이아웃·페이지·조회 함수가 같은 렌더 요청에서 권한 결과를 공유한다.
+// React cache는 요청마다 분리되므로 다른 사용자나 다음 요청으로 권한을 재사용하지 않는다.
+export const requireMoveInAccess = cache(async function requireMoveInAccess(
   projectId: string,
 ): Promise<MoveInAccess> {
   const supabase = await createServerClient();
@@ -68,7 +71,7 @@ export async function requireMoveInAccess(
     memberId: membership.id,
     userId: userData.user.id,
   };
-}
+});
 
 export function accessMessage(kind: Exclude<MoveInAccess, { ok: true }>["kind"]) {
   if (kind === "unauthenticated") return "로그인이 필요합니다.";
