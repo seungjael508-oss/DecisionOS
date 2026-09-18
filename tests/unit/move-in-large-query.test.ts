@@ -33,7 +33,7 @@ beforeEach(() => {
     }
     const offset=Number(url.searchParams.get('offset') ?? 0);
     const limit=Number(url.searchParams.get('limit') ?? 1000);
-    if(url.pathname.endsWith('/project_unit') && url.searchParams.get('select')?.includes('grade:')) {
+    if(url.pathname.endsWith('/project_unit') && (url.searchParams.get('select')?.includes('grade:') || url.searchParams.get('select')?.includes('latest:'))) {
       if(offset>0 && state.failBatch)return new Response('Bad Request',{status:400});
       rows=rows.map(unit=>{
         const occupancy=fixtures.unit_occupancy_status.find(o=>o.unit_id===unit.unit_id);
@@ -42,8 +42,8 @@ beforeEach(() => {
         const events=fixtures.consultation.filter(c=>c.unit_id===unit.unit_id).sort((a,b)=>String(b.consulted_at).localeCompare(String(a.consulted_at)));
         const pairs=url.searchParams.get('grade.or');
         const matching= pairs ? events.filter(c=>pairs.includes(`unit_id.eq.${c.unit_id},customer_id.eq.${c.customer_id}`)) : events;
-        const grades=matching.filter(c=>['A','B','C','D','부재','상담거절'].includes(String((c.structured_tags as Record<string,unknown>)?.legacy_grade)));
-        return {...unit,occupancy:occupancy?{...occupancy,contract:contract?{...contract,holder}:null}:null,latest:events.slice(0,1),grade:grades.slice(0,1).map(c=>({customer_id:c.customer_id,legacy_grade:(c.structured_tags as Record<string,unknown>).legacy_grade}))};
+        const grades=url.searchParams.has('grade.structured_tags->>legacy_grade') ? matching.filter(c=>['A','B','C','D','부재','상담거절'].includes(String((c.structured_tags as Record<string,unknown>)?.legacy_grade))) : matching;
+        return {...unit,occupancy:occupancy?{...occupancy,contract:contract?{...contract,holder}:null}:null,latest:events.slice(0,1).map(c=>({...c,legacy_grade:(c.structured_tags as Record<string,unknown>)?.legacy_grade})),grade:grades.slice(0,1).map(c=>({customer_id:c.customer_id,legacy_grade:(c.structured_tags as Record<string,unknown>).legacy_grade}))};
       });
     }
     if(url.searchParams.get('order')?.startsWith('consulted_at')) rows=[...rows].sort((a,b)=>String(b.consulted_at).localeCompare(String(a.consulted_at)));
@@ -107,4 +107,40 @@ it('resolves a former-holder grade with one bounded query without losing unit hi
  expect(state.requests).toHaveLength(3);
  expect(state.requests.every(t=>t==='project_unit')).toBe(true);
  expect(fixtures.consultation[0].customer_id).toBe(id(9999));
+});
+
+// P1: 상담 원문/전체 태그를 전송하지 않고 세대별 최근 표시값만 반환한다.
+it('loads floorplan with bounded embedded latest grade, no project history scan',async()=>{
+ fixtures.consultation=Array.from({length:2033},(_,i)=>({id:id(i+10000),unit_id:id((i%851)+1),consulted_at:'2026-09-01T00:00:00Z',structured_tags:{legacy_grade:'B',private_note:'do not transfer'}}));
+ const result=await loadFloorplanRows('synthetic-project');
+ expect(result.error).toBe(false);
+ expect(result.rows).toHaveLength(851);
+ expect(result.rows.every(row=>row.latestGrade==='B')).toBe(true);
+ expect(state.requests).toEqual(['project_unit','project_unit']);
+ expect(state.urls.every(url=>url.searchParams.get('grade.limit')==='1')).toBe(true);
+ expect(state.urls.every(url=>!url.searchParams.has('grade.structured_tags->>legacy_grade'))).toBe(true);
+ expect(JSON.stringify(result.rows)).not.toContain('private_note');
+});
+it('does not fall back to an older floorplan grade when latest consultation has none',async()=>{
+ fixtures.consultation=[{id:id(9000),unit_id:id(1),consulted_at:'2026-09-02T00:00:00Z',structured_tags:{}},{id:id(9001),unit_id:id(1),consulted_at:'2026-09-01T00:00:00Z',structured_tags:{legacy_grade:'A'}}];
+ const result=await loadFloorplanRows('synthetic-project');
+ expect(result.rows.find(row=>row.unitId===id(1))?.latestGrade).toBeNull();
+});
+
+// 화양에서는 담당자와 무관하게 동일한 851세대를 반환하고 다른 현장은 기존 제한을 유지한다.
+it.each(["PROJECT_ADMIN", "COUNSELOR", "COUNSELOR"])("Hwayang %s reads all 851 including unassigned", async role => {
+ state.role=role;
+ fixtures.customer[0].assigned_counselor_id='other-member';
+ const result=await loadUnitRows('1283e198-5043-4027-96d6-edcc7a6686c6');
+ expect(result.error).toBe(false);expect(result.rows).toHaveLength(851);
+ expect(result.rows.some(r=>r.unitId===id(1))).toBe(true);
+});
+it('call list reads only per-unit latest consultation without scanning history',async()=>{
+ fixtures.consultation=Array.from({length:2033},(_,i)=>({id:id(i+10000),unit_id:id((i%851)+1),customer_id:id((i%851)+2001),consulted_at:'2026-09-01T00:00:00Z',structured_tags:{legacy_grade:'B'}}));
+ const result=await loadCallRows('1283e198-5043-4027-96d6-edcc7a6686c6');
+ expect(result.error).toBe(false);expect(result.rows).toHaveLength(851);
+ expect(state.requests).not.toContain('consultation');
+ expect(state.requests).toEqual(['project_unit','project_unit']);
+ expect(state.urls.every(u=>!u.searchParams.get('select')?.includes('content'))).toBe(true);
+ expect(state.urls.filter(u=>u.searchParams.get('select')?.includes('latest:')).every(u=>u.searchParams.get('latest.limit')==='1')).toBe(true);
 });

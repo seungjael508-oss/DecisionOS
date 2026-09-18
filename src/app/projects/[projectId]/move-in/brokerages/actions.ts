@@ -1,6 +1,8 @@
 "use server";
 
-import { requireMoveInAccess, requireProjectAdmin } from "@/lib/move-in/access";
+import { canManageField } from "@/lib/move-in/field-access";
+
+import { requireMoveInAccess } from "@/lib/move-in/access";
 import {
   isBrokerageContactRole,
   type SaveBrokerageOfficeInput,
@@ -9,7 +11,7 @@ import { createServerClient } from "@/lib/supabase/server";
 
 export async function saveBrokerageOffice(input: SaveBrokerageOfficeInput) {
   const access = await requireMoveInAccess(input.projectId);
-  if (!requireProjectAdmin(access)) return { ok: false as const };
+  if (!access.ok || !canManageField(input.projectId, access.role)) return { ok: false as const };
   if (!input.name.trim()) return { ok: false as const };
 
   const contacts = input.contacts.filter(

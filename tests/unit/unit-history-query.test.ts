@@ -60,3 +60,11 @@ it('denies an inaccessible project before reading unit or history',async()=>{
  expect((await loadUnitDetail('other-project','unit')).kind).toBe('missing');
  expect(state.requests).toHaveLength(0);
 });
+
+it('Hwayang counselor reads another counselor entire timeline including old holders',async()=>{
+ state.role='COUNSELOR';state.assigned='another-member';
+ state.events=Array.from({length:1001},(_,i)=>event(String(i),'2026-08-01T00:00:00Z'));
+ const result=await loadUnitDetail('1283e198-5043-4027-96d6-edcc7a6686c6','unit');
+ expect(result.kind).toBe('ok');if(result.kind==='ok')expect(result.consultations).toHaveLength(1001);
+ expect(state.requests.filter(r=>r.table==='consultation').every(r=>r.filters.unit_id==='unit')).toBe(true);
+});

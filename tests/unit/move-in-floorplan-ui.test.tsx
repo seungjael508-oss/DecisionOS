@@ -1,26 +1,28 @@
 /** @vitest-environment jsdom */
 
 import type { ReactNode } from "react";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { FloorplanBoard } from "@/components/move-in/floorplan-board";
-import { FloorplanFilters } from "@/components/move-in/floorplan-filters";
+import { FloorplanClient } from "@/components/move-in/floorplan-client";
 import type { FloorplanUnit } from "@/lib/move-in/floorplan";
 
+const routing = vi.hoisted(() => ({ push: vi.fn(), refresh: vi.fn(), replace: vi.fn() }));
 vi.mock("next/link", () => ({
-  default: ({ href, children, ...props }: { href: string; children: ReactNode }) => (
-    <a href={href} {...props}>
+  default: ({ href, children, prefetch, ...props }: { href: string; children: ReactNode; prefetch?: boolean }) => (
+    <a href={href} data-prefetch={String(prefetch)} {...props}>
       {children}
     </a>
   ),
 }));
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => routing,
 }));
 
 afterEach(() => {
   cleanup();
+  vi.unstubAllGlobals();
 });
 
 const units: FloorplanUnit[] = [
@@ -88,20 +90,28 @@ describe("floorplan UI", () => {
     expect(screen.getByRole("list", { name: "범례" })).toBeTruthy();
   });
 
-  it("keeps the selected building when switching color mode", () => {
-    render(
-      <FloorplanFilters
-        projectId="p1"
-        buildings={["101", "106"]}
-        buildingNo="106"
-        colorBy="moveInStatus"
-      />,
-    );
-    expect(
-      screen.getByRole("link", { name: "입주의향" }).getAttribute("href"),
-    ).toBe("/projects/p1/move-in/floorplan?buildingNo=106&colorBy=occupancyIntent");
-    expect(screen.getByRole("link", { name: "입주진행" }).getAttribute("aria-current")).toBe(
-      "page",
-    );
+  it("switches all four modes and buildings using the same dataset without navigation or fetch", () => {
+    const fetch = vi.fn(() => { throw new Error("Unexpected network request"); });
+    vi.stubGlobal("fetch", fetch);
+    const dataset = units.concat({ ...units[0], unitId: "u-101", buildingNo: "101", unitNo: "1004" });
+    const before = JSON.stringify(dataset);
+    render(<FloorplanClient projectId="p1" units={dataset} initialBuildingNo="106" initialColorBy="moveInStatus" />);
+    const cases = [["입주의향", "실입주"], ["자금상태", "정상"], ["기존등급", "A"], ["입주진행", "입주예정"]];
+    for (const [mode, value] of cases) {
+      fireEvent.click(screen.getByRole("button", { name: mode }));
+      expect(screen.getByRole("button", { name: mode }).getAttribute("aria-pressed")).toBe("true");
+      expect(screen.getByRole("link", { name: `106동 1501호 ${value}` })).toBeTruthy();
+    }
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "101" } });
+    expect(screen.queryByText("1501")).toBeNull();
+    expect(screen.getByRole("link", { name: "101동 1004호 입주예정" }).getAttribute("data-prefetch")).toBe("false");
+    fireEvent.click(screen.getByRole("button", { name: "기존등급" }));
+    fireEvent.click(screen.getByRole("button", { name: "적용" }));
+    expect(screen.getByRole("link", { name: "101동 1004호 A" })).toBeTruthy();
+    expect(fetch).not.toHaveBeenCalled();
+    expect(routing.push).not.toHaveBeenCalled();
+    expect(routing.replace).not.toHaveBeenCalled();
+    expect(routing.refresh).not.toHaveBeenCalled();
+    expect(JSON.stringify(dataset)).toBe(before);
   });
 });

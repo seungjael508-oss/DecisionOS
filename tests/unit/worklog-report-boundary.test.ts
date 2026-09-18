@@ -35,3 +35,9 @@ describe("existing generate_report snapshot boundary", () => {
     expect(await generateMoveInDailyReport({ projectId: "p", date: "2026-09-16" })).toEqual({ ok: false });
   });
 });
+
+it('Hwayang counselor can generate the same worklog report through the guarded RPC',async()=>{
+ mocks.role='COUNSELOR';const s=snapshot();mocks.load.mockResolvedValue({error:false,snapshot:s});
+ expect((await generateMoveInDailyReport({projectId:'1283e198-5043-4027-96d6-edcc7a6686c6',date:s.date})).ok).toBe(true);
+ expect(mocks.rpc).toHaveBeenCalledWith('generate_report',expect.objectContaining({p_report_phase:'MOVE_IN',p_report_type:'DAILY'}));
+});

@@ -1,3 +1,4 @@
+import { canManageField } from "@/lib/move-in/field-access";
 import type { Json } from "@/lib/supabase/types";
 import type { MoveInRole } from "@/lib/move-in/access";
 import {
@@ -18,8 +19,8 @@ export type MoveInReportRow = {
   generatedData: Json;
 };
 
-export function canGenerateMoveInReport(role: MoveInRole) {
-  return role === "PROJECT_ADMIN";
+export function canGenerateMoveInReport(role: MoveInRole, projectId = "") {
+  return canManageField(projectId, role);
 }
 
 export function sortMoveInReports(rows: MoveInReportRow[]) {

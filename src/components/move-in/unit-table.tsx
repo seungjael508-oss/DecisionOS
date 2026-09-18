@@ -20,7 +20,7 @@ export function UnitTable({ projectId, rows }: { projectId: string; rows: UnitLi
           {["동호수","계약자","전화번호","현재등급","최근상담","최근접촉","다음접촉"].map(label=><th key={label} className="py-2 pr-3 font-medium">{label}</th>)}
         </tr></thead>
         <tbody>{rows.map(row=><tr key={row.unitId} className="border-b border-neutral-200 align-top">
-          <td className="py-3 pr-3 whitespace-nowrap"><Link className="font-semibold underline" href={href(row)}>{formatUnitLabel(row.buildingNo,row.unitNo)}</Link></td>
+          <td className="py-3 pr-3 whitespace-nowrap"><Link prefetch={false} className="font-semibold underline" href={href(row)}>{formatUnitLabel(row.buildingNo,row.unitNo)}</Link></td>
           <td className="py-3 pr-3">{row.customerName ?? "—"}</td>
           <td className="py-3 pr-3"><CustomerPhone raw={row.customerPhone ?? null} status={row.phoneQuality}/></td>
           <td className="py-3 pr-3">{row.latestGrade ?? "미확인"}</td>
@@ -31,7 +31,7 @@ export function UnitTable({ projectId, rows }: { projectId: string; rows: UnitLi
       </table>
     </div>
     <ul className="flex flex-col gap-3 md:hidden">{rows.map(row=><li key={row.unitId} className="border border-neutral-300 p-4">
-      <Link className="text-lg font-semibold underline" href={href(row)}>{formatUnitLabel(row.buildingNo,row.unitNo)}</Link>
+      <Link prefetch={false} className="text-lg font-semibold underline" href={href(row)}>{formatUnitLabel(row.buildingNo,row.unitNo)}</Link>
       <p>계약자 {row.customerName ?? "—"} · 현재등급 {row.latestGrade ?? "미확인"}</p>
       <CustomerPhone raw={row.customerPhone ?? null} status={row.phoneQuality}/>
       <div className="my-2"><RecentContent row={row}/></div>

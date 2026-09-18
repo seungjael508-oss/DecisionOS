@@ -1,6 +1,8 @@
 "use server";
 
-import { requireMoveInAccess, requireProjectAdmin } from "@/lib/move-in/access";
+import { canManageField } from "@/lib/move-in/field-access";
+
+import { requireMoveInAccess } from "@/lib/move-in/access";
 import { buildGenerateMoveInDailyReportArgs } from "@/lib/move-in/reports";
 import { createServerClient } from "@/lib/supabase/server";
 import { isWorklogDateYmd } from "@/lib/worklog/day-range";
@@ -13,7 +15,7 @@ export async function generateMoveInDailyReport(input: {
   expectedFingerprint?: string;
 }) {
   const access = await requireMoveInAccess(input.projectId);
-  if (!requireProjectAdmin(access)) {
+  if (!access.ok || !canManageField(input.projectId, access.role)) {
     return { ok: false as const };
   }
   if (!isWorklogDateYmd(input.date)) {

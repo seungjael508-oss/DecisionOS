@@ -99,3 +99,11 @@ describe("move-in navigation", () => {
     );
   });
 });
+
+// 현장 메뉴는 같고 배정/이관 메뉴만 관리자 전용으로 남는다.
+it('Hwayang counselor sees brokerage field menu without administration',()=>{
+ render(<MoveInNav projectId="1283e198-5043-4027-96d6-edcc7a6686c6" projectName="화양" role="COUNSELOR"/>);
+ expect(screen.getByText('중개업소 관리')).toBeTruthy();
+ expect(screen.queryByText('데이터 가져오기')).toBeNull();
+ expect(screen.queryByText('상담사 배정')).toBeNull();
+});

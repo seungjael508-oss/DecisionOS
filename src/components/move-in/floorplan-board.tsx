@@ -1,3 +1,4 @@
+// 동 전환으로 새로 보이는 세대 링크의 자동 prefetch가 DB 조회를 유발하지 않도록 한다.
 import Link from "next/link";
 import {
   buildFloorplanGrid,
@@ -72,6 +73,7 @@ export function FloorplanBoard({
                     return (
                       <td key={line} className="p-1">
                         <Link
+                          prefetch={false}
                           href={`/projects/${projectId}/move-in/units/${cell.unitId}`}
                           className={`block min-w-14 border border-neutral-400 px-2 py-2 text-center ${tone.className}`}
                           aria-label={`${formatUnitLabel(cell.buildingNo, cell.unitNo)} ${tone.label}`}
@@ -94,6 +96,7 @@ export function FloorplanBoard({
             return (
               <li key={unit.unitId}>
                 <Link
+                  prefetch={false}
                   href={`/projects/${projectId}/move-in/units/${unit.unitId}`}
                   className={`inline-block border border-neutral-400 px-2 py-1 ${tone.className}`}
                   aria-label={`${formatUnitLabel(unit.buildingNo, unit.unitNo)} ${tone.label}`}

@@ -1,5 +1,5 @@
-import { FloorplanBoard } from "@/components/move-in/floorplan-board";
-import { FloorplanFilters } from "@/components/move-in/floorplan-filters";
+// 초기 URL은 첫 표시만 결정하고 이후 전환은 클라이언트에서 처리한다.
+import { FloorplanClient } from "@/components/move-in/floorplan-client";
 import { EmptyState, QueryError } from "@/components/move-in/status-copy";
 import { requireMoveInAccess } from "@/lib/move-in/access";
 import {
@@ -43,20 +43,8 @@ export default async function MoveInFloorplanPage({
       {result.rows.length === 0 ? (
         <EmptyState>등록된 동호수가 없습니다.</EmptyState>
       ) : (
-        <>
-          <FloorplanFilters
-            projectId={projectId}
-            buildings={buildings}
-            buildingNo={buildingNo}
-            colorBy={colorBy}
-          />
-          <FloorplanBoard
-            projectId={projectId}
-            units={result.rows}
-            buildingNo={buildingNo}
-            colorBy={colorBy}
-          />
-        </>
+        <FloorplanClient projectId={projectId} units={result.rows}
+          initialBuildingNo={buildingNo} initialColorBy={colorBy} />
       )}
     </main>
   );

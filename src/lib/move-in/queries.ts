@@ -1,3 +1,4 @@
+import { usesAssignedCustomerScope } from "@/lib/move-in/field-access";
 import { requireMoveInAccess } from "@/lib/move-in/access";
 import { readAllRows } from '@/lib/supabase/read-all';
 import { readByIds } from '@/lib/supabase/read-by-ids';
@@ -59,9 +60,9 @@ export async function loadDashboard(projectId: string, now = new Date()) {
       .order("consulted_at").order("id").range(from,to).returns<DashboardEvent[]>()),
   ]);
   if (units.error || events.error) return {error:true} as const;
-  const visible = units.data.filter(u=>access.role!=="COUNSELOR" || u.occupancy?.contract?.holder?.assigned_counselor_id===access.memberId);
+  const visible = units.data.filter(u=>!usesAssignedCustomerScope(projectId, access.role) || u.occupancy?.contract?.holder?.assigned_counselor_id===access.memberId);
   const visibleById = new Map(visible.map(u=>[u.unit_id,u]));
-  const today = events.data.filter(e=>visibleById.has(e.unit_id) && (access.role!=="COUNSELOR" || visibleById.get(e.unit_id)?.occupancy?.contract?.customer_id===e.customer_id));
+  const today = events.data.filter(e=>visibleById.has(e.unit_id) && (!usesAssignedCustomerScope(projectId, access.role) || visibleById.get(e.unit_id)?.occupancy?.contract?.customer_id===e.customer_id));
   // One prior valid event per exact (unit,holder), in bounded batches. Multiple
   // holders of the same unit go in separate batches so an embedded limit cannot hide one.
   const pairs = [...new Map(today.map(e=>[`${e.unit_id}:${e.customer_id}`,e])).values()];
@@ -169,7 +170,7 @@ export async function loadUnitRows(
     .order("consulted_at",{referencedTable:"grade",ascending:false}).order("id",{referencedTable:"grade",ascending:false}).limit(1,{referencedTable:"grade"})
     .range(from,to).returns<ListProjection[]>());
   if (units.error) return {rows:[],error:true};
-  const visible = units.data.filter(unit => access.role !== "COUNSELOR" || unit.occupancy?.contract?.holder?.assigned_counselor_id === access.memberId);
+  const visible = units.data.filter(unit => !usesAssignedCustomerScope(projectId, access.role) || unit.occupancy?.contract?.holder?.assigned_counselor_id === access.memberId);
   const gradeByUnit = new Map<string,string>();
   const mismatches = new Map<string,string>();
   for (const unit of visible) {
@@ -200,7 +201,7 @@ export async function loadUnitRows(
     const status = unit.occupancy;
     const contract = status?.contract;
     const holder = contract?.holder;
-    if (access.role === "COUNSELOR" && holder?.assigned_counselor_id !== access.memberId) continue;
+    if (usesAssignedCustomerScope(projectId, access.role) && holder?.assigned_counselor_id !== access.memberId) continue;
     const latest = unit.latest[0];
     rows.push({
       unitId:unit.unit_id,buildingNo:unit.building_no,unitNo:unit.unit_no,
@@ -224,51 +225,30 @@ export async function loadFloorplanRows(
 > {
   const supabase = await createServerClient();
 
-  const [unitsResult, occupancyResult, consultationResult] = await Promise.all([
-    supabase
-      .from("project_unit")
-      .select("unit_id, building_no, unit_no, floor")
-      .eq("project_id", projectId),
-    supabase
-      .from("unit_occupancy_status")
-      .select("unit_id, occupancy_intent, funding_status, move_in_status")
-      .eq("project_id", projectId),
-    readAllRows((from, to) => supabase
-      .from("consultation")
-      .select("unit_id, consulted_at, structured_tags")
-      .eq("project_id", projectId)
-      .order("consulted_at", { ascending: false }).order("id").range(from, to)),
-  ]);
-
-  if (unitsResult.error || occupancyResult.error || consultationResult.error) {
-    return { rows: [], error: true };
-  }
-
-  const occupancyByUnit = new Map(
-    (occupancyResult.data ?? []).map((row) => [row.unit_id, row]),
-  );
-  const latestGradeByUnit = new Map<
-    string,
-    ReturnType<typeof extractLegacyGrade>
-  >();
-  for (const row of consultationResult.data ?? []) {
-    if (!row.unit_id || latestGradeByUnit.has(row.unit_id)) continue;
-    latestGradeByUnit.set(row.unit_id, extractLegacyGrade(row.structured_tags));
-  }
-
-  const rows: FloorplanUnit[] = (unitsResult.data ?? []).map((unit) => {
-    const occupancy = occupancyByUnit.get(unit.unit_id);
-    return {
-      unitId: unit.unit_id,
-      buildingNo: unit.building_no,
-      unitNo: unit.unit_no,
-      floor: unit.floor,
-      occupancyIntent: occupancy?.occupancy_intent ?? null,
-      fundingStatus: occupancy?.funding_status ?? null,
-      moveInStatus: occupancy?.move_in_status ?? null,
-      latestGrade: latestGradeByUnit.get(unit.unit_id) ?? null,
-    };
-  });
+  // 세대별 최신 상담의 등급만 DB에서 1건으로 제한한다. 원문·전체 태그·History는 전송하지 않는다.
+  // 상담사/관리자 데이터 경계는 기존 사용자 Supabase client와 RLS를 그대로 사용한다.
+  type Projection = {
+    unit_id: string; building_no: string; unit_no: string; floor: number | null;
+    occupancy: { occupancy_intent: OccupancyRow["occupancy_intent"]; funding_status: OccupancyRow["funding_status"]; move_in_status: OccupancyRow["move_in_status"] } | null;
+    grade: Array<{ legacy_grade: string | null }>;
+  };
+  const result = await readAllRows((from, to) => supabase.from("project_unit")
+    .select(`unit_id,building_no,unit_no,floor,
+      occupancy:unit_occupancy_status!unit_occupancy_status_project_id_unit_id_fkey(occupancy_intent,funding_status,move_in_status),
+      grade:consultation!consultation_unit_project_fkey(legacy_grade:structured_tags->>legacy_grade)`, { count: "exact" })
+    .eq("project_id", projectId).order("unit_id")
+    .order("consulted_at", { referencedTable: "grade", ascending: false })
+    .order("id", { referencedTable: "grade", ascending: true })
+    .limit(1, { referencedTable: "grade" }).range(from, to).returns<Projection[]>());
+  if (result.error) return { rows: [], error: true };
+  // 최신 상담에 등급이 없으면 기존 동호수표와 동일하게 미등록으로 표시한다.
+  const rows: FloorplanUnit[] = result.data.map(unit => ({
+    unitId: unit.unit_id, buildingNo: unit.building_no, unitNo: unit.unit_no, floor: unit.floor,
+    occupancyIntent: unit.occupancy?.occupancy_intent ?? null,
+    fundingStatus: unit.occupancy?.funding_status ?? null,
+    moveInStatus: unit.occupancy?.move_in_status ?? null,
+    latestGrade: extractLegacyGrade({ legacy_grade: unit.grade[0]?.legacy_grade ?? null }),
+  }));
 
   return { rows, error: false };
 }
@@ -372,7 +352,7 @@ export async function loadUnitDetail(
       phoneQuality = customerResult.data?.phone_quality ?? null;
       assignedCounselorId = customerResult.data?.assigned_counselor_id ?? null;
 
-      if (access.role === "COUNSELOR" && assignedCounselorId !== access.memberId) return { kind: "missing" };
+      if (usesAssignedCustomerScope(projectId, access.role) && assignedCounselorId !== access.memberId) return { kind: "missing" };
 
       const siblingContracts = await supabase
         .from("contract")
@@ -421,7 +401,7 @@ export async function loadUnitDetail(
     }
   }
 
-  if (access.role === "COUNSELOR" && assignedCounselorId !== access.memberId) return { kind: "missing" };
+  if (usesAssignedCustomerScope(projectId, access.role) && assignedCounselorId !== access.memberId) return { kind: "missing" };
 
   const consultationResult = await readAllRows((from, to) => supabase
     .from("consultation")
@@ -476,104 +456,53 @@ export async function loadUnitDetail(
 export async function loadCallRows(
   projectId: string,
 ): Promise<{ rows: CallListRow[]; error: true } | { rows: CallListRow[]; error: false }> {
+  const access = await requireMoveInAccess(projectId);
+  if (!access.ok) return { rows: [], error: true };
   const supabase = await createServerClient();
-
-  const customersResult = await supabase
-    .from("customer")
-    .select("id, name, phone, phone_normalized, phone_quality, assigned_counselor_id")
-    .eq("project_id", projectId);
-
-  if (customersResult.error) return { rows: [], error: true };
-
-  const customers = customersResult.data ?? [];
-  if (customers.length === 0) return { rows: [], error: false };
-
-  const customerIds = customers.map((row) => row.id);
-  const customerById = new Map(customers.map((row) => [row.id, row]));
-
-  const contractsResult = await readByIds(customerIds, (ids, from, to) => supabase
-    .from("contract")
-    .select("contract_id, unit_id, customer_id")
-    .eq("project_id", projectId)
-    .eq("contract_status", "ACTIVE")
-    .in("customer_id", ids).order("contract_id").range(from, to));
-
-  if (contractsResult.error) return { rows: [], error: true };
-
-  const contracts = contractsResult.data ?? [];
-  if (contracts.length === 0) return { rows: [], error: false };
-
-  const unitIds = [...new Set(contracts.map((row) => row.unit_id))];
-  const contractByUnit = new Map(contracts.map((row) => [row.unit_id, row]));
-
-  const [unitsResult, occupancyResult, consultationResult] = await Promise.all([
-    readByIds(unitIds, (ids, from, to) => supabase
-      .from("project_unit")
-      .select("unit_id, building_no, unit_no")
-      .eq("project_id", projectId)
-      .in("unit_id", ids).order("unit_id").range(from, to)),
-    readByIds(unitIds, (ids, from, to) => supabase
-      .from("unit_occupancy_status")
-      .select(
-        "unit_id, occupancy_intent, funding_status, move_in_status, next_contact_at",
-      )
-      .eq("project_id", projectId)
-      .in("unit_id", ids).order("unit_id").range(from, to)),
-    readByIds(unitIds, (ids, from, to) => supabase
-      .from("consultation")
-      .select("unit_id, consulted_at, structured_tags")
-      .eq("project_id", projectId)
-      .in("unit_id", ids)
-      .order("consulted_at", { ascending: false }).range(from, to)),
-  ]);
-
-  if (unitsResult.error || occupancyResult.error || consultationResult.error) {
-    return { rows: [], error: true };
-  }
-
-  const occupancyByUnit = new Map(
-    (occupancyResult.data ?? []).map((row) => [row.unit_id, row]),
-  );
-  const latestConsultationByUnit = new Map<
-    string,
-    { consultedAt: string; grade: ReturnType<typeof extractLegacyGrade> }
-  >();
-  for (const row of consultationResult.data ?? []) {
-    if (!row.unit_id || latestConsultationByUnit.has(row.unit_id)) continue;
-    latestConsultationByUnit.set(row.unit_id, {
-      consultedAt: row.consulted_at,
-      grade: extractLegacyGrade(row.structured_tags),
-    });
-  }
-
-  const rows: CallListRow[] = (unitsResult.data ?? []).flatMap((unit) => {
-    const contract = contractByUnit.get(unit.unit_id);
-    if (!contract) return [];
-    const customer = customerById.get(contract.customer_id);
-    if (!customer) return [];
-    const occupancy = occupancyByUnit.get(unit.unit_id);
-    const latest = latestConsultationByUnit.get(unit.unit_id);
-    return [
-      {
-        unitId: unit.unit_id,
-        buildingNo: unit.building_no,
-        unitNo: unit.unit_no,
-        customerId: customer.id,
-        customerName: customer.name,
-        customerPhone: customer.phone,
-        phoneQuality: customer.phone_quality,
-        phoneNormalized: customer.phone_normalized,
-        assignedCounselorId: customer.assigned_counselor_id,
-        latestGrade: latest?.grade ?? null,
-        occupancyIntent: occupancy?.occupancy_intent ?? null,
-        fundingStatus: occupancy?.funding_status ?? null,
-        moveInStatus: occupancy?.move_in_status ?? null,
-        lastConsultedAt: latest?.consultedAt ?? null,
-        nextContactAt: occupancy?.next_contact_at ?? null,
-      },
-    ];
+  type CallProjection = {
+    unit_id: string; building_no: string; unit_no: string;
+    occupancy: {
+      occupancy_intent: OccupancyRow["occupancy_intent"];
+      funding_status: OccupancyRow["funding_status"];
+      move_in_status: OccupancyRow["move_in_status"];
+      next_contact_at: string | null;
+      contract: { customer_id: string; contract_status: string; holder: {
+        name: string; phone: string; phone_normalized: string | null;
+        phone_quality: string | null; assigned_counselor_id: string | null;
+      } | null } | null;
+    } | null;
+    latest: Array<{ consulted_at: string; legacy_grade: string | null }>;
+  };
+  // 서버에서 세대별 최신 1건만 투영한다. 공동조회가 열려도 전체 상담 이력을 읽지 않는다.
+  const result = await readAllRows((from, to) => supabase.from("project_unit")
+    .select(`unit_id,building_no,unit_no,
+      occupancy:unit_occupancy_status!unit_occupancy_status_project_id_unit_id_fkey(
+        occupancy_intent,funding_status,move_in_status,next_contact_at,
+        contract:contract!unit_occupancy_status_contract_id_project_id_unit_id_fkey(
+          customer_id,contract_status,holder:customer!contract_customer_id_project_id_fkey(
+            name,phone,phone_normalized,phone_quality,assigned_counselor_id))),
+      latest:consultation!consultation_unit_project_fkey(consulted_at,legacy_grade:structured_tags->>legacy_grade)`, { count: "exact" })
+    .eq("project_id", projectId).order("unit_id")
+    .order("consulted_at", { referencedTable: "latest", ascending: false })
+    .order("id", { referencedTable: "latest", ascending: false })
+    .limit(1, { referencedTable: "latest" }).range(from, to).returns<CallProjection[]>());
+  if (result.error) return { rows: [], error: true };
+  const rows: CallListRow[] = result.data.flatMap(unit => {
+    const occupancy = unit.occupancy;
+    const contract = occupancy?.contract;
+    const holder = contract?.holder;
+    if (!occupancy || !contract || contract.contract_status !== "ACTIVE" || !holder) return [];
+    if (usesAssignedCustomerScope(projectId, access.role) && holder.assigned_counselor_id !== access.memberId) return [];
+    const latest = unit.latest[0];
+    return [{ unitId: unit.unit_id, buildingNo: unit.building_no, unitNo: unit.unit_no,
+      customerId: contract.customer_id, customerName: holder.name, customerPhone: holder.phone,
+      phoneQuality: holder.phone_quality, phoneNormalized: holder.phone_normalized,
+      assignedCounselorId: holder.assigned_counselor_id,
+      latestGrade: extractLegacyGrade({ legacy_grade: latest?.legacy_grade ?? null }),
+      occupancyIntent: occupancy.occupancy_intent, fundingStatus: occupancy.funding_status,
+      moveInStatus: occupancy.move_in_status, lastConsultedAt: latest?.consulted_at ?? null,
+      nextContactAt: occupancy.next_contact_at }];
   });
-
   return { rows: sortCallRows(rows), error: false };
 }
 

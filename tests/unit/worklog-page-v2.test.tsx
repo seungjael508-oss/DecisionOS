@@ -41,3 +41,8 @@ describe("daily worklog page access and display", () => {
     expect(screen.queryByRole("button", { name: "보고서 생성" })).toBeNull();
   });
 });
+
+it("Hwayang counselor sees the same worklog generation action",async()=>{
+ render(await Page({params:Promise.resolve({projectId:"1283e198-5043-4027-96d6-edcc7a6686c6"}),searchParams:Promise.resolve({date:"2026-09-16"})}));
+ expect(screen.getByRole("button",{name:"보고서 생성"})).toBeTruthy();
+});

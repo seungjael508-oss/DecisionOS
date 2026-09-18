@@ -8,7 +8,7 @@ it('uses the approved Excel initial snapshot only for the authorized project-wid
  expect(snapshot?.grades).toEqual({A:245,B:156,C:381,D:39,'부재':19,'상담거절':11});
  expect(Object.values(snapshot!.grades).reduce((a,b)=>a+b,0)).toBe(851);
  expect(legacyDashboardSnapshot('another-project','PROJECT_ADMIN')).toBeNull();
- expect(legacyDashboardSnapshot('1283e198-5043-4027-96d6-edcc7a6686c6','COUNSELOR')).toBeNull();
+ expect(legacyDashboardSnapshot('1283e198-5043-4027-96d6-edcc7a6686c6','COUNSELOR')).toEqual(snapshot);
 });
 it('counts a real native visit and D to C from prior consultation, not the master',()=>{
  const result=buildDashboardActivity([event()], [{unit_id:'u1',customer_id:'c1',legacy_grade:'D'}],now);

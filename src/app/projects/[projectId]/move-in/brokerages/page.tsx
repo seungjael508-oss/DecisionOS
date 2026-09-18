@@ -1,3 +1,4 @@
+import { canManageField } from "@/lib/move-in/field-access";
 import { BrokerageBoard } from "@/components/move-in/brokerage-board";
 import { AccessDenied, QueryError } from "@/components/move-in/status-copy";
 import { requireMoveInAccess } from "@/lib/move-in/access";
@@ -11,7 +12,7 @@ export default async function MoveInBrokeragesPage({
   const { projectId } = await params;
   const access = await requireMoveInAccess(projectId);
   if (!access.ok) return null;
-  if (access.role !== "PROJECT_ADMIN") {
+  if (!canManageField(projectId, access.role)) {
     return (
       <AccessDenied message="중개업소 관리는 현장 관리자만 사용할 수 있습니다." />
     );

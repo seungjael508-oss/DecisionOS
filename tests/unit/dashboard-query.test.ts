@@ -34,7 +34,7 @@ it('returns 851/848/3, real event activity and no history content with bounded r
  expect(state.urls.filter(u=>u.searchParams.has('legacy.limit')).every(u=>u.searchParams.get('legacy.limit')==='1')).toBe(true);
 });
 it('scopes counselor totals to assigned holders and never exposes project initial totals',async()=>{
- state.role='COUNSELOR';const result=await loadDashboard(project,new Date('2026-09-17T05:00:00Z'));
+ state.role='COUNSELOR';const result=await loadDashboard('another-project',new Date('2026-09-17T05:00:00Z'));
  expect(result.error).toBe(false);if(result.error)return;
  expect(result.data.totalUnits).toBe(1);expect(result.data.initial).toBeNull();
 });
@@ -43,4 +43,10 @@ it('denies a forbidden project before reading datasets',async()=>{
 });
 it('does not replace an incomplete dataset with false zero counts',async()=>{
  state.fail=true;expect((await loadDashboard(project)).error).toBe(true);
+});
+
+it('Hwayang counselor dashboard equals all 851 units and shared initial aggregate',async()=>{
+ state.role='COUNSELOR';const result=await loadDashboard(project,new Date('2026-09-17T05:00:00Z'));
+ expect(result.error).toBe(false);if(result.error)return;
+ expect(result.data.totalUnits).toBe(851);expect(result.data.initial?.total).toBe(851);
 });

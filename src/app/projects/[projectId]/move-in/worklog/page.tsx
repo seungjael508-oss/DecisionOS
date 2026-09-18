@@ -1,7 +1,8 @@
+import { canManageField } from "@/lib/move-in/field-access";
 import { WorklogDateForm } from "@/components/move-in/worklog-date-form";
 import { WorklogSnapshotView } from "@/components/move-in/worklog-snapshot-view";
 import { ReportGenerateForm } from "@/components/move-in/report-generate-form";
-import { requireMoveInAccess, requireProjectAdmin } from "@/lib/move-in/access";
+import { requireMoveInAccess } from "@/lib/move-in/access";
 import { formatWorklogDateLabel } from "@/lib/worklog/day-range";
 import { loadMoveInWorklog } from "@/lib/worklog/queries";
 import { worklogSnapshotFingerprint } from "@/lib/worklog/fingerprint";
@@ -38,7 +39,7 @@ export default async function MoveInWorklogPage({
       </header>
 
       <WorklogSnapshotView snapshot={snapshot} />
-      {requireProjectAdmin(access) ? (
+      {canManageField(projectId, access.role) ? (
         <section className="mt-8" aria-label="현재 업무일지 보고서 저장">
           <p className="mb-3 text-sm text-neutral-600">현재 표시된 집계를 보고서로 저장합니다.</p>
           <ReportGenerateForm key={`${snapshot.date}:${worklogSnapshotFingerprint(snapshot)}`} projectId={projectId} dateYmd={snapshot.date} expectedFingerprint={worklogSnapshotFingerprint(snapshot)} />

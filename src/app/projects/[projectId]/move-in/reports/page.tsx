@@ -31,7 +31,7 @@ export default async function MoveInReportsPage({
   return (
     <main className="p-8">
       <h1 className="mb-6 text-2xl font-semibold">일일 입주촉진 보고서</h1>
-      {canGenerateMoveInReport(access.role) ? (
+      {canGenerateMoveInReport(access.role, projectId) ? (
         <ReportGenerateForm projectId={projectId} dateYmd={dateYmd} />
       ) : (
         <p className="mb-8 text-sm text-neutral-600">조회만 가능합니다.</p>

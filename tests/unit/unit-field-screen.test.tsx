@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import {afterEach,expect,it} from 'vitest';
-import {cleanup,render,screen} from '@testing-library/react';
+import {afterEach,expect,it,vi} from 'vitest';
+import {cleanup,render,screen,fireEvent} from '@testing-library/react';
 import {UnitTable} from '@/components/move-in/unit-table';
 import {sortUnits,type UnitListRow} from '@/lib/move-in/filters';
 afterEach(cleanup);
@@ -17,4 +17,21 @@ it('renders field columns, legacy grade, clamped content and invalid-phone actio
  expect(screen.getAllByText('Synthetic most recent content')[0].className).toContain('line-clamp-2');
  expect(screen.getAllByText(/전화번호 확인필요/).length).toBeGreaterThan(0);
  expect(screen.queryByRole('link',{name:'전화'})).toBeNull();
+});
+
+// 받은 데이터에서 동/호/계약자 검색을 수행하고 세대 상세 prefetch도 발생시키지 않는다.
+it('filters units by building, unit and customer on the client without navigation or fetch',async()=>{
+ const { UnitListClient }=await import('@/components/move-in/unit-list-client');
+ const fetch=vi.fn();vi.stubGlobal('fetch',fetch);
+ const data=[{...row('1004'),customerName:'Synthetic target'},row('201','102')];
+ const before=JSON.stringify(data);
+ render(<UnitListClient projectId="synthetic" rows={data} initialFilters={{buildingNo:'',unitNo:'',customerName:'',occupancyIntent:'',fundingStatus:'',moveInStatus:''}}/>);
+ fireEvent.change(screen.getByLabelText('동'),{target:{value:'101'}});
+ fireEvent.change(screen.getByLabelText('호'),{target:{value:'1004'}});
+ fireEvent.change(screen.getByLabelText('계약자명'),{target:{value:'target'}});
+ fireEvent.click(screen.getByRole('button',{name:'적용'}));
+ expect(screen.queryByText('102동 201호')).toBeNull();
+ expect(screen.getAllByRole('link',{name:'101동 1004호'})).toHaveLength(2);
+ expect(fetch).not.toHaveBeenCalled();expect(JSON.stringify(data)).toBe(before);
+ vi.unstubAllGlobals();
 });

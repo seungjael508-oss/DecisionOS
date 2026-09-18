@@ -10,7 +10,7 @@ export const HWAYANG_DASHBOARD_PROJECT = "1283e198-5043-4027-96d6-edcc7a6686c6";
  * No customer-level source data is included. Source asOf is unknown.
  */
 export function legacyDashboardSnapshot(projectId: string, role: string) {
-  if (projectId !== HWAYANG_DASHBOARD_PROJECT || role !== "PROJECT_ADMIN") return null;
+  if (projectId !== HWAYANG_DASHBOARD_PROJECT || (role !== "PROJECT_ADMIN" && role !== "COUNSELOR")) return null;
   return { total: 851, grades: { A:245, B:156, C:381, D:39, "부재":19, "상담거절":11 } };
 }
 

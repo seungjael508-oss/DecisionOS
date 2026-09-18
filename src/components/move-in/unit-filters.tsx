@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import {
   FUNDING_STATUS_LABELS,
@@ -13,33 +12,24 @@ import {
 import type { UnitListFilters } from "@/lib/move-in/filters";
 
 export function UnitFilters({
-  projectId,
+  onApply,
   filters,
 }: {
-  projectId: string;
+  onApply: (filters: UnitListFilters) => void;
   filters: UnitListFilters;
 }) {
-  const router = useRouter();
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const params = new URLSearchParams();
-    for (const key of [
-      "buildingNo",
-      "unitNo",
-      "customerName",
-      "occupancyIntent",
-      "fundingStatus",
-      "moveInStatus",
-    ]) {
-      const value = String(form.get(key) ?? "").trim();
-      if (value) params.set(key, value);
-    }
-    const query = params.toString();
-    router.push(
-      `/projects/${projectId}/move-in/units${query ? `?${query}` : ""}`,
-    );
+    // 이미 받은 데이터의 검색조건만 갱신한다. URL navigation은 수행하지 않는다.
+    const value = (key: string) => String(form.get(key) ?? "").trim();
+    onApply({
+      buildingNo: value("buildingNo"), unitNo: value("unitNo"), customerName: value("customerName"),
+      occupancyIntent: OCCUPANCY_INTENT_VALUES.find(v => v === value("occupancyIntent")) ?? "",
+      fundingStatus: FUNDING_STATUS_VALUES.find(v => v === value("fundingStatus")) ?? "",
+      moveInStatus: MOVE_IN_STATUS_VALUES.find(v => v === value("moveInStatus")) ?? "",
+    });
   }
 
   return (

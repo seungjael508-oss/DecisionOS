@@ -1,7 +1,6 @@
-import { UnitFilters } from "@/components/move-in/unit-filters";
-import { UnitTable } from "@/components/move-in/unit-table";
-import { EmptyState, QueryError } from "@/components/move-in/status-copy";
-import { filterUnits, type UnitListFilters } from "@/lib/move-in/filters";
+import { UnitListClient } from "@/components/move-in/unit-list-client";
+import { QueryError } from "@/components/move-in/status-copy";
+import { type UnitListFilters } from "@/lib/move-in/filters";
 import type {
   FundingStatus,
   MoveInStatus,
@@ -61,17 +60,11 @@ export default async function MoveInUnitsPage({
   const result = await loadUnitRows(projectId);
   if (result.error) return <QueryError />;
 
-  const rows = filterUnits(result.rows, filters);
 
   return (
     <main className="p-8">
       <h1 className="mb-6 text-2xl font-semibold">동호수 관리</h1>
-      <UnitFilters projectId={projectId} filters={filters} />
-      {result.rows.length === 0 || rows.length === 0 ? (
-        <EmptyState>등록된 동호수가 없습니다.</EmptyState>
-      ) : (
-        <UnitTable projectId={projectId} rows={rows} />
-      )}
+      <UnitListClient projectId={projectId} rows={result.rows} initialFilters={filters} />
     </main>
   );
 }
