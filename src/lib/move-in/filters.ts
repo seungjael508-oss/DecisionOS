@@ -1,4 +1,12 @@
-import type { FundingStatus, MoveInStatus, OccupancyIntent } from "@/lib/move-in/labels";
+import { isLegacyGrade, LEGACY_GRADE_VALUES, type LegacyGrade } from "@/lib/move-in/consultation";
+import {
+  FUNDING_STATUS_LABELS,
+  MOVE_IN_STATUS_LABELS,
+  OCCUPANCY_INTENT_LABELS,
+  type FundingStatus,
+  type MoveInStatus,
+  type OccupancyIntent,
+} from "@/lib/move-in/labels";
 
 export type UnitListRow = {
   unitId: string;
@@ -27,6 +35,18 @@ export type UnitListFilters = {
   occupancyIntent: OccupancyIntent | "";
   fundingStatus: FundingStatus | "";
   moveInStatus: MoveInStatus | "";
+  // 동호수 관리 화면 등급 빠른필터. 기존 테스트가 grade 없이 UnitListFilters를 만들기 때문에 optional로 둔다.
+  grade?: LegacyGrade | "";
+};
+
+export const DEFAULT_UNIT_LIST_FILTERS: UnitListFilters = {
+  buildingNo: "",
+  unitNo: "",
+  customerName: "",
+  occupancyIntent: "",
+  fundingStatus: "",
+  moveInStatus: "",
+  grade: "",
 };
 
 export function sortUnits(rows: UnitListRow[]) {
@@ -55,8 +75,87 @@ export function filterUnits(rows: UnitListRow[], filters: UnitListFilters) {
     if (filters.moveInStatus && row.moveInStatus !== filters.moveInStatus) {
       return false;
     }
+    if (filters.grade && row.latestGrade !== filters.grade) {
+      return false;
+    }
     return true;
   });
+}
+
+/** 등급별 세대 수. 버튼 라벨은 이 값을 그대로 써야 하며 하드코딩하지 않는다. */
+export function gradeCounts(rows: UnitListRow[]): Record<LegacyGrade, number> {
+  const counts = Object.fromEntries(
+    LEGACY_GRADE_VALUES.map((grade) => [grade, 0]),
+  ) as Record<LegacyGrade, number>;
+  for (const row of rows) {
+    if (row.latestGrade && isLegacyGrade(row.latestGrade)) {
+      counts[row.latestGrade] += 1;
+    }
+  }
+  return counts;
+}
+
+export type UnitSortKey = "unit" | "name" | "grade";
+export type SortDirection = "asc" | "desc";
+
+export const UNIT_SORT_OPTIONS: { key: UnitSortKey; direction: SortDirection; label: string }[] = [
+  { key: "unit", direction: "asc", label: "동호수 오름차순" },
+  { key: "unit", direction: "desc", label: "동호수 내림차순" },
+  { key: "name", direction: "asc", label: "이름 가나다순" },
+  { key: "name", direction: "desc", label: "이름 역순" },
+  { key: "grade", direction: "asc", label: "등급순 (A→상담거절)" },
+  { key: "grade", direction: "desc", label: "등급순 (상담거절→A)" },
+];
+
+// 현장 상담 우선순위 순서. 미확인은 등급 정렬에서만 쓰는 fallback 구간이다.
+const GRADE_SORT_ORDER = [...LEGACY_GRADE_VALUES, "미확인"] as const;
+
+function gradeSortRank(grade: string | null | undefined): number {
+  if (grade && isLegacyGrade(grade)) return GRADE_SORT_ORDER.indexOf(grade);
+  return GRADE_SORT_ORDER.indexOf("미확인");
+}
+
+/** Excel 스타일 컬럼 정렬. 동호수는 숫자 비교, 이름은 null을 방향과 무관하게 항상 마지막에 둔다. */
+export function sortUnitRows(
+  rows: UnitListRow[],
+  sortKey: UnitSortKey,
+  direction: SortDirection,
+): UnitListRow[] {
+  const sign = direction === "asc" ? 1 : -1;
+
+  if (sortKey === "unit") {
+    return [...rows].sort((a, b) => {
+      const building = a.buildingNo.localeCompare(b.buildingNo, "ko", { numeric: true });
+      if (building !== 0) return building * sign;
+      return a.unitNo.localeCompare(b.unitNo, "ko", { numeric: true }) * sign;
+    });
+  }
+
+  if (sortKey === "name") {
+    return [...rows].sort((a, b) => {
+      if (!a.customerName && !b.customerName) return 0;
+      if (!a.customerName) return 1;
+      if (!b.customerName) return -1;
+      return a.customerName.localeCompare(b.customerName, "ko") * sign;
+    });
+  }
+
+  return [...rows].sort((a, b) => {
+    return (gradeSortRank(a.latestGrade) - gradeSortRank(b.latestGrade)) * sign;
+  });
+}
+
+/** 인쇄 헤더용 요약. 고객 개인정보는 담지 않고 적용된 필터 조건만 표기한다. */
+export function describeActiveFilters(filters: UnitListFilters): string {
+  const parts: string[] = [];
+  if (filters.grade) parts.push(`등급: ${filters.grade}`);
+  if (filters.buildingNo.trim()) parts.push(`동: ${filters.buildingNo.trim()}`);
+  if (filters.unitNo.trim()) parts.push(`호수: ${filters.unitNo.trim()}`);
+  if (filters.customerName.trim()) parts.push(`이름: ${filters.customerName.trim()}`);
+  if (filters.occupancyIntent) parts.push(`입주의향: ${OCCUPANCY_INTENT_LABELS[filters.occupancyIntent]}`);
+  if (filters.fundingStatus) parts.push(`자금상태: ${FUNDING_STATUS_LABELS[filters.fundingStatus]}`);
+  if (filters.moveInStatus) parts.push(`입주진행: ${MOVE_IN_STATUS_LABELS[filters.moveInStatus]}`);
+  return parts.length === 0 ? "전체" : parts.join(" · ");
 }
 
 export type TodayReason =

@@ -1,5 +1,5 @@
 import { formatDateTime, formatUnitLabel } from "@/lib/move-in/labels";
-import type { UnitListRow } from "@/lib/move-in/filters";
+import type { SortDirection, UnitListRow, UnitSortKey } from "@/lib/move-in/filters";
 import { CustomerPhone } from "@/components/move-in/customer-phone";
 import Link from "next/link";
 
@@ -10,14 +10,61 @@ function RecentContent({ row }: { row: UnitListRow }) {
   </div>;
 }
 
-export function UnitTable({ projectId, rows }: { projectId: string; rows: UnitListRow[] }) {
+function sortIndicator(active: boolean, direction: SortDirection) {
+  if (!active) return "↕";
+  return direction === "asc" ? "↑" : "↓";
+}
+
+function SortableHeader({
+  label,
+  columnKey,
+  sortKey,
+  sortDirection,
+  onSort,
+}: {
+  label: string;
+  columnKey: UnitSortKey;
+  sortKey: UnitSortKey;
+  sortDirection: SortDirection;
+  onSort: (key: UnitSortKey) => void;
+}) {
+  const active = sortKey === columnKey;
+  return (
+    <th className="py-2 pr-3 font-medium">
+      <button type="button" onClick={() => onSort(columnKey)} className="inline-flex items-center gap-1">
+        {label}
+        <span aria-hidden="true">{sortIndicator(active, sortDirection)}</span>
+      </button>
+    </th>
+  );
+}
+
+export function UnitTable({
+  projectId,
+  rows,
+  sortKey,
+  sortDirection,
+  onSort,
+}: {
+  projectId: string;
+  rows: UnitListRow[];
+  sortKey: UnitSortKey;
+  sortDirection: SortDirection;
+  onSort: (key: UnitSortKey) => void;
+}) {
   const href = (row: UnitListRow) => `/projects/${projectId}/move-in/units/${row.unitId}`;
   return <>
     <p className="mb-3 text-sm text-neutral-600">현재등급은 현재 계약자의 최근 유효 상담평가 기준입니다. 상담 원문과 관리상태는 동호수를 선택해 확인하세요.</p>
     <div className="hidden overflow-x-auto md:block">
       <table className="w-full border-collapse text-left">
         <thead><tr className="border-b border-neutral-300">
-          {["동호수","계약자","전화번호","현재등급","최근상담","최근접촉","다음접촉"].map(label=><th key={label} className="py-2 pr-3 font-medium">{label}</th>)}
+          <SortableHeader label="동호수" columnKey="unit" sortKey={sortKey} sortDirection={sortDirection} onSort={onSort} />
+          <SortableHeader label="계약자" columnKey="name" sortKey={sortKey} sortDirection={sortDirection} onSort={onSort} />
+          <th className="py-2 pr-3 font-medium">전화번호</th>
+          <SortableHeader label="현재등급" columnKey="grade" sortKey={sortKey} sortDirection={sortDirection} onSort={onSort} />
+          <th className="py-2 pr-3 font-medium">최근상담</th>
+          <th className="py-2 pr-3 font-medium">최근접촉</th>
+          <th className="py-2 font-medium">다음접촉</th>
         </tr></thead>
         <tbody>{rows.map(row=><tr key={row.unitId} className="border-b border-neutral-200 align-top">
           <td className="py-3 pr-3 whitespace-nowrap"><Link prefetch={false} className="font-semibold underline" href={href(row)}>{formatUnitLabel(row.buildingNo,row.unitNo)}</Link></td>

@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+/* 동호수 관리 인쇄: 851세대 전체가 아닌 현재 화면의 필터 결과만 A4 가로로 출력한다. */
+@media print {
+  @page {
+    size: landscape;
+  }
+}
