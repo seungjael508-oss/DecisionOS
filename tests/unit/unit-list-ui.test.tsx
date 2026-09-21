@@ -47,10 +47,10 @@ function row(partial: Partial<UnitListRow> & Pick<UnitListRow, "unitId">): UnitL
 }
 
 const rows: UnitListRow[] = [
-  row({ unitId: "u-101-201", buildingNo: "101", unitNo: "201", customerName: "김철수", latestGrade: "A" }),
-  row({ unitId: "u-105-301", buildingNo: "105", unitNo: "301", customerName: "박영희", latestGrade: "C" }),
-  row({ unitId: "u-105-302", buildingNo: "105", unitNo: "302", customerName: "이민수", latestGrade: "C" }),
-  row({ unitId: "u-106-401", buildingNo: "106", unitNo: "401", customerName: "최지훈", latestGrade: "D" }),
+  row({ unitId: "u-101-201", buildingNo: "101", unitNo: "201", customerName: "김철수", latestGrade: "A", customerPhone: "010-1234-5678" }),
+  row({ unitId: "u-105-301", buildingNo: "105", unitNo: "301", customerName: "박영희", latestGrade: "C", customerPhone: "010-9999-0000" }),
+  row({ unitId: "u-105-302", buildingNo: "105", unitNo: "302", customerName: "이민수", latestGrade: "C", customerPhone: "010-7777-1234" }),
+  row({ unitId: "u-106-401", buildingNo: "106", unitNo: "401", customerName: "최지훈", latestGrade: "D", customerPhone: "010-5678-2222" }),
 ];
 
 // jsdom은 @media print를 평가하지 않으므로 화면용 영역(.print:hidden)과
@@ -162,6 +162,134 @@ describe("unit list UI", () => {
     fireEvent.change(screen.getByLabelText("정렬"), { target: { value: "grade:desc" } });
     cells = screen.getAllByRole("link").map((link) => link.textContent);
     expect(cells[cells.length - 1]).toBe("101동 201호");
+    expectNoNetworkOrNavigation(fetch, before);
+  });
+
+  it("searches by phone number without hyphens", async () => {
+    const { fetch, before } = renderClient();
+    fireEvent.change(screen.getByLabelText("전화번호"), { target: { value: "01012345678" } });
+    await waitFor(() => {
+      expect(screenArea().queryByText("박영희")).toBeNull();
+    });
+    expect(screenArea().getByText("김철수")).toBeTruthy();
+    expectNoNetworkOrNavigation(fetch, before);
+  });
+
+  it("searches by phone number with hyphens", async () => {
+    const { fetch, before } = renderClient();
+    fireEvent.change(screen.getByLabelText("전화번호"), { target: { value: "010-1234-5678" } });
+    await waitFor(() => {
+      expect(screenArea().queryByText("박영희")).toBeNull();
+    });
+    expect(screenArea().getByText("김철수")).toBeTruthy();
+    expectNoNetworkOrNavigation(fetch, before);
+  });
+
+  it("finds a unit by a partial phone number (front digits)", async () => {
+    const { fetch, before } = renderClient();
+    fireEvent.change(screen.getByLabelText("전화번호"), { target: { value: "1234" } });
+    await waitFor(() => {
+      expect(screenArea().queryByText("박영희")).toBeNull();
+    });
+    expect(screenArea().getByText("김철수")).toBeTruthy();
+    expectNoNetworkOrNavigation(fetch, before);
+  });
+
+  it("finds a unit by a partial phone number (trailing digits)", async () => {
+    const { fetch, before } = renderClient();
+    fireEvent.change(screen.getByLabelText("전화번호"), { target: { value: "5678" } });
+    await waitFor(() => {
+      expect(screenArea().queryByText("박영희")).toBeNull();
+    });
+    expect(screenArea().getByText("김철수")).toBeTruthy();
+    expectNoNetworkOrNavigation(fetch, before);
+  });
+
+  describe("전화번호 단독 검색: 동/호/계약자명/등급이 비어 있어도 동작한다", () => {
+    it.each([
+      ["전체 숫자", "01012345678"],
+      ["하이픈 포함", "010-1234-5678"],
+      ["중간 4자리", "1234"],
+      ["끝 4자리", "5678"],
+    ])("%s(%s) 입력만으로 계약자를 찾는다", async (_label, value) => {
+      const { fetch, before } = renderClient();
+      fireEvent.change(screen.getByLabelText("전화번호"), { target: { value } });
+      await waitFor(() => {
+        expect(screenArea().queryByText("박영희")).toBeNull();
+      });
+      expect(screenArea().getByText("김철수")).toBeTruthy();
+      // 전화번호 검색이 다른 필터 상태를 건드리지 않았는지 확인한다.
+      expect((screen.getByLabelText("동") as HTMLInputElement).value).toBe("");
+      expect((screen.getByLabelText("호") as HTMLInputElement).value).toBe("");
+      expect((screen.getByLabelText("계약자명") as HTMLInputElement).value).toBe("");
+      expect(screen.getByRole("button", { name: "전체 4" }).getAttribute("aria-pressed")).toBe("true");
+      expectNoNetworkOrNavigation(fetch, before);
+    });
+  });
+
+  it("combines phone number search with grade filter", async () => {
+    const { fetch, before } = renderClient();
+    fireEvent.click(screen.getByRole("button", { name: "D 1" }));
+    fireEvent.change(screen.getByLabelText("전화번호"), { target: { value: "5678" } });
+    // 김철수도 5678을 포함하지만 A등급이라 D 필터와 AND 결합되어 제외되어야 한다.
+    await waitFor(() => {
+      expect(screenArea().queryByText("김철수")).toBeNull();
+    });
+    expect(screenArea().getByText("최지훈")).toBeTruthy();
+    expectNoNetworkOrNavigation(fetch, before);
+  });
+
+  it("combines phone number search with building filter", async () => {
+    const { fetch, before } = renderClient();
+    fireEvent.change(screen.getByLabelText("동"), { target: { value: "105" } });
+    fireEvent.change(screen.getByLabelText("전화번호"), { target: { value: "1234" } });
+    // 김철수도 1234를 포함하지만 101동이라 105동 필터와 AND 결합되어 제외되어야 한다.
+    await waitFor(() => {
+      expect(screenArea().queryByText("김철수")).toBeNull();
+    });
+    expect(screenArea().getByText("이민수")).toBeTruthy();
+    // 105동 박영희는 전화번호에 1234가 없어 제외되어야 한다.
+    expect(screenArea().queryByText("박영희")).toBeNull();
+    expectNoNetworkOrNavigation(fetch, before);
+  });
+
+  it("PHONE_INVALID 세대도 저장된 원본 번호로 검색된다", async () => {
+    const invalidRows: UnitListRow[] = [
+      ...rows,
+      row({
+        unitId: "u-107-501",
+        buildingNo: "107",
+        unitNo: "501",
+        customerName: "정하늘",
+        customerPhone: "010-0000-9999",
+        phoneQuality: "PHONE_INVALID",
+      }),
+    ];
+    const fetch = vi.fn(() => {
+      throw new Error("Unexpected network request");
+    });
+    vi.stubGlobal("fetch", fetch);
+    render(<UnitListClient projectId="p1" rows={invalidRows} initialFilters={DEFAULT_UNIT_LIST_FILTERS} />);
+    fireEvent.change(screen.getByLabelText("전화번호"), { target: { value: "0000" } });
+    await waitFor(() => {
+      expect(screenArea().getByText("정하늘")).toBeTruthy();
+    });
+    expect(fetch).not.toHaveBeenCalled();
+    expect(routing.push).not.toHaveBeenCalled();
+    expect(routing.refresh).not.toHaveBeenCalled();
+  });
+
+  it("전체 초기화는 전화번호 검색값도 지운다", async () => {
+    const { fetch, before } = renderClient();
+    fireEvent.change(screen.getByLabelText("전화번호"), { target: { value: "1234" } });
+    await waitFor(() => {
+      expect(screenArea().queryByText("박영희")).toBeNull();
+    });
+    fireEvent.click(screen.getByRole("button", { name: "전체 초기화" }));
+    await waitFor(() => {
+      expect((screen.getByLabelText("전화번호") as HTMLInputElement).value).toBe("");
+    });
+    expect(screenArea().getByText("박영희")).toBeTruthy();
     expectNoNetworkOrNavigation(fetch, before);
   });
 

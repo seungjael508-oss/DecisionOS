@@ -10,6 +10,15 @@ import { isLegacyGrade, LEGACY_GRADE_VALUES, type LegacyGrade } from "@/lib/move
 import { selectLatestMarketRow, type MarketRow } from "@/lib/market/select-latest";
 import { worklogMarketRows, type WorklogMarketSnapshot } from "@/lib/worklog/market-snapshots";
 import { monthDelta } from "@/lib/market/metrics";
+import {
+  buildConsultationDetail,
+  buildGradeChangeSummary,
+  buildTeamActivity,
+  type WorklogConsultationDetailRow,
+  type WorklogFieldMember,
+  type WorklogGradeChanges,
+  type WorklogTeamActivity,
+} from "@/lib/worklog/team-activity";
 
 export const WORKLOG_CONTACT_TYPES = [
   "CALL",
@@ -24,6 +33,8 @@ export type WorklogUnitRow = {
   unitId: string;
   buildingNo: string;
   unitType: string | null;
+  // 동호수(예: "105동 1203호") 라벨 계산용. 3인 실시간 업무일지 이전 호출부는 생략 가능.
+  unitNo?: string;
 };
 
 export type WorklogOccupancyRow = {
@@ -45,6 +56,9 @@ export type WorklogConsultationRow = {
   legacyGrade?: string | null;
   purpose?: string | null;
   nextActionAt?: string | null;
+  // 담당자별 실적/금일 상담 상세용. 3인 실시간 업무일지 이전 호출부는 생략 가능.
+  counselorId?: string | null;
+  content?: string | null;
 };
 
 export const WORKLOG_PURPOSES = ["성향파악", "입주안내", "잔금독촉", "매칭안내", "기타"] as const;
@@ -57,6 +71,8 @@ export type WorklogV2Sources = { contracts?: WorklogContractRow[]; marketRows?: 
   phoneQualities?: Array<{unitId: string; invalid: boolean}>;
   marketSnapshots?: WorklogMarketSnapshot[];
   masterSnapshots?: WorklogMasterSnapshot[]; managementClassifications?: WorklogManagementClassification[];
+  // 화양 3인 실시간 업무일지: 제공될 때만 담당자별 실적/등급변경/금일 상담 상세를 계산한다.
+  fieldMembers?: WorklogFieldMember[];
 };
 export type WorklogSalesCount = {
   supply: number; sold: number | null; unsold: number | null;
@@ -139,6 +155,10 @@ export type MoveInWorklogSnapshot = Partial<WorklogDailySections> & {
     balancePaid: number;
     movedIn: number;
   }>;
+  // sources.fieldMembers가 주어질 때만 채워진다 (화양 3인 실시간 업무일지).
+  teamActivity?: WorklogTeamActivity;
+  gradeChanges?: WorklogGradeChanges;
+  consultationDetail?: WorklogConsultationDetailRow[];
 };
 
 export function buildMoveInWorklogSnapshot(
@@ -301,6 +321,11 @@ export function buildMoveInWorklogSnapshot(
     byUnitType: [...typeMap.entries()]
       .sort(([a], [b]) => a.localeCompare(b, "ko"))
       .map(([unitType, counts]) => ({ unitType, ...counts })),
+    ...(sources.fieldMembers ? {
+      teamActivity: buildTeamActivity(consultationsToday, sources.fieldMembers),
+      gradeChanges: buildGradeChangeSummary(units, consultations, sources.fieldMembers, range, sources.masterSnapshots ?? []),
+      consultationDetail: buildConsultationDetail(units, consultations, sources.fieldMembers, range, sources.masterSnapshots ?? []),
+    } : {}),
   };
 }
 

@@ -10,6 +10,12 @@ const mocks = vi.hoisted(() => ({ role: "COUNSELOR", load: vi.fn() }));
 vi.mock("@/lib/move-in/access", () => ({ requireMoveInAccess: async () => ({ ok: true, role: mocks.role }), requireProjectAdmin: (a: { role: string }) => a.role === "PROJECT_ADMIN" }));
 vi.mock("@/lib/worklog/queries", () => ({ loadMoveInWorklog: mocks.load }));
 vi.mock("@/components/move-in/report-generate-form", () => ({ ReportGenerateForm: (p: { expectedFingerprint: string; dateYmd: string }) => <button data-fingerprint={p.expectedFingerprint} data-date={p.dateYmd}>보고서 생성</button> }));
+// 화양 프로젝트에서만 렌더되는 WorklogLiveRefresh(클라이언트 컴포넌트)가 useRouter/Supabase 브라우저 클라이언트를 사용하므로 mock한다.
+vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
+vi.mock("@/lib/supabase/client", () => {
+  const chainable = { on: () => chainable, subscribe: () => chainable };
+  return { createBrowserClient: () => ({ channel: () => chainable, removeChannel: () => {} }) };
+});
 const snapshot = buildMoveInWorklogSnapshot([], [], [], worklogDayRange("2026-09-16", "Asia/Seoul"));
 beforeEach(() => {
   mocks.role = "COUNSELOR";

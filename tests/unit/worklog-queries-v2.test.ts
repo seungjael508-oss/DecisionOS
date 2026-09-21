@@ -23,6 +23,9 @@ vi.mock("@/lib/supabase/server", () => ({ createServerClient: async () => ({
     };
     return builder;
   },
+  // 화양 프로젝트에서만 호출되는 담당자 이름 조회 RPC. 이 파일의 테스트는 담당자 이름 자체를
+  // 검증 대상으로 삼지 않으므로, 시딩되지 않으면 빈 배열을 반환한다.
+  rpc(name: string) { return Promise.resolve({ data: state.tables[`rpc:${name}`] ?? [], error: null }); },
 }) }));
 
 beforeEach(() => { state.tables = {}; state.failed = ""; state.requests = []; });

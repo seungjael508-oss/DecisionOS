@@ -44,13 +44,14 @@ export function UnitFilters({
   const [buildingNo, setBuildingNo] = useState(filters.buildingNo);
   const [unitNo, setUnitNo] = useState(filters.unitNo);
   const [customerName, setCustomerName] = useState(filters.customerName);
+  const [customerPhone, setCustomerPhone] = useState(filters.customerPhone ?? "");
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      onChange({ ...filters, buildingNo, unitNo, customerName });
+      onChange({ ...filters, buildingNo, unitNo, customerName, customerPhone });
     }, SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [buildingNo, unitNo, customerName, filters, onChange]);
+  }, [buildingNo, unitNo, customerName, customerPhone, filters, onChange]);
 
   function setSelect(key: "occupancyIntent" | "fundingStatus" | "moveInStatus", value: string) {
     onChange({ ...filters, [key]: value });
@@ -65,6 +66,7 @@ export function UnitFilters({
       buildingNo ||
       unitNo ||
       customerName ||
+      customerPhone ||
       filters.occupancyIntent ||
       filters.fundingStatus ||
       filters.moveInStatus,
@@ -116,6 +118,15 @@ export function UnitFilters({
           <input
             value={customerName}
             onChange={(event) => setCustomerName(event.target.value)}
+            className="border border-neutral-400 px-2 py-1"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          전화번호
+          <input
+            value={customerPhone}
+            onChange={(event) => setCustomerPhone(event.target.value)}
+            placeholder="하이픈 없이 일부만 입력해도 검색됩니다"
             className="border border-neutral-400 px-2 py-1"
           />
         </label>

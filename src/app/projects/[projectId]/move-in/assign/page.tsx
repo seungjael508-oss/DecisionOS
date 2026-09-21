@@ -1,37 +1,14 @@
-import { AssignBoard } from "@/components/move-in/assign-board";
-import { AssignFilters } from "@/components/move-in/assign-filters";
-import { AccessDenied, EmptyState, QueryError } from "@/components/move-in/status-copy";
+import { AssignListClient } from "@/components/move-in/assign-list-client";
+import { FieldMemberNameEditor } from "@/components/move-in/field-member-name-editor";
+import { AccessDenied, QueryError } from "@/components/move-in/status-copy";
 import { requireMoveInAccess } from "@/lib/move-in/access";
-import {
-  counselorOptionLabel,
-  filterAssignRows,
-  type AssignListFilters,
-} from "@/lib/move-in/assign";
-import { isLegacyGrade, type LegacyGrade } from "@/lib/move-in/consultation";
-import { loadActiveCounselors, loadCallRows } from "@/lib/move-in/queries";
-
-function one(value: string | string[] | undefined) {
-  return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
-}
-
-function parseFilters(
-  searchParams: Record<string, string | string[] | undefined>,
-): AssignListFilters {
-  const legacyGrade = one(searchParams.legacyGrade);
-  return {
-    q: one(searchParams.q),
-    counselorId: one(searchParams.counselorId),
-    legacyGrade: isLegacyGrade(legacyGrade) ? (legacyGrade as LegacyGrade) : "",
-    unassignedOnly: one(searchParams.unassignedOnly) === "1",
-  };
-}
+import { fieldMemberLabel } from "@/lib/move-in/assign";
+import { loadActiveCounselors, loadCallRows, loadFieldMemberNames } from "@/lib/move-in/queries";
 
 export default async function MoveInAssignPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ projectId: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { projectId } = await params;
   const access = await requireMoveInAccess(projectId);
@@ -42,37 +19,29 @@ export default async function MoveInAssignPage({
     );
   }
 
-  const filters = parseFilters(await searchParams);
-  const [list, counselorsResult] = await Promise.all([
+  const [list, counselorsResult, fieldMembersResult] = await Promise.all([
     loadCallRows(projectId),
     loadActiveCounselors(projectId),
+    loadFieldMemberNames(projectId),
   ]);
-  if (list.error || counselorsResult.error) return <QueryError />;
+  if (list.error || counselorsResult.error || fieldMembersResult.error) {
+    return <QueryError />;
+  }
 
+  // display_name은 list_move_in_field_members(화양 전용 RPC)로만 채워진다.
+  // 다른 프로젝트는 항상 빈 목록이 돌아오므로 "이름 미등록"으로 대체된다.
+  const fieldMembers = fieldMembersResult.members;
+  const nameByMemberId = new Map(fieldMembers.map((member) => [member.memberId, member.displayName]));
   const counselors = counselorsResult.counselors.map((id) => ({
     id,
-    label: counselorOptionLabel(id),
+    label: fieldMemberLabel(nameByMemberId.get(id)),
   }));
-  const rows = filterAssignRows(list.rows, filters);
 
   return (
     <main className="p-8">
       <h1 className="mb-6 text-2xl font-semibold">상담사 배정</h1>
-      <AssignFilters
-        projectId={projectId}
-        filters={filters}
-        counselors={counselors}
-      />
-      {list.rows.length === 0 || rows.length === 0 ? (
-        <EmptyState>배정할 세대가 없습니다.</EmptyState>
-      ) : (
-        <AssignBoard
-          projectId={projectId}
-          rows={rows}
-          counselors={counselors}
-          currentMemberId={access.memberId}
-        />
-      )}
+      <FieldMemberNameEditor projectId={projectId} members={fieldMembers} />
+      <AssignListClient projectId={projectId} rows={list.rows} counselors={counselors} />
     </main>
   );
 }

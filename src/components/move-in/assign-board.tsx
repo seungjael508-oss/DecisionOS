@@ -3,8 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { assignMoveInCustomers } from "@/app/projects/[projectId]/move-in/assign/actions";
-import { canSubmitAssignment, uniqueCustomerIds } from "@/lib/move-in/assign";
-import { counselorDisplayName } from "@/lib/move-in/consultation";
+import {
+  canSubmitAssignment,
+  fieldMemberLabel,
+  uniqueCustomerIds,
+  type AssignSortDirection,
+  type AssignSortKey,
+} from "@/lib/move-in/assign";
 import type { CallListRow } from "@/lib/move-in/calls";
 import {
   FUNDING_STATUS_LABELS,
@@ -25,16 +30,49 @@ function statusSummary(row: CallListRow) {
   return parts.join(" / ") || "미등록";
 }
 
+function sortIndicator(active: boolean, direction: AssignSortDirection) {
+  if (!active) return "↕";
+  return direction === "asc" ? "↑" : "↓";
+}
+
+function SortableHeader({
+  label,
+  columnKey,
+  sortKey,
+  sortDirection,
+  onSort,
+}: {
+  label: string;
+  columnKey: AssignSortKey;
+  sortKey: AssignSortKey;
+  sortDirection: AssignSortDirection;
+  onSort: (key: AssignSortKey) => void;
+}) {
+  const active = sortKey === columnKey;
+  return (
+    <th className="py-2 pr-3 font-medium">
+      <button type="button" onClick={() => onSort(columnKey)} className="inline-flex items-center gap-1">
+        {label}
+        <span aria-hidden="true">{sortIndicator(active, sortDirection)}</span>
+      </button>
+    </th>
+  );
+}
+
 export function AssignBoard({
   projectId,
   rows,
   counselors,
-  currentMemberId,
+  sortKey,
+  sortDirection,
+  onSort,
 }: {
   projectId: string;
   rows: CallListRow[];
   counselors: { id: string; label: string }[];
-  currentMemberId: string;
+  sortKey: AssignSortKey;
+  sortDirection: AssignSortDirection;
+  onSort: (key: AssignSortKey) => void;
 }) {
   const router = useRouter();
   const [selected, setSelected] = useState<string[]>([]);
@@ -47,10 +85,18 @@ export function AssignBoard({
   const assigneeLabel =
     counselors.find((item) => item.id === assigneeId)?.label ?? "";
 
+  // 화면에 현재 보이는(필터링된) 행에서만 "전체 선택"이 동작해야 한다.
   const allIds = useMemo(
     () => uniqueCustomerIds(rows.map((row) => row.customerId)),
     [rows],
   );
+
+  // list_move_in_field_members 결과에 없는 상담사(다른 프로젝트 등)는 "이름 미등록"으로 대체한다.
+  function currentAssigneeLabel(memberId: string | null) {
+    if (!memberId) return "미배정";
+    const found = counselors.find((item) => item.id === memberId);
+    return fieldMemberLabel(found?.label ?? null);
+  }
 
   function toggle(customerId: string) {
     setSelected((current) =>
@@ -143,10 +189,10 @@ export function AssignBoard({
                   }}
                 />
               </th>
-              <th className="py-2 pr-3 font-medium">동호수</th>
-              <th className="py-2 pr-3 font-medium">계약자</th>
+              <SortableHeader label="동호수" columnKey="unit" sortKey={sortKey} sortDirection={sortDirection} onSort={onSort} />
+              <SortableHeader label="계약자" columnKey="name" sortKey={sortKey} sortDirection={sortDirection} onSort={onSort} />
               <th className="py-2 pr-3 font-medium">전화번호</th>
-              <th className="py-2 pr-3 font-medium">기존등급</th>
+              <SortableHeader label="기존등급" columnKey="grade" sortKey={sortKey} sortDirection={sortDirection} onSort={onSort} />
               <th className="py-2 pr-3 font-medium">현재상태</th>
               <th className="py-2 font-medium">현재 담당</th>
             </tr>
@@ -174,9 +220,7 @@ export function AssignBoard({
                 <td className="py-2 pr-3">{row.customerPhone ?? "—"}</td>
                 <td className="py-2 pr-3">{row.latestGrade ?? "—"}</td>
                 <td className="py-2 pr-3">{statusSummary(row)}</td>
-                <td className="py-2">
-                  {counselorDisplayName(row.assignedCounselorId, currentMemberId)}
-                </td>
+                <td className="py-2">{currentAssigneeLabel(row.assignedCounselorId)}</td>
               </tr>
             ))}
           </tbody>

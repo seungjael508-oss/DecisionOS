@@ -1,7 +1,9 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { readAllRows } from "@/lib/supabase/read-all";
+import type { Database } from "@/lib/supabase/types";
 import { loadMarketRows } from "@/lib/market/queries";
 import { extractLegacyGrade, confirmedLegacyVisitKey } from "@/lib/move-in/consultation";
+import { HWAYANG_SHARED_PROJECT_ID } from "@/lib/move-in/field-access";
 import {
   isWorklogDateYmd,
   resolveWorklogTimeZone,
@@ -22,6 +24,15 @@ export const WORKLOG_QUERY_TABLES = [
   "market_data",
   "customer",
 ] as const;
+
+// counselor_id/content(원문 상담내용)은 화양 3인 실시간 업무일지에서만 선택한다.
+// 두 SELECT 문자열을 하나의 삼항연산자로 합치면 postgrest-js의 리터럴 파싱이 깨지므로
+// (select() 인자는 단일 문자열 리터럴이어야 함), 아래에서 완전히 분리된 쿼리로 나눈다.
+type ConsultationRawRow = Pick<
+  Database["public"]["Tables"]["consultation"]["Row"],
+  "id" | "unit_id" | "consulted_at" | "contact_type" | "channel" | "purpose" | "structured_tags" | "next_action_at"
+> &
+  Partial<Pick<Database["public"]["Tables"]["consultation"]["Row"], "counselor_id" | "content">>;
 
 export function worklogSourceFilter(projectId: string) {
   return {
@@ -68,10 +79,12 @@ export async function loadMoveInWorklog(
         : todayYmd(timeZone);
     const range = worklogDayRange(dateYmd, timeZone);
 
-    const [unitsResult, occupancyResult, consultationResult, contractsResult, marketResult, customersResult] = await Promise.all([
+    const isHwayangSharedField = projectId === HWAYANG_SHARED_PROJECT_ID;
+
+    const [unitsResult, occupancyResult, consultationResult, contractsResult, marketResult, customersResult, fieldMembersResult] = await Promise.all([
       readAllRows((from, to) => supabase
         .from("project_unit")
-        .select("unit_id, building_no, unit_type", { count: "exact" })
+        .select("unit_id, building_no, unit_no, unit_type", { count: "exact" })
         .eq("project_id", projectId).order("unit_id").range(from, to)),
       readAllRows((from, to) => supabase
         .from("unit_occupancy_status")
@@ -80,16 +93,26 @@ export async function loadMoveInWorklog(
           { count: "exact" },
         )
         .eq("project_id", projectId).order("unit_id").range(from, to)),
-      readAllRows((from, to) => supabase
-        .from("consultation")
-        .select("id, unit_id, consulted_at, contact_type, channel, purpose, structured_tags, next_action_at", { count: "exact" })
-        .eq("project_id", projectId)
-        .lt("consulted_at", range.endIso).order("consulted_at").order("id").range(from, to)),
+      // 화양이 아니면 필요 없는 원문 상담내용(content)을 서버로 끌어오지 않도록 select 자체를 분리한다.
+      isHwayangSharedField
+        ? readAllRows<ConsultationRawRow>((from, to) => supabase
+            .from("consultation")
+            .select("id, unit_id, consulted_at, contact_type, channel, purpose, structured_tags, next_action_at, counselor_id, content", { count: "exact" })
+            .eq("project_id", projectId)
+            .lt("consulted_at", range.endIso).order("consulted_at").order("id").range(from, to))
+        : readAllRows<ConsultationRawRow>((from, to) => supabase
+            .from("consultation")
+            .select("id, unit_id, consulted_at, contact_type, channel, purpose, structured_tags, next_action_at", { count: "exact" })
+            .eq("project_id", projectId)
+            .lt("consulted_at", range.endIso).order("consulted_at").order("id").range(from, to)),
       readAllRows((from, to) => supabase.from("contract")
         .select("contract_id, unit_id, customer_id, contract_status, contracted_at", { count: "exact" })
         .eq("project_id", projectId).order("contract_id").range(from, to)),
       loadMarketRows(projectId, range.endIso).catch(() => ({ error: true as const, rows: [] })),
       readAllRows((from, to) => supabase.from("customer").select("id, phone_quality", { count: "exact" }).eq("project_id", projectId).order("id").range(from,to)),
+      // 화양이 아니면 RPC가 항상 빈 배열을 반환하므로(private.is_hwayang_field_member 가드),
+      // 팀 실적/등급변경/상담 상세 섹션은 화양에서만 계산된다.
+      isHwayangSharedField ? supabase.rpc("list_move_in_field_members", { p_project_id: projectId }) : Promise.resolve({ data: [], error: null }),
     ]);
 
     if (unitsResult.error || occupancyResult.error || consultationResult.error || contractsResult.error) {
@@ -124,6 +147,7 @@ export async function loadMoveInWorklog(
         unitId: row.unit_id,
         buildingNo: row.building_no,
         unitType: row.unit_type,
+        unitNo: row.unit_no,
       })),
       (occupancyResult.data ?? []).map((row) => ({
         unitId: row.unit_id,
@@ -143,6 +167,8 @@ export async function loadMoveInWorklog(
         legacyGrade: extractLegacyGrade(row.structured_tags),
         purpose: row.purpose,
         nextActionAt: row.next_action_at,
+        counselorId: row.counselor_id,
+        content: row.content,
       })),
       range,
       {
@@ -150,6 +176,9 @@ export async function loadMoveInWorklog(
         contracts: contractsResult.data.map(row => ({ unitId: row.unit_id, status: row.contract_status, contractedAt: row.contracted_at })),
         marketRows: marketResult.rows,
         marketError: marketResult.error,
+        ...(isHwayangSharedField && !fieldMembersResult.error ? {
+          fieldMembers: (fieldMembersResult.data ?? []).map((row) => ({ memberId: row.member_id, displayName: row.display_name })),
+        } : {}),
       },
     );
 

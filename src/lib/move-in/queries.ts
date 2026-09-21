@@ -694,6 +694,31 @@ export async function loadActiveCounselors(
   };
 }
 
+export type FieldMemberName = {
+  memberId: string;
+  displayName: string | null;
+};
+
+// list_move_in_field_members는 화양 공유현장에서만 값을 반환한다(private.is_hwayang_field_member 가드).
+// 다른 프로젝트는 항상 빈 배열이며, 이때 상담사 배정 화면은 "이름 미등록"으로 표시한다.
+export async function loadFieldMemberNames(
+  projectId: string,
+): Promise<{ error: true } | { error: false; members: FieldMemberName[] }> {
+  const supabase = await createServerClient();
+  const result = await supabase.rpc("list_move_in_field_members", {
+    p_project_id: projectId,
+  });
+
+  if (result.error) return { error: true };
+  return {
+    error: false,
+    members: (result.data ?? []).map((row) => ({
+      memberId: row.member_id,
+      displayName: row.display_name,
+    })),
+  };
+}
+
 export type MemberProject = {
   id: string;
   name: string;

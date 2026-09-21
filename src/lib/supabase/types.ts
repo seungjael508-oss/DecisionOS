@@ -1111,6 +1111,7 @@ export type Database = {
         Row: {
           active: boolean
           created_at: string
+          display_name: string | null
           id: string
           project_id: string
           role: Database["public"]["Enums"]["project_member_role"]
@@ -1120,6 +1121,7 @@ export type Database = {
         Insert: {
           active?: boolean
           created_at?: string
+          display_name?: string | null
           id?: string
           project_id: string
           role: Database["public"]["Enums"]["project_member_role"]
@@ -1129,6 +1131,7 @@ export type Database = {
         Update: {
           active?: boolean
           created_at?: string
+          display_name?: string | null
           id?: string
           project_id?: string
           role?: Database["public"]["Enums"]["project_member_role"]
@@ -1662,9 +1665,9 @@ export type Database = {
       }
       create_move_in_consultation: {
         Args: {
-          p_business_purpose?: string
           p_actual_move_in_date?: string
           p_balance_paid_at?: string
+          p_business_purpose?: string
           p_consultation_type: string
           p_content: string
           p_customer_id: string
@@ -1690,6 +1693,13 @@ export type Database = {
           p_template_id?: string
         }
         Returns: string
+      }
+      list_move_in_field_members: {
+        Args: { p_project_id: string }
+        Returns: {
+          display_name: string
+          member_id: string
+        }[]
       }
       promote_entry_to_customer: {
         Args: { p_entry_id: string; p_project_id: string }
@@ -1743,6 +1753,14 @@ export type Database = {
           p_resolved_at?: string
           p_status?: string
           p_ticket_id: string
+        }
+        Returns: string
+      }
+      update_move_in_field_member_display_name: {
+        Args: {
+          p_display_name: string
+          p_member_id: string
+          p_project_id: string
         }
         Returns: string
       }

@@ -8,6 +8,12 @@ import {
   type OccupancyIntent,
 } from "@/lib/move-in/labels";
 
+// calls.ts가 filters.ts를 이미 가져다 쓰므로(todayReasons) 순환 참조를 피하려고
+// digitsOnly를 calls.ts에서 import하지 않고 동일한 로직을 그대로 둔다.
+function digitsOnly(value: string) {
+  return value.replace(/\D/g, "");
+}
+
 export type UnitListRow = {
   unitId: string;
   buildingNo: string;
@@ -32,6 +38,9 @@ export type UnitListFilters = {
   buildingNo: string;
   unitNo: string;
   customerName: string;
+  // PHONE_INVALID 세대도 검색할 수 있도록 phoneQuality와 무관하게 저장된 원본 번호로 비교한다.
+  // 하이픈/공백을 지우고 숫자만 부분일치하며, 전화번호 데이터 자체는 절대 수정하지 않는다.
+  customerPhone?: string;
   occupancyIntent: OccupancyIntent | "";
   fundingStatus: FundingStatus | "";
   moveInStatus: MoveInStatus | "";
@@ -43,6 +52,7 @@ export const DEFAULT_UNIT_LIST_FILTERS: UnitListFilters = {
   buildingNo: "",
   unitNo: "",
   customerName: "",
+  customerPhone: "",
   occupancyIntent: "",
   fundingStatus: "",
   moveInStatus: "",
@@ -61,11 +71,13 @@ export function filterUnits(rows: UnitListRow[], filters: UnitListFilters) {
   const building = filters.buildingNo.trim();
   const unit = filters.unitNo.trim();
   const name = filters.customerName.trim();
+  const phone = digitsOnly((filters.customerPhone ?? "").trim());
 
   return rows.filter((row) => {
     if (building && !row.buildingNo.includes(building)) return false;
     if (unit && !row.unitNo.includes(unit)) return false;
     if (name && !(row.customerName ?? "").includes(name)) return false;
+    if (phone && !digitsOnly(row.customerPhone ?? "").includes(phone)) return false;
     if (filters.occupancyIntent && row.occupancyIntent !== filters.occupancyIntent) {
       return false;
     }
@@ -110,7 +122,8 @@ export const UNIT_SORT_OPTIONS: { key: UnitSortKey; direction: SortDirection; la
 // 현장 상담 우선순위 순서. 미확인은 등급 정렬에서만 쓰는 fallback 구간이다.
 const GRADE_SORT_ORDER = [...LEGACY_GRADE_VALUES, "미확인"] as const;
 
-function gradeSortRank(grade: string | null | undefined): number {
+// 등급 정렬 순위. 상담사 배정 화면(assign.ts)도 동일한 우선순위를 재사용한다.
+export function gradeSortRank(grade: string | null | undefined): number {
   if (grade && isLegacyGrade(grade)) return GRADE_SORT_ORDER.indexOf(grade);
   return GRADE_SORT_ORDER.indexOf("미확인");
 }
@@ -152,6 +165,7 @@ export function describeActiveFilters(filters: UnitListFilters): string {
   if (filters.buildingNo.trim()) parts.push(`동: ${filters.buildingNo.trim()}`);
   if (filters.unitNo.trim()) parts.push(`호수: ${filters.unitNo.trim()}`);
   if (filters.customerName.trim()) parts.push(`이름: ${filters.customerName.trim()}`);
+  if (filters.customerPhone?.trim()) parts.push(`전화번호: ${filters.customerPhone.trim()}`);
   if (filters.occupancyIntent) parts.push(`입주의향: ${OCCUPANCY_INTENT_LABELS[filters.occupancyIntent]}`);
   if (filters.fundingStatus) parts.push(`자금상태: ${FUNDING_STATUS_LABELS[filters.fundingStatus]}`);
   if (filters.moveInStatus) parts.push(`입주진행: ${MOVE_IN_STATUS_LABELS[filters.moveInStatus]}`);

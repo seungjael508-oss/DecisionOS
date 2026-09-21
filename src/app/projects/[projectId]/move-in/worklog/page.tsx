@@ -1,6 +1,8 @@
-import { canManageField } from "@/lib/move-in/field-access";
+import { canManageField, HWAYANG_SHARED_PROJECT_ID } from "@/lib/move-in/field-access";
 import { WorklogDateForm } from "@/components/move-in/worklog-date-form";
 import { WorklogSnapshotView } from "@/components/move-in/worklog-snapshot-view";
+import { WorklogTeamActivityView } from "@/components/move-in/worklog-team-activity";
+import { WorklogLiveRefresh } from "@/components/move-in/worklog-live-refresh";
 import { ReportGenerateForm } from "@/components/move-in/report-generate-form";
 import { requireMoveInAccess } from "@/lib/move-in/access";
 import { formatWorklogDateLabel } from "@/lib/worklog/day-range";
@@ -35,10 +37,12 @@ export default async function MoveInWorklogPage({
           자동 집계 기준 {snapshot.timeZone} 업무일 00:00 이상 ~ 익일 00:00 미만
         </p>
         <p className="mt-1 text-sm text-neutral-600">최종 갱신 {new Intl.DateTimeFormat("ko-KR", { timeZone: snapshot.timeZone, dateStyle: "medium", timeStyle: "medium" }).format(new Date(result.refreshedAt))}</p>
+        {projectId === HWAYANG_SHARED_PROJECT_ID ? <WorklogLiveRefresh projectId={projectId} /> : null}
         <WorklogDateForm projectId={projectId} dateYmd={snapshot.date} />
       </header>
 
       <WorklogSnapshotView snapshot={snapshot} />
+      <WorklogTeamActivityView snapshot={snapshot} />
       {canManageField(projectId, access.role) ? (
         <section className="mt-8" aria-label="현재 업무일지 보고서 저장">
           <p className="mb-3 text-sm text-neutral-600">현재 표시된 집계를 보고서로 저장합니다.</p>

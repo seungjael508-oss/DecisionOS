@@ -100,6 +100,53 @@ describe("unit list name/unit search", () => {
   });
 });
 
+describe("unit list phone search", () => {
+  const rows = [
+    row({ unitId: "a", customerName: "김철수", buildingNo: "101", unitNo: "201", customerPhone: "010-1234-5678", latestGrade: "A" }),
+    row({ unitId: "b", customerName: "박영희", buildingNo: "105", unitNo: "301", customerPhone: "010-9999-0000", latestGrade: "D" }),
+    // PHONE_INVALID 세대도 phoneQuality와 무관하게 저장된 원본 번호로 검색되어야 한다.
+    row({ unitId: "c", customerName: "정하늘", buildingNo: "105", unitNo: "302", customerPhone: "010-0000-1234", latestGrade: "D", phoneQuality: "PHONE_INVALID" }),
+  ];
+
+  it("하이픈 없이 입력해도 저장된 하이픈 번호를 찾는다", () => {
+    expect(
+      filterUnits(rows, { ...DEFAULT_UNIT_LIST_FILTERS, customerPhone: "01012345678" }).map((item) => item.unitId),
+    ).toEqual(["a"]);
+  });
+
+  it("하이픈을 그대로 입력해도 찾는다", () => {
+    expect(
+      filterUnits(rows, { ...DEFAULT_UNIT_LIST_FILTERS, customerPhone: "010-1234-5678" }).map((item) => item.unitId),
+    ).toEqual(["a"]);
+  });
+
+  it("뒷자리 일부만 입력해도 부분일치한다", () => {
+    expect(
+      filterUnits(rows, { ...DEFAULT_UNIT_LIST_FILTERS, customerPhone: "1234" }).map((item) => item.unitId),
+    ).toEqual(["a", "c"]);
+  });
+
+  it("전화번호 + 등급 조합은 AND로 동작한다", () => {
+    expect(
+      filterUnits(rows, { ...DEFAULT_UNIT_LIST_FILTERS, customerPhone: "1234", grade: "D" }).map((item) => item.unitId),
+    ).toEqual(["c"]);
+  });
+
+  it("전화번호 + 동 조합은 AND로 동작한다", () => {
+    expect(
+      filterUnits(rows, { ...DEFAULT_UNIT_LIST_FILTERS, customerPhone: "9999", buildingNo: "105" }).map(
+        (item) => item.unitId,
+      ),
+    ).toEqual(["b"]);
+  });
+
+  it("PHONE_INVALID 세대도 저장된 원본 번호로 검색된다", () => {
+    expect(
+      filterUnits(rows, { ...DEFAULT_UNIT_LIST_FILTERS, customerPhone: "010-0000-1234" }).map((item) => item.unitId),
+    ).toEqual(["c"]);
+  });
+});
+
 describe("sortUnitRows", () => {
   it("sorts 동호수 numerically, not lexicographically", () => {
     const rows = [
