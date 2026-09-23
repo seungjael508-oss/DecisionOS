@@ -14,7 +14,8 @@ select has_enum('public'::name, 'project_status'::name, 'project_status enum exi
 select enum_has_labels('public'::name, 'project_status'::name, array['ACTIVE', 'CLOSED']::text[]);
 
 select has_enum('public'::name, 'project_member_role'::name, 'project_member_role enum exists');
-select enum_has_labels('public'::name, 'project_member_role'::name, array['COUNSELOR', 'TEAM_LEAD', 'PROJECT_ADMIN']::text[]);
+-- CLIENT_MANAGER는 20260921010000_client_manager_role_enum.sql에서 추가된 값이다.
+select enum_has_labels('public'::name, 'project_member_role'::name, array['COUNSELOR', 'TEAM_LEAD', 'PROJECT_ADMIN', 'CLIENT_MANAGER']::text[]);
 
 select has_enum('public'::name, 'customer_status'::name, 'customer_status enum exists');
 select enum_has_labels('public'::name, 'customer_status'::name, array['ACTIVE', 'ARCHIVED']::text[]);

@@ -1694,11 +1694,32 @@ export type Database = {
         }
         Returns: string
       }
+      invite_project_member: {
+        Args: {
+          p_display_name: string
+          p_project_id: string
+          p_role: Database["public"]["Enums"]["project_member_role"]
+          p_user_id: string
+        }
+        Returns: string
+      }
       list_move_in_field_members: {
         Args: { p_project_id: string }
         Returns: {
           display_name: string
           member_id: string
+        }[]
+      }
+      list_project_members: {
+        Args: { p_project_id: string }
+        Returns: {
+          member_id: string
+          user_id: string
+          display_name: string | null
+          email: string
+          role: Database["public"]["Enums"]["project_member_role"]
+          active: boolean
+          created_at: string
         }[]
       }
       promote_entry_to_customer: {
@@ -1842,7 +1863,11 @@ export type Database = {
         | "MONTHLY_RENT"
         | "UNDECIDED"
       organization_status: "ACTIVE" | "INACTIVE"
-      project_member_role: "COUNSELOR" | "TEAM_LEAD" | "PROJECT_ADMIN"
+      project_member_role:
+        | "COUNSELOR"
+        | "TEAM_LEAD"
+        | "PROJECT_ADMIN"
+        | "CLIENT_MANAGER"
       project_status: "ACTIVE" | "CLOSED"
       report_phase: "SALES" | "UNSOLD" | "MOVE_IN"
       report_template_source_type: "PHOTO" | "SCREENSHOT" | "EXCEL" | "MANUAL"
@@ -2031,7 +2056,12 @@ export const Constants = {
         "UNDECIDED",
       ],
       organization_status: ["ACTIVE", "INACTIVE"],
-      project_member_role: ["COUNSELOR", "TEAM_LEAD", "PROJECT_ADMIN"],
+      project_member_role: [
+        "COUNSELOR",
+        "TEAM_LEAD",
+        "PROJECT_ADMIN",
+        "CLIENT_MANAGER",
+      ],
       project_status: ["ACTIVE", "CLOSED"],
       report_phase: ["SALES", "UNSOLD", "MOVE_IN"],
       report_template_source_type: ["PHOTO", "SCREENSHOT", "EXCEL", "MANUAL"],

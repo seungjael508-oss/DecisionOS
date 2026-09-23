@@ -6,7 +6,10 @@ export const HWAYANG_SHARED_PROJECT_ID = "1283e198-5043-4027-96d6-edcc7a6686c6";
 
 /** 활성 멤버로 확인된 호출자의 현장 관리 화면/작업 허용 여부. 관리자 권한은 승격하지 않는다. */
 export function canManageField(projectId: string, role: MoveInRole) {
-  return role === "PROJECT_ADMIN" || (role === "COUNSELOR" && projectId === HWAYANG_SHARED_PROJECT_ID);
+  return (
+    role === "PROJECT_ADMIN" ||
+    ((role === "COUNSELOR" || role === "CLIENT_MANAGER") && projectId === HWAYANG_SHARED_PROJECT_ID)
+  );
 }
 
 /** 화양 외 프로젝트의 상담사 담당 고객 제한을 그대로 유지한다. */

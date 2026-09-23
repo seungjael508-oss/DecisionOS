@@ -4,7 +4,7 @@ import type { Database } from "@/lib/supabase/types";
 
 export type MoveInRole = Extract<
   Database["public"]["Enums"]["project_member_role"],
-  "COUNSELOR" | "PROJECT_ADMIN"
+  "COUNSELOR" | "PROJECT_ADMIN" | "CLIENT_MANAGER"
 >;
 
 export type MoveInAccess =
@@ -44,7 +44,9 @@ export const requireMoveInAccess = cache(async function requireMoveInAccess(
 
   if (
     !membership ||
-    (membership.role !== "COUNSELOR" && membership.role !== "PROJECT_ADMIN")
+    (membership.role !== "COUNSELOR" &&
+      membership.role !== "PROJECT_ADMIN" &&
+      membership.role !== "CLIENT_MANAGER")
   ) {
     return { ok: false, kind: "forbidden" };
   }
@@ -82,5 +84,25 @@ export function accessMessage(kind: Exclude<MoveInAccess, { ok: true }>["kind"])
 export function requireProjectAdmin(
   access: MoveInAccess,
 ): access is Extract<MoveInAccess, { ok: true; role: "PROJECT_ADMIN" }> {
+  return access.ok && access.role === "PROJECT_ADMIN";
+}
+
+// 상담사 배정/현장 인력 표시이름 관리. PROJECT_ADMIN과 CLIENT_MANAGER(시행사 관리자) 모두 허용한다.
+// DB에서도 assign_move_in_customers / update_move_in_field_member_display_name RPC가
+// 동일하게 private.require_field_manage_access로 다시 검증하므로, 이 함수는 UI 게이팅용이다.
+export function canManageAssignments(access: MoveInAccess): boolean {
+  return access.ok && (access.role === "PROJECT_ADMIN" || access.role === "CLIENT_MANAGER");
+}
+
+// 계약자 정보(이름/전화번호) 수정, 전화번호 정정, 고객/계약 일괄 import는
+// CLIENT_MANAGER에게 절대 열지 않는다. PROJECT_ADMIN 전용으로 고정한다.
+export function requireCustomerMasterAdmin(access: MoveInAccess): boolean {
+  return access.ok && access.role === "PROJECT_ADMIN";
+}
+
+// 계약 생성/해지, 명의변경(holder transfer), 원장(ledger) import도 PROJECT_ADMIN 전용으로 고정한다.
+// 관련 RPC(create_contract/cancel_contract/transfer_contract_holder)는
+// private.require_project_admin을 그대로 쓰므로 DB에서도 CLIENT_MANAGER는 항상 거부된다.
+export function requireContractAdmin(access: MoveInAccess): boolean {
   return access.ok && access.role === "PROJECT_ADMIN";
 }

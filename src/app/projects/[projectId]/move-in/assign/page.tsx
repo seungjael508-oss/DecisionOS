@@ -1,7 +1,7 @@
 import { AssignListClient } from "@/components/move-in/assign-list-client";
 import { FieldMemberNameEditor } from "@/components/move-in/field-member-name-editor";
 import { AccessDenied, QueryError } from "@/components/move-in/status-copy";
-import { requireMoveInAccess } from "@/lib/move-in/access";
+import { canManageAssignments, requireMoveInAccess } from "@/lib/move-in/access";
 import { fieldMemberLabel } from "@/lib/move-in/assign";
 import { loadActiveCounselors, loadCallRows, loadFieldMemberNames } from "@/lib/move-in/queries";
 
@@ -13,7 +13,7 @@ export default async function MoveInAssignPage({
   const { projectId } = await params;
   const access = await requireMoveInAccess(projectId);
   if (!access.ok) return null;
-  if (access.role !== "PROJECT_ADMIN") {
+  if (!canManageAssignments(access)) {
     return (
       <AccessDenied message="상담사 배정은 현장 관리자만 사용할 수 있습니다." />
     );
