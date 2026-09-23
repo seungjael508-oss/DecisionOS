@@ -1,5 +1,6 @@
 import { usesAssignedCustomerScope } from "@/lib/move-in/field-access";
 import { requireMoveInAccess } from "@/lib/move-in/access";
+import type { ProjectMemberRow } from "@/lib/move-in/members";
 import { readAllRows } from '@/lib/supabase/read-all';
 import { readByIds } from '@/lib/supabase/read-by-ids';
 import {
@@ -759,11 +760,34 @@ export async function loadMemberProjects(): Promise<
 
   const projects: MemberProject[] = [];
   for (const row of memberships ?? []) {
-    if (row.role !== "COUNSELOR" && row.role !== "PROJECT_ADMIN") continue;
+    if (row.role !== "COUNSELOR" && row.role !== "PROJECT_ADMIN" && row.role !== "CLIENT_MANAGER") continue;
     const name = nameById.get(row.project_id);
     if (!name) continue;
     projects.push({ id: row.project_id, name, role: row.role });
   }
 
   return { ok: true, projects };
+}
+
+export async function loadProjectMembers(
+  projectId: string,
+): Promise<{ members: ProjectMemberRow[]; error: true } | { members: ProjectMemberRow[]; error: false }> {
+  const access = await requireMoveInAccess(projectId);
+  if (!access.ok || access.role !== "PROJECT_ADMIN") return { members: [], error: true };
+
+  const supabase = await createServerClient();
+  const { data, error } = await supabase.rpc("list_project_members", { p_project_id: projectId });
+  if (error || !data) return { members: [], error: true };
+
+  const members: ProjectMemberRow[] = data.map((row) => ({
+    memberId: row.member_id,
+    userId: row.user_id,
+    displayName: row.display_name,
+    email: row.email,
+    role: row.role,
+    active: row.active,
+    createdAt: row.created_at,
+  }));
+
+  return { members, error: false };
 }

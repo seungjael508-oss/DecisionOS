@@ -8,6 +8,7 @@ import type { MoveInRole } from "@/lib/move-in/access";
 const ROLE_LABEL: Record<MoveInRole, string> = {
   COUNSELOR: "상담사",
   PROJECT_ADMIN: "현장 관리자",
+  CLIENT_MANAGER: "시행사 관리자",
 };
 
 export function MoveInNav({
@@ -32,11 +33,17 @@ export function MoveInNav({
     { href: `${base}/worklog`, label: "업무일지", exact: true },
     { href: `${base}/reports`, label: "보고서", exact: true },
     ...(canManageField(projectId, role) ? [{ href: `${base}/brokerages`, label: "중개업소 관리", exact: true }] : []),
+    // 상담사 배정: PROJECT_ADMIN + CLIENT_MANAGER(시행사 관리자) 모두 허용.
+    ...(role === "PROJECT_ADMIN" || role === "CLIENT_MANAGER"
+      ? [{ href: `${base}/assign`, label: "상담사 배정", exact: true }]
+      : []),
+    // 데이터 가져오기(계약/고객 일괄 import, 원장 import): PROJECT_ADMIN 전용으로 고정한다.
     ...(role === "PROJECT_ADMIN"
-      ? [
-          { href: `${base}/assign`, label: "상담사 배정", exact: true },
-          { href: `${base}/import`, label: "데이터 가져오기", exact: true },
-        ]
+      ? [{ href: `${base}/import`, label: "데이터 가져오기", exact: true }]
+      : []),
+    // 사용자 관리(초대): PROJECT_ADMIN 전용으로 고정한다.
+    ...(role === "PROJECT_ADMIN"
+      ? [{ href: `${base}/members`, label: "사용자 관리", exact: true }]
       : []),
   ];
 

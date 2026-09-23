@@ -1824,7 +1824,11 @@ export type Database = {
         | "MONTHLY_RENT"
         | "UNDECIDED"
       organization_status: "ACTIVE" | "INACTIVE"
-      project_member_role: "COUNSELOR" | "TEAM_LEAD" | "PROJECT_ADMIN"
+      project_member_role:
+        | "COUNSELOR"
+        | "TEAM_LEAD"
+        | "PROJECT_ADMIN"
+        | "CLIENT_MANAGER"
       project_status: "ACTIVE" | "CLOSED"
       report_phase: "SALES" | "UNSOLD" | "MOVE_IN"
       report_template_source_type: "PHOTO" | "SCREENSHOT" | "EXCEL" | "MANUAL"
@@ -2013,7 +2017,12 @@ export const Constants = {
         "UNDECIDED",
       ],
       organization_status: ["ACTIVE", "INACTIVE"],
-      project_member_role: ["COUNSELOR", "TEAM_LEAD", "PROJECT_ADMIN"],
+      project_member_role: [
+        "COUNSELOR",
+        "TEAM_LEAD",
+        "PROJECT_ADMIN",
+        "CLIENT_MANAGER",
+      ],
       project_status: ["ACTIVE", "CLOSED"],
       report_phase: ["SALES", "UNSOLD", "MOVE_IN"],
       report_template_source_type: ["PHOTO", "SCREENSHOT", "EXCEL", "MANUAL"],

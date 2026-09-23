@@ -1,7 +1,7 @@
 "use server";
 
 import { canSubmitAssignment, isValidFieldMemberDisplayName, uniqueCustomerIds } from "@/lib/move-in/assign";
-import { requireMoveInAccess, requireProjectAdmin } from "@/lib/move-in/access";
+import { canManageAssignments, requireMoveInAccess } from "@/lib/move-in/access";
 import { createServerClient } from "@/lib/supabase/server";
 
 export async function assignMoveInCustomers(input: {
@@ -10,7 +10,7 @@ export async function assignMoveInCustomers(input: {
   assigneeProjectMemberId: string;
 }) {
   const access = await requireMoveInAccess(input.projectId);
-  if (!requireProjectAdmin(access)) {
+  if (!canManageAssignments(access)) {
     return { ok: false as const };
   }
 
@@ -32,14 +32,14 @@ export async function assignMoveInCustomers(input: {
 }
 
 // UI에서 "상담사 관리" 섹션을 숨기는 것만으로는 권한 검증이 되지 않으므로,
-// 서버 액션에서 다시 한 번 PROJECT_ADMIN 여부를 확인한 뒤에만 RPC를 호출한다.
+// 서버 액션에서 다시 한 번 배정 관리 권한(PROJECT_ADMIN/CLIENT_MANAGER)을 확인한 뒤에만 RPC를 호출한다.
 export async function updateMoveInFieldMemberDisplayName(input: {
   projectId: string;
   memberId: string;
   displayName: string;
 }) {
   const access = await requireMoveInAccess(input.projectId);
-  if (!requireProjectAdmin(access)) {
+  if (!canManageAssignments(access)) {
     return { ok: false as const };
   }
 
