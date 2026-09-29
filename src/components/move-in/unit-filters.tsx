@@ -8,6 +8,9 @@ import {
   MOVE_IN_STATUS_VALUES,
   OCCUPANCY_INTENT_LABELS,
   OCCUPANCY_INTENT_VALUES,
+  OPERATIONAL_INTENT_LABELS,
+  OPERATIONAL_INTENT_VALUES,
+  type OperationalIntent,
 } from "@/lib/move-in/labels";
 import { LEGACY_GRADE_VALUES, type LegacyGrade } from "@/lib/move-in/consultation";
 import {
@@ -57,6 +60,10 @@ export function UnitFilters({
     onChange({ ...filters, [key]: value });
   }
 
+  function setOperationalIntent(values: OperationalIntent[]) {
+    onChange({ ...filters, operationalIntent: values });
+  }
+
   function toggleGrade(grade: LegacyGrade) {
     onChange({ ...filters, grade: filters.grade === grade ? "" : grade });
   }
@@ -69,7 +76,8 @@ export function UnitFilters({
       customerPhone ||
       filters.occupancyIntent ||
       filters.fundingStatus ||
-      filters.moveInStatus,
+      filters.moveInStatus ||
+      filters.operationalIntent.length > 0,
   );
 
   return (
@@ -129,6 +137,27 @@ export function UnitFilters({
             placeholder="하이픈 없이 일부만 입력해도 검색됩니다"
             className="border border-neutral-400 px-2 py-1"
           />
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          최종의향
+          <select
+            aria-label="최종의향"
+            multiple
+            value={filters.operationalIntent}
+            onChange={(event) => setOperationalIntent(
+              Array.from(event.currentTarget.selectedOptions).map(
+                (option) => option.value as OperationalIntent,
+              ),
+            )}
+            className="min-h-28 border border-neutral-400 px-2 py-1"
+          >
+            {OPERATIONAL_INTENT_VALUES.map((value) => (
+              <option key={value} value={value}>
+                {OPERATIONAL_INTENT_LABELS[value]}
+              </option>
+            ))}
+          </select>
+          <span className="text-xs text-neutral-600">복수 선택 시 하나라도 일치하는 세대를 표시합니다.</span>
         </label>
         <label className="flex flex-col gap-1 text-sm">
           입주의향

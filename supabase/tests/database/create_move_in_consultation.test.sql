@@ -251,6 +251,50 @@ select is(
 select lives_ok(
   $$ select public.create_move_in_consultation(
        p_project_id := '20000000-0000-4000-8000-000000000001',
+       p_unit_id := '8c000000-0000-4000-8000-000000000003',
+       p_customer_id := '50000000-0000-4000-8000-0000000000a1',
+       p_consultation_type := 'OUTBOUND',
+       p_content := '다음 접촉 해제',
+       p_clear_next_contact_at := true
+     ) $$,
+  '상담에서 명시적으로 다음 접촉 해제'
+);
+
+select is(
+  (select next_contact_at from public.unit_occupancy_status where unit_id = '8c000000-0000-4000-8000-000000000003'),
+  null,
+  '명시적 해제는 occupancy next_contact_at을 비운다'
+);
+
+select is(
+  (
+    select count(*)::integer
+    from public.contact_schedule
+    where unit_id = '8c000000-0000-4000-8000-000000000003'
+      and status = 'PENDING'
+  ),
+  0,
+  '명시적 해제는 남은 PENDING contact schedule을 남기지 않는다'
+);
+
+select throws_ok(
+  $$ select public.create_move_in_consultation(
+       p_project_id := '20000000-0000-4000-8000-000000000001',
+       p_unit_id := '8c000000-0000-4000-8000-000000000003',
+       p_customer_id := '50000000-0000-4000-8000-0000000000a1',
+       p_consultation_type := 'OUTBOUND',
+       p_content := '잘못된 다음 접촉 요청',
+       p_next_contact_at := '2026-09-21T09:00:00+09:00'::timestamptz,
+       p_clear_next_contact_at := true
+     ) $$,
+  '23514',
+  null,
+  '다음 접촉값과 해제 플래그를 함께 저장할 수 없다'
+);
+
+select lives_ok(
+  $$ select public.create_move_in_consultation(
+       p_project_id := '20000000-0000-4000-8000-000000000001',
        p_unit_id := '8c000000-0000-4000-8000-000000000004',
        p_customer_id := '50000000-0000-4000-8000-0000000000a1',
        p_consultation_type := 'VISIT',

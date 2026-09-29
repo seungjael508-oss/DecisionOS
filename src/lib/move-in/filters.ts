@@ -3,9 +3,12 @@ import {
   FUNDING_STATUS_LABELS,
   MOVE_IN_STATUS_LABELS,
   OCCUPANCY_INTENT_LABELS,
+  OPERATIONAL_INTENT_LABELS,
+  OPERATIONAL_INTENT_VALUES,
   type FundingStatus,
   type MoveInStatus,
   type OccupancyIntent,
+  type OperationalIntent,
 } from "@/lib/move-in/labels";
 
 // calls.ts가 filters.ts를 이미 가져다 쓰므로(todayReasons) 순환 참조를 피하려고
@@ -24,6 +27,9 @@ export type UnitListRow = {
   latestGrade?: string | null;
   latestConsultation?: string | null;
   latestPreviousHolder?: boolean;
+  operationalIntent: OperationalIntent | null;
+  operationalIntentAsOf: string | null;
+  currentContractId: string | null;
   occupancyIntent: OccupancyIntent | null;
   fundingStatus: FundingStatus | null;
   moveInStatus: MoveInStatus | null;
@@ -44,6 +50,8 @@ export type UnitListFilters = {
   occupancyIntent: OccupancyIntent | "";
   fundingStatus: FundingStatus | "";
   moveInStatus: MoveInStatus | "";
+  // OR semantics within this one filter; all other active list filters are ANDed.
+  operationalIntent: OperationalIntent[];
   // 동호수 관리 화면 등급 빠른필터. 기존 테스트가 grade 없이 UnitListFilters를 만들기 때문에 optional로 둔다.
   grade?: LegacyGrade | "";
 };
@@ -56,8 +64,23 @@ export const DEFAULT_UNIT_LIST_FILTERS: UnitListFilters = {
   occupancyIntent: "",
   fundingStatus: "",
   moveInStatus: "",
+  operationalIntent: [],
   grade: "",
 };
+
+export function parseOperationalIntentFilter(
+  value: string | null | undefined,
+): OperationalIntent[] {
+  if (!value) return [];
+  return [...new Set(
+    value
+      .split(",")
+      .map((item) => item.trim())
+      .filter((item): item is OperationalIntent => (
+        OPERATIONAL_INTENT_VALUES as readonly string[]
+      ).includes(item)),
+  )];
+}
 
 export function sortUnits(rows: UnitListRow[]) {
   return [...rows].sort((a, b) => {
@@ -85,6 +108,12 @@ export function filterUnits(rows: UnitListRow[], filters: UnitListFilters) {
       return false;
     }
     if (filters.moveInStatus && row.moveInStatus !== filters.moveInStatus) {
+      return false;
+    }
+    if (
+      filters.operationalIntent.length > 0
+      && (!row.operationalIntent || !filters.operationalIntent.includes(row.operationalIntent))
+    ) {
       return false;
     }
     if (filters.grade && row.latestGrade !== filters.grade) {
@@ -169,6 +198,9 @@ export function describeActiveFilters(filters: UnitListFilters): string {
   if (filters.occupancyIntent) parts.push(`입주의향: ${OCCUPANCY_INTENT_LABELS[filters.occupancyIntent]}`);
   if (filters.fundingStatus) parts.push(`자금상태: ${FUNDING_STATUS_LABELS[filters.fundingStatus]}`);
   if (filters.moveInStatus) parts.push(`입주진행: ${MOVE_IN_STATUS_LABELS[filters.moveInStatus]}`);
+  if (filters.operationalIntent.length > 0) {
+    parts.push(`최종의향: ${filters.operationalIntent.map((intent) => OPERATIONAL_INTENT_LABELS[intent]).join(", ")}`);
+  }
   return parts.length === 0 ? "전체" : parts.join(" · ");
 }
 

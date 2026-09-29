@@ -1526,10 +1526,14 @@ export type Database = {
           contract_id: string
           created_at: string
           funding_status: Database["public"]["Enums"]["funding_status"]
+          legacy_grade: string | null
+          legacy_grade_as_of: string | null
           last_contact_at: string | null
           move_in_status: Database["public"]["Enums"]["move_in_status"]
           next_contact_at: string | null
           occupancy_intent: Database["public"]["Enums"]["occupancy_intent"]
+          operational_intent: Database["public"]["Enums"]["operational_intent"]
+          operational_intent_as_of: string | null
           occupancy_status_id: string
           planned_move_in_date: string | null
           project_id: string
@@ -1543,10 +1547,14 @@ export type Database = {
           contract_id: string
           created_at?: string
           funding_status?: Database["public"]["Enums"]["funding_status"]
+          legacy_grade?: string | null
+          legacy_grade_as_of?: string | null
           last_contact_at?: string | null
           move_in_status?: Database["public"]["Enums"]["move_in_status"]
           next_contact_at?: string | null
           occupancy_intent?: Database["public"]["Enums"]["occupancy_intent"]
+          operational_intent?: Database["public"]["Enums"]["operational_intent"]
+          operational_intent_as_of?: string | null
           occupancy_status_id?: string
           planned_move_in_date?: string | null
           project_id: string
@@ -1560,10 +1568,14 @@ export type Database = {
           contract_id?: string
           created_at?: string
           funding_status?: Database["public"]["Enums"]["funding_status"]
+          legacy_grade?: string | null
+          legacy_grade_as_of?: string | null
           last_contact_at?: string | null
           move_in_status?: Database["public"]["Enums"]["move_in_status"]
           next_contact_at?: string | null
           occupancy_intent?: Database["public"]["Enums"]["occupancy_intent"]
+          operational_intent?: Database["public"]["Enums"]["operational_intent"]
+          operational_intent_as_of?: string | null
           occupancy_status_id?: string
           planned_move_in_date?: string | null
           project_id?: string
@@ -1668,6 +1680,7 @@ export type Database = {
           p_actual_move_in_date?: string
           p_balance_paid_at?: string
           p_business_purpose?: string
+          p_clear_next_contact_at?: boolean
           p_consultation_type: string
           p_content: string
           p_customer_id: string
@@ -1676,6 +1689,7 @@ export type Database = {
           p_move_in_status?: Database["public"]["Enums"]["move_in_status"]
           p_next_contact_at?: string
           p_occupancy_intent?: Database["public"]["Enums"]["occupancy_intent"]
+          p_operational_intent?: Database["public"]["Enums"]["operational_intent"]
           p_planned_move_in_date?: string
           p_project_id: string
           p_reason?: string
@@ -1861,6 +1875,14 @@ export type Database = {
         | "SALE"
         | "JEONSE"
         | "MONTHLY_RENT"
+        | "UNDECIDED"
+      operational_intent:
+        | "MOVE_IN"
+        | "CONSIDERING_MOVE_IN"
+        | "SALE_TRANSFER"
+        | "RENT"
+        | "TERMINATION"
+        | "ABANDONMENT"
         | "UNDECIDED"
       organization_status: "ACTIVE" | "INACTIVE"
       project_member_role:
@@ -2055,6 +2077,15 @@ export const Constants = {
         "MONTHLY_RENT",
         "UNDECIDED",
       ],
+      operational_intent: [
+        "MOVE_IN",
+        "CONSIDERING_MOVE_IN",
+        "SALE_TRANSFER",
+        "RENT",
+        "TERMINATION",
+        "ABANDONMENT",
+        "UNDECIDED",
+      ],
       organization_status: ["ACTIVE", "INACTIVE"],
       project_member_role: [
         "COUNSELOR",
@@ -2077,4 +2108,3 @@ export const Constants = {
     },
   },
 } as const
-

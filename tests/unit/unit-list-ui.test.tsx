@@ -43,12 +43,15 @@ function row(partial: Partial<UnitListRow> & Pick<UnitListRow, "unitId">): UnitL
     lastContactAt: null,
     nextContactAt: null,
     ...partial,
+    operationalIntent: partial.operationalIntent ?? null,
+    operationalIntentAsOf: partial.operationalIntentAsOf ?? null,
+    currentContractId: partial.currentContractId ?? null,
   };
 }
 
 const rows: UnitListRow[] = [
   row({ unitId: "u-101-201", buildingNo: "101", unitNo: "201", customerName: "김철수", latestGrade: "A", customerPhone: "010-1234-5678" }),
-  row({ unitId: "u-105-301", buildingNo: "105", unitNo: "301", customerName: "박영희", latestGrade: "C", customerPhone: "010-9999-0000" }),
+  row({ unitId: "u-105-301", buildingNo: "105", unitNo: "301", customerName: "박영희", latestGrade: "C", customerPhone: "010-9999-0000", operationalIntent: "SALE_TRANSFER" }),
   row({ unitId: "u-105-302", buildingNo: "105", unitNo: "302", customerName: "이민수", latestGrade: "C", customerPhone: "010-7777-1234" }),
   row({ unitId: "u-106-401", buildingNo: "106", unitNo: "401", customerName: "최지훈", latestGrade: "D", customerPhone: "010-5678-2222" }),
 ];
@@ -67,7 +70,7 @@ function renderClient() {
   });
   vi.stubGlobal("fetch", fetch);
   const before = JSON.stringify(rows);
-  render(<UnitListClient projectId="p1" rows={rows} initialFilters={DEFAULT_UNIT_LIST_FILTERS} />);
+  render(<UnitListClient projectId="p1" rows={rows} initialFilters={DEFAULT_UNIT_LIST_FILTERS} initialReturnTo="/projects/p1/move-in/units" />);
   return { fetch, before };
 }
 
@@ -80,6 +83,12 @@ function expectNoNetworkOrNavigation(fetch: ReturnType<typeof vi.fn>, before: st
 }
 
 describe("unit list UI", () => {
+  it("shows the current final intent in the desktop and mobile unit list", () => {
+    const { fetch, before } = renderClient();
+    expect(screen.getAllByText("전매/매도").length).toBeGreaterThan(0);
+    expectNoNetworkOrNavigation(fetch, before);
+  });
+
   it("filters by grade with a visible pressed state and zero network calls", () => {
     const { fetch, before } = renderClient();
     fireEvent.click(screen.getByRole("button", { name: "C 2" }));
@@ -96,6 +105,94 @@ describe("unit list UI", () => {
     fireEvent.change(screen.getByLabelText("동"), { target: { value: "105" } });
     expect(screen.getByRole("status").textContent).toContain("2세대");
     expectNoNetworkOrNavigation(fetch, before);
+  });
+
+  it("passes the active client-side filters as the unit detail return context", async () => {
+    renderClient();
+    fireEvent.click(screen.getByRole("button", { name: "C 2" }));
+    fireEvent.change(screen.getByLabelText("동"), { target: { value: "105" } });
+
+    await waitFor(() => {
+      const href = screenArea().getAllByRole("link", { name: "105동 301호" })[0]
+        .getAttribute("href");
+      expect(href).toContain("returnTo=");
+      expect(decodeURIComponent(href ?? "")).toContain(
+        "/projects/p1/move-in/units?grade=C&buildingNo=105",
+      );
+    });
+  });
+
+  it("preserves explicitly supplied default sort parameters in the detail return context", async () => {
+    const returnTo = "/projects/p1/move-in/units?grade=C&buildingNo=105&intent=SALE_TRANSFER&sort=unit&direction=asc&cursor=abc";
+    window.history.replaceState(null, "", returnTo);
+    render(
+      <UnitListClient
+        projectId="p1"
+        rows={rows}
+        initialFilters={{
+          ...DEFAULT_UNIT_LIST_FILTERS,
+          grade: "C",
+          buildingNo: "105",
+          operationalIntent: ["SALE_TRANSFER"],
+        }}
+        initialReturnTo={returnTo}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("정렬"), { target: { value: "unit:asc" } });
+
+    await waitFor(() => {
+      const href = screenArea().getAllByRole("link", { name: "105동 301호" })[0]
+        .getAttribute("href");
+      expect(decodeURIComponent(href ?? "")).toContain(`returnTo=${returnTo}`);
+    });
+  });
+
+  it("keeps default sorting absent when the original context omitted it", async () => {
+    const returnTo = "/projects/p1/move-in/units?grade=C&cursor=abc";
+    window.history.replaceState(null, "", returnTo);
+    render(
+      <UnitListClient
+        projectId="p1"
+        rows={rows}
+        initialFilters={{ ...DEFAULT_UNIT_LIST_FILTERS, grade: "C" }}
+        initialReturnTo={returnTo}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("정렬"), { target: { value: "unit:asc" } });
+
+    await waitFor(() => {
+      const href = screenArea().getAllByRole("link", { name: "105동 301호" })[0]
+        .getAttribute("href");
+      const decoded = decodeURIComponent(href ?? "");
+      expect(decoded).toContain(`returnTo=${returnTo}`);
+      expect(decoded).not.toContain("sort=unit");
+      expect(decoded).not.toContain("direction=asc");
+    });
+  });
+
+  it("keeps non-default sort parameters in the detail return context", async () => {
+    const returnTo = "/projects/p1/move-in/units?grade=C&sort=grade&direction=desc&cursor=abc";
+    window.history.replaceState(null, "", returnTo);
+    render(
+      <UnitListClient
+        projectId="p1"
+        rows={rows}
+        initialFilters={{ ...DEFAULT_UNIT_LIST_FILTERS, grade: "C" }}
+        initialReturnTo={returnTo}
+        initialSortKey="grade"
+        initialSortDirection="desc"
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("정렬"), { target: { value: "grade:desc" } });
+
+    await waitFor(() => {
+      const href = screenArea().getAllByRole("link", { name: "105동 301호" })[0]
+        .getAttribute("href");
+      expect(decodeURIComponent(href ?? "")).toContain(`returnTo=${returnTo}`);
+    });
   });
 
   it("debounces the name search input before filtering", async () => {
@@ -269,7 +366,7 @@ describe("unit list UI", () => {
       throw new Error("Unexpected network request");
     });
     vi.stubGlobal("fetch", fetch);
-    render(<UnitListClient projectId="p1" rows={invalidRows} initialFilters={DEFAULT_UNIT_LIST_FILTERS} />);
+    render(<UnitListClient projectId="p1" rows={invalidRows} initialFilters={DEFAULT_UNIT_LIST_FILTERS} initialReturnTo="/projects/p1/move-in/units" />);
     fireEvent.change(screen.getByLabelText("전화번호"), { target: { value: "0000" } });
     await waitFor(() => {
       expect(screenArea().getByText("정하늘")).toBeTruthy();

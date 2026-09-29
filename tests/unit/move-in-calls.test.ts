@@ -132,6 +132,42 @@ describe("legacy grade and consultation args", () => {
     expect(args).not.toHaveProperty("p_occupancy_intent");
     expect(args).not.toHaveProperty("p_funding_status");
     expect(args).not.toHaveProperty("p_move_in_status");
+    expect(args).not.toHaveProperty("p_operational_intent");
+  });
+
+  it("sends operational intent only when the counselor selects it", () => {
+    const explicit = buildCreateMoveInConsultationArgs({
+      projectId: "p1",
+      unitId: "u1",
+      customerId: "c1",
+      consultationType: "OUTBOUND",
+      content: "전매 의향을 직접 선택",
+      operationalIntent: "SALE_TRANSFER",
+    });
+    expect(explicit).toMatchObject({ p_operational_intent: "SALE_TRANSFER" });
+
+    const unselected = buildCreateMoveInConsultationArgs({
+      projectId: "p1",
+      unitId: "u1",
+      customerId: "c1",
+      consultationType: "OUTBOUND",
+      content: "선택 안 함",
+      operationalIntent: "",
+    });
+    expect(unselected).not.toHaveProperty("p_operational_intent");
+  });
+
+  it("sends an explicit next-contact clear only when requested", () => {
+    expect(
+      buildCreateMoveInConsultationArgs({
+        projectId: "p1",
+        unitId: "u1",
+        customerId: "c1",
+        consultationType: "OUTBOUND",
+        content: "다음 접촉 해제",
+        clearNextContactAt: true,
+      }),
+    ).toMatchObject({ p_clear_next_contact_at: true });
   });
 
   it("rejects blank content", () => {

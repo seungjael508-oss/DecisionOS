@@ -3,6 +3,7 @@ import type { Database } from "@/lib/supabase/types";
 export type OccupancyIntent = Database["public"]["Enums"]["occupancy_intent"];
 export type FundingStatus = Database["public"]["Enums"]["funding_status"];
 export type MoveInStatus = Database["public"]["Enums"]["move_in_status"];
+export type OperationalIntent = Database["public"]["Enums"]["operational_intent"];
 export type ProjectMemberRole = Database["public"]["Enums"]["project_member_role"];
 
 /** Existing holder/sibling contract policy: completed contracts remain sold. */
@@ -33,6 +34,26 @@ export const MOVE_IN_STATUS_LABELS: Record<MoveInStatus, string> = {
   MOVED_IN: "입주완료",
 };
 
+export const OPERATIONAL_INTENT_VALUES = [
+  "MOVE_IN",
+  "CONSIDERING_MOVE_IN",
+  "SALE_TRANSFER",
+  "RENT",
+  "TERMINATION",
+  "ABANDONMENT",
+  "UNDECIDED",
+] as const satisfies readonly OperationalIntent[];
+
+export const OPERATIONAL_INTENT_LABELS: Record<OperationalIntent, string> = {
+  MOVE_IN: "입주",
+  CONSIDERING_MOVE_IN: "입주 고려",
+  SALE_TRANSFER: "전매/매도",
+  RENT: "전세/월세",
+  TERMINATION: "해지",
+  ABANDONMENT: "포기",
+  UNDECIDED: "미확정",
+};
+
 export const OCCUPANCY_INTENT_VALUES = Object.keys(
   OCCUPANCY_INTENT_LABELS,
 ) as OccupancyIntent[];
@@ -49,15 +70,28 @@ export function formatUnitLabel(buildingNo: string, unitNo: string) {
   return `${buildingNo}동 ${unitNo}호`;
 }
 
+const KST_DATE_TIME_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  timeZone: "Asia/Seoul",
+  calendar: "iso8601",
+  numberingSystem: "latn",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
 export function formatDateTime(value: string | null) {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat("ko-KR", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "Asia/Seoul",
-  }).format(date);
+  const parts = Object.fromEntries(
+    KST_DATE_TIME_FORMATTER.formatToParts(date)
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, part.value]),
+  );
+  return `${parts.year}.${parts.month}.${parts.day} ${parts.hour}:${parts.minute}`;
 }
 
 export const CONTACT_TYPE_LABELS: Record<string, string> = {

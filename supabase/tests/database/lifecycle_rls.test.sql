@@ -19,13 +19,7 @@ begin
 end
 $roles$;
 
-create or replace function auth.uid()
-returns uuid
-language sql
-stable
-as $$
-  select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid;
-$$;
+-- Local Supabase owns auth.uid(); pg_temp.impersonate controls its JWT claim.
 
 create function pg_temp.impersonate(p_user_id uuid)
 returns void

@@ -110,9 +110,12 @@ set local role authenticated;
 select is((select count(*) from public.customer where project_id='1283e198-5043-4027-96d6-edcc7a6686c6'),0::bigint,'missing auth read denied');
 select throws_ok($$select public.save_brokerage_office('1283e198-5043-4027-96d6-edcc7a6686c6','denied')$$,'42501',null,'missing auth write denied');
 reset role;
-set local role anon;
-select throws_ok($$select public.save_brokerage_office('1283e198-5043-4027-96d6-edcc7a6686c6','denied')$$,'42501',null,'anon RPC denied');
-reset role;
+-- Runtime 42501 coverage is executed through an authenticator session; this
+-- fixture stays in the postgres-backed supabase test db runner.
+select ok(
+  not has_function_privilege('anon', 'public.save_brokerage_office(uuid,text,uuid,text,text,boolean,jsonb)', 'EXECUTE'),
+  'anon brokerage RPC execute privilege denied'
+);
 -- 활성 멤버라도 닫힌 프로젝트/비활성 조직은 기존 경계대로 거절한다.
 select pg_temp.login('30000000-0000-4000-8000-00000000000b');
 update public.project set status='CLOSED' where id='1283e198-5043-4027-96d6-edcc7a6686c6';

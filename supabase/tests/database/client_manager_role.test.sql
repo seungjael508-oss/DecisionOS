@@ -36,8 +36,9 @@ select is((select count(*) from public.customer where project_id='1283e198-5043-
 select is((select count(*) from public.consultation where project_id='1283e198-5043-4027-96d6-edcc7a6686c6' and content='Synthetic history'),1::bigint,'client manager: consultation visible (field member)');
 
 -- 현장 운영 RPC: PROJECT_ADMIN과 동일하게 전부 성공해야 한다.
-select lives_ok($$select public.create_move_in_consultation('1283e198-5043-4027-96d6-edcc7a6686c6',pg_temp.hid('unit',2),pg_temp.hid('customer',2),'OUTBOUND','cm-consult',p_legacy_grade:='A',p_next_contact_at:=now()+interval '1 day',p_move_in_status:='CONTACTED')$$,'client manager: consultation + occupancy write');
+select lives_ok($$select public.create_move_in_consultation('1283e198-5043-4027-96d6-edcc7a6686c6',pg_temp.hid('unit',2),pg_temp.hid('customer',2),'OUTBOUND','cm-consult',p_legacy_grade:='A',p_next_contact_at:=now()+interval '1 day',p_move_in_status:='CONTACTED',p_operational_intent:='SALE_TRANSFER')$$,'client manager: consultation + occupancy + operational-intent write');
 select is((select created_by from public.consultation where project_id='1283e198-5043-4027-96d6-edcc7a6686c6' and content='cm-consult'),pg_temp.hid('member',3),'client manager: actual logged-in author');
+select is((select operational_intent::text from public.unit_occupancy_status where unit_id=pg_temp.hid('unit',2)),'SALE_TRANSFER','client manager: explicit operational intent is applied');
 select lives_ok($$select public.generate_report('1283e198-5043-4027-96d6-edcc7a6686c6',current_date,'MOVE_IN','DAILY','{}')$$,'client manager: worklog report generation');
 select lives_ok($$select public.save_brokerage_office('1283e198-5043-4027-96d6-edcc7a6686c6','Synthetic office (client manager)')$$,'client manager: brokerage write');
 select lives_ok($$select public.save_move_in_unit_deal('1283e198-5043-4027-96d6-edcc7a6686c6',pg_temp.hid('unit',2),pg_temp.hid('contract',2),pg_temp.hid('customer',2),'CONSENTED','IN_PROGRESS',true,false,false)$$,'client manager: deal write');
@@ -109,9 +110,14 @@ select is((select count(*) from public.customer where project_id='1283e198-5043-
 select throws_ok($$select public.save_brokerage_office('1283e198-5043-4027-96d6-edcc7a6686c6','denied')$$,'42501',null,'missing auth: write denied');
 reset role;
 
-set local role anon;
-select throws_ok($$select public.assign_move_in_customers('1283e198-5043-4027-96d6-edcc7a6686c6',array[pg_temp.hid('customer',4)],pg_temp.hid('member',2))$$,'42501',null,'anon: assignment RPC denied');
-reset role;
+-- supabase test db runs with a postgres session. SET ROLE anon would still leave
+-- postgres as session_user and therefore is not a valid SECURITY DEFINER caller.
+-- The actual authenticator-session invocation and DB-liveness assertion live in
+-- client_manager_anon_rpc_denial.pgtap.sql.
+select ok(
+  not has_function_privilege('anon', 'public.assign_move_in_customers(uuid,uuid[],uuid)', 'EXECUTE'),
+  'anon: assignment RPC execute privilege denied'
+);
 
 -- 닫힌 프로젝트/비활성 조직: 활성 CLIENT_MANAGER라도 기존 경계대로 거절해야 한다.
 select pg_temp.login('30000000-0000-4000-8000-00000000000e');

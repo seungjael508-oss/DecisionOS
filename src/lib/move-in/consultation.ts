@@ -1,5 +1,5 @@
 import type { Database, Json } from "@/lib/supabase/types";
-import type { FundingStatus, MoveInStatus, OccupancyIntent } from "@/lib/move-in/labels";
+import type { FundingStatus, MoveInStatus, OccupancyIntent, OperationalIntent } from "@/lib/move-in/labels";
 
 export const CONSULTATION_PURPOSES = ["성향파악", "입주안내", "잔금독촉", "매칭안내", "기타"] as const;
 
@@ -29,6 +29,7 @@ export const LEGACY_GRADE_VALUES = [
 ] as const;
 
 export type LegacyGrade = (typeof LEGACY_GRADE_VALUES)[number];
+
 
 export function isConsultationType(value: string): value is ConsultationType {
   return (CONSULTATION_TYPES as readonly string[]).includes(value);
@@ -80,9 +81,11 @@ export type CreateMoveInConsultationInput = {
   purpose?: string;
   legacyGrade?: LegacyGrade | "";
   nextContactAt?: string;
+  clearNextContactAt?: boolean;
   occupancyIntent?: OccupancyIntent | "";
   fundingStatus?: FundingStatus | "";
   moveInStatus?: MoveInStatus | "";
+  operationalIntent?: OperationalIntent | "";
   plannedMoveInDate?: string;
   balancePaidAt?: string;
   actualMoveInDate?: string;
@@ -113,9 +116,13 @@ export function buildCreateMoveInConsultationArgs(
 
   if (input.legacyGrade) args.p_legacy_grade = input.legacyGrade;
   if (input.nextContactAt) args.p_next_contact_at = input.nextContactAt;
+  if (input.clearNextContactAt) args.p_clear_next_contact_at = true;
   if (input.occupancyIntent) args.p_occupancy_intent = input.occupancyIntent;
   if (input.fundingStatus) args.p_funding_status = input.fundingStatus;
   if (input.moveInStatus) args.p_move_in_status = input.moveInStatus;
+  // An empty select intentionally omits the RPC argument, preserving the
+  // current snapshot and its as-of timestamp.
+  if (input.operationalIntent) args.p_operational_intent = input.operationalIntent;
   if (input.plannedMoveInDate) {
     args.p_planned_move_in_date = input.plannedMoveInDate;
   }

@@ -24,6 +24,9 @@ function row(partial: Partial<UnitListRow> & Pick<UnitListRow, "unitId">): UnitL
     lastContactAt: null,
     nextContactAt: null,
     ...partial,
+    operationalIntent: partial.operationalIntent ?? null,
+    operationalIntentAsOf: partial.operationalIntentAsOf ?? null,
+    currentContractId: partial.currentContractId ?? null,
   };
 }
 
@@ -62,6 +65,25 @@ describe("unit list grade filter", () => {
     expect(
       filterUnits(rows, { ...DEFAULT_UNIT_LIST_FILTERS, grade: "상담거절" }).map((item) => item.unitId),
     ).toEqual(["f"]);
+  });
+
+  it("combines grade and building with an operational-intent OR filter", () => {
+    const intentRows = [
+      row({ unitId: "sale", buildingNo: "105", unitNo: "401", latestGrade: "C", operationalIntent: "SALE_TRANSFER" }),
+      row({ unitId: "termination", buildingNo: "105", unitNo: "402", latestGrade: "C", operationalIntent: "TERMINATION" }),
+      row({ unitId: "rent", buildingNo: "105", unitNo: "403", latestGrade: "C", operationalIntent: "RENT" }),
+      row({ unitId: "other-grade", buildingNo: "105", unitNo: "404", latestGrade: "D", operationalIntent: "SALE_TRANSFER" }),
+      row({ unitId: "other-building", buildingNo: "106", unitNo: "405", latestGrade: "C", operationalIntent: "SALE_TRANSFER" }),
+    ];
+
+    expect(
+      filterUnits(intentRows, {
+        ...DEFAULT_UNIT_LIST_FILTERS,
+        grade: "C",
+        buildingNo: "105",
+        operationalIntent: ["SALE_TRANSFER", "TERMINATION"],
+      }).map((item) => item.unitId),
+    ).toEqual(["sale", "termination"]);
   });
 
   it("resets to the full list when filters are cleared", () => {

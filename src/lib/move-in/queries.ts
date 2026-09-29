@@ -150,8 +150,8 @@ export async function loadUnitRows(
   const supabase = await createServerClient();
   type ListProjection = {
     unit_id: string; building_no: string; unit_no: string;
-    occupancy: (Pick<OccupancyRow, "occupancy_intent" | "funding_status" | "move_in_status" | "balance_paid_at" | "actual_move_in_date" | "planned_move_in_date" | "last_contact_at" | "next_contact_at"> & {
-      contract: { customer_id: string; holder: { name: string; phone: string; phone_quality: string | null; assigned_counselor_id: string | null } | null } | null;
+    occupancy: (Pick<OccupancyRow, "occupancy_intent" | "funding_status" | "move_in_status" | "operational_intent" | "operational_intent_as_of" | "balance_paid_at" | "actual_move_in_date" | "planned_move_in_date" | "last_contact_at" | "next_contact_at"> & {
+      contract: { contract_id: string; customer_id: string; holder: { name: string; phone: string; phone_quality: string | null; assigned_counselor_id: string | null } | null } | null;
     }) | null;
     latest: Array<{ id: string; customer_id: string; consulted_at: string; content: string | null; next_action_at: string | null }>;
     grade: Array<{ customer_id: string; legacy_grade: string }>;
@@ -160,9 +160,9 @@ export async function loadUnitRows(
   const units = await readAllRows((from,to)=>supabase.from("project_unit").select(`
     unit_id, building_no, unit_no,
     occupancy:unit_occupancy_status!unit_occupancy_status_project_id_unit_id_fkey(
-      occupancy_intent,funding_status,move_in_status,balance_paid_at,actual_move_in_date,planned_move_in_date,last_contact_at,next_contact_at,
+      occupancy_intent,funding_status,move_in_status,operational_intent,operational_intent_as_of,balance_paid_at,actual_move_in_date,planned_move_in_date,last_contact_at,next_contact_at,
       contract:contract!unit_occupancy_status_contract_id_project_id_unit_id_fkey(
-        customer_id,holder:customer!contract_customer_id_project_id_fkey(name,phone,phone_quality,assigned_counselor_id))),
+        contract_id,customer_id,holder:customer!contract_customer_id_project_id_fkey(name,phone,phone_quality,assigned_counselor_id))),
     latest:consultation!consultation_unit_project_fkey(id,customer_id,consulted_at,content,next_action_at),
     grade:consultation!consultation_unit_project_fkey(customer_id,legacy_grade:structured_tags->>legacy_grade)
   `,{count:"exact"}).eq("project_id",projectId).order("unit_id")
@@ -209,6 +209,9 @@ export async function loadUnitRows(
       customerName:holder?.name ?? null, customerPhone:holder?.phone ?? null,phoneQuality:holder?.phone_quality ?? null,
       latestGrade:gradeByUnit.get(unit.unit_id) ?? null,latestConsultation:latest?.content ?? null,
       latestPreviousHolder:Boolean(latest && contract && latest.customer_id !== contract.customer_id),
+      operationalIntent:status?.operational_intent ?? null,
+      operationalIntentAsOf:status?.operational_intent_as_of ?? null,
+      currentContractId:contract?.contract_id ?? null,
       occupancyIntent:status?.occupancy_intent ?? null,fundingStatus:status?.funding_status ?? null,moveInStatus:status?.move_in_status ?? null,
       balancePaidAt:status?.balance_paid_at ?? null,actualMoveInDate:status?.actual_move_in_date ?? null,plannedMoveInDate:status?.planned_move_in_date ?? null,
       lastContactAt:latest?.consulted_at ?? status?.last_contact_at ?? null,
@@ -790,4 +793,117 @@ export async function loadProjectMembers(
   }));
 
   return { members, error: false };
+}
+
+
+export type MoveInTodayQueueSourceRow = {
+  unitId: string;
+  contractId: string;
+  legacyGrade: string | null;
+  occupancyIntent: string | null;
+  fundingStatus: string | null;
+  moveInStatus: string | null;
+  lastContactAt: string | null;
+  nextContactAt: string | null;
+  reasonCodes: string[];
+  problemCategories: string[];
+  priority: string;
+  sourceFingerprint: string;
+};
+
+export type MoveInTodayQueueRow = MoveInTodayQueueSourceRow & {
+  buildingNo: string | null;
+  unitNo: string | null;
+  customerName: string | null;
+  operationalIntent: import("@/lib/move-in/labels").OperationalIntent | null;
+  operationalIntentAsOf: string | null;
+};
+
+type TodayQueueRpcRow = {
+  unit_id: string;
+  contract_id: string;
+  legacy_grade: string | null;
+  occupancy_intent: string | null;
+  funding_status: string | null;
+  move_in_status: string | null;
+  last_contact_at: string | null;
+  next_contact_at: string | null;
+  reason_codes: string[] | null;
+  problem_categories: string[] | null;
+  priority: string;
+  source_fingerprint: string;
+};
+
+/** Pure server-side pair: a stale contract never receives a current holder's intent. */
+export function joinMoveInTodayQueueRows(
+  queueRows: MoveInTodayQueueSourceRow[],
+  currentRows: Array<Pick<UnitListRow, "unitId" | "currentContractId" | "customerName" | "operationalIntent" | "operationalIntentAsOf"> & { buildingNo?: string | null; unitNo?: string | null }>,
+): MoveInTodayQueueRow[] {
+  const currentByUnitAndContract = new Map(
+    currentRows
+      .filter((row) => Boolean(row.currentContractId))
+      .map((row) => [`${row.unitId}:${row.currentContractId}`, row]),
+  );
+  return queueRows.map((queue) => {
+    const current = currentByUnitAndContract.get(`${queue.unitId}:${queue.contractId}`);
+    return {
+      ...queue,
+      buildingNo: current?.buildingNo ?? null,
+      unitNo: current?.unitNo ?? null,
+      customerName: current?.customerName ?? null,
+      operationalIntent: current?.operationalIntent ?? null,
+      operationalIntentAsOf: current?.operationalIntentAsOf ?? null,
+    };
+  });
+}
+
+/** This only narrows rows already produced and ordered by the authoritative Queue function. */
+export function filterTodayQueueRows<T extends Pick<MoveInTodayQueueRow, "reasonCodes" | "moveInStatus">>(
+  rows: T[],
+  filter: import("@/lib/move-in/filters").TodayFilter,
+): T[] {
+  if (filter === "all") return rows;
+  return rows.filter((row) => {
+    if (filter === "next_contact") return row.reasonCodes.includes("FOLLOW_UP_DUE");
+    if (filter === "funding") return row.reasonCodes.includes("C_GRADE_FUNDING");
+    return row.moveInStatus === "DELAYED";
+  });
+}
+
+/**
+ * Calls the unchanged SQL Queue function, then enriches each row only when the
+ * queue contract remains the currently authorized active contract for its unit.
+ */
+export async function loadMoveInTodayQueueRows(projectId: string, now = new Date()): Promise<
+  { error: true; rows: MoveInTodayQueueRow[] } | { error: false; rows: MoveInTodayQueueRow[] }
+> {
+  const access = await requireMoveInAccess(projectId);
+  if (!access.ok) return { error: true, rows: [] };
+  const supabase = await createServerClient();
+  const queueClient = supabase as unknown as {
+    rpc: (name: "get_move_in_today_queue", args: { p_project_id: string; p_now: string }) => Promise<{
+      data: TodayQueueRpcRow[] | null;
+      error: unknown;
+    }>;
+  };
+  const [queueResult, currentResult] = await Promise.all([
+    queueClient.rpc("get_move_in_today_queue", { p_project_id: projectId, p_now: now.toISOString() }),
+    loadUnitRows(projectId),
+  ]);
+  if (queueResult.error || currentResult.error || !queueResult.data) return { error: true, rows: [] };
+  const source = queueResult.data.map((row): MoveInTodayQueueSourceRow => ({
+    unitId: row.unit_id,
+    contractId: row.contract_id,
+    legacyGrade: row.legacy_grade,
+    occupancyIntent: row.occupancy_intent,
+    fundingStatus: row.funding_status,
+    moveInStatus: row.move_in_status,
+    lastContactAt: row.last_contact_at,
+    nextContactAt: row.next_contact_at,
+    reasonCodes: row.reason_codes ?? [],
+    problemCategories: row.problem_categories ?? [],
+    priority: row.priority,
+    sourceFingerprint: row.source_fingerprint,
+  }));
+  return { error: false, rows: joinMoveInTodayQueueRows(source, currentResult.rows) };
 }

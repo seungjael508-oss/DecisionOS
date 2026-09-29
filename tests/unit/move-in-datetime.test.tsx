@@ -9,17 +9,16 @@ import { formatDateTime } from '@/lib/move-in/labels';
 import { ConsultationHistory } from '@/components/move-in/consultation-history';
 
 const cases = [
-  ['2026-07-14T02:11:08.327Z', '2026. 7. 14. 오전 11:11'],
-  ['2026-07-14T06:05:55.258Z', '2026. 7. 14. 오후 3:05'],
-  ['2026-09-09T15:30:00Z', '2026. 9. 10. 오전 12:30'],
+  ['2026-07-14T02:11:08.327Z', '2026.07.14 11:11'],
+  ['2026-07-14T06:05:55.258Z', '2026.07.14 15:05'],
+  ['2026-09-09T15:30:00Z', '2026.09.10 00:30'],
+  ['2026-09-29T10:15:00Z', '2026.09.29 19:15'],
 ] as const;
 afterEach(cleanup);
-// ICU versions can localize Korean dayPeriod as AM/PM or 오전/오후.
-// Compare the requested Korean labels without altering dates, hours or minutes.
-const koreanPeriod = (value: string) => value.replace(/\bAM\b/g, '오전').replace(/\bPM\b/g, '오후');
 
-it.each(cases)('formats %s as KST including the midnight date boundary', (input, expected) => {
-  expect(koreanPeriod(formatDateTime(input))).toBe(expected);
+it.each(cases)('formats %s as a deterministic KST numeric string', (input, expected) => {
+  expect(formatDateTime(input)).toBe(expected);
+  expect(formatDateTime(input)).not.toMatch(/AM|PM|오전|오후/);
 });
 
 it('returns the same KST results in a separate UTC runtime', () => {
@@ -30,8 +29,13 @@ it('returns the same KST results in a separate UTC runtime', () => {
     env: { ...process.env, TZ: 'UTC' }, encoding: 'utf8',
   }));
   expect(result.zone).toBe('UTC');
-  expect(result.values.map(koreanPeriod)).toEqual(cases.map(([, expected]) => expected));
+  expect(result.values).toEqual(cases.map(([, expected]) => expected));
   expect(result.values).toEqual(cases.map(([input]) => formatDateTime(input)));
+});
+
+it('uses the established fallback for null and invalid timestamps', () => {
+  expect(formatDateTime(null)).toBe('—');
+  expect(formatDateTime('not-a-timestamp')).toBe('—');
 });
 
 it.each([true, false])('uses the shared KST formatter in the timeline (legacy=%s)', (legacyImported) => {
@@ -40,5 +44,5 @@ it.each([true, false])('uses the shared KST formatter in the timeline (legacy=%s
     content:'Synthetic consultation', nextActionAt:null, counselorId:'synthetic-member',
     legacyGrade:'C', legacyImported,
   }]}/>);
-  expect(screen.getByText(text => koreanPeriod(text) === cases[2][1])).toBeTruthy();
+  expect(screen.getByText(cases[2][1])).toBeTruthy();
 });

@@ -164,12 +164,23 @@ select col_type_is('public'::name, 'customer'::name, 'name'::name, 'character va
 select col_not_null('public'::name, 'customer'::name, 'name'::name);
 
 select has_column('public'::name, 'customer'::name, 'phone'::name, 'customer.phone exists');
-select col_type_is('public'::name, 'customer'::name, 'phone'::name, 'character varying(20)');
+select col_type_is('public'::name, 'customer'::name, 'phone'::name, 'text');
 select col_not_null('public'::name, 'customer'::name, 'phone'::name);
 
 select has_column('public'::name, 'customer'::name, 'phone_normalized'::name, 'customer.phone_normalized exists');
 select col_type_is('public'::name, 'customer'::name, 'phone_normalized'::name, 'character varying(20)');
-select col_not_null('public'::name, 'customer'::name, 'phone_normalized'::name);
+select col_is_null('public'::name, 'customer'::name, 'phone_normalized'::name);
+
+select has_column('public'::name, 'customer'::name, 'phone_raw'::name, 'customer.phone_raw preserves original input');
+select col_type_is('public'::name, 'customer'::name, 'phone_raw'::name, 'text');
+select col_not_null('public'::name, 'customer'::name, 'phone_raw'::name);
+
+select has_column('public'::name, 'customer'::name, 'source_identity_key'::name, 'customer.source_identity_key exists');
+select col_type_is('public'::name, 'customer'::name, 'source_identity_key'::name, 'text');
+select col_is_null('public'::name, 'customer'::name, 'source_identity_key'::name);
+
+select has_column('public'::name, 'customer'::name, 'phone_quality'::name, 'customer.phone_quality exists');
+select col_type_is('public'::name, 'customer'::name, 'phone_quality'::name, 'text');
 
 select has_column('public'::name, 'customer'::name, 'status'::name, 'customer.status exists');
 select col_type_is('public'::name, 'customer'::name, 'status'::name, 'customer_status');
@@ -219,7 +230,30 @@ select col_type_is('public'::name, 'customer'::name, 'updated_at'::name, 'timest
 select col_not_null('public'::name, 'customer'::name, 'updated_at'::name);
 select col_default_is('public'::name, 'customer'::name, 'updated_at'::name, 'now()', 'customer.updated_at default');
 
-select col_is_unique('public'::name, 'customer'::name, array['project_id', 'phone_normalized']::name[]);
+select ok(
+  exists (
+    select 1
+    from pg_indexes
+    where schemaname = 'public'
+      and tablename = 'customer'
+      and indexname = 'customer_legacy_phone_unique'
+      and indexdef like '%(project_id, phone_normalized)%'
+      and indexdef like '%WHERE (source_identity_key IS NULL)%'
+  ),
+  'legacy unkeyed phone uniqueness is partial'
+);
+select ok(
+  exists (
+    select 1
+    from pg_indexes
+    where schemaname = 'public'
+      and tablename = 'customer'
+      and indexname = 'customer_source_identity_unique'
+      and indexdef like '%(project_id, source_identity_key)%'
+      and indexdef like '%WHERE (source_identity_key IS NOT NULL)%'
+  ),
+  'source-confirmed identity uniqueness is partial'
+);
 select col_is_unique('public'::name, 'customer'::name, array['id', 'project_id']::name[]);
 select fk_ok('public'::name, 'customer'::name, array['assigned_counselor_id', 'project_id']::name[], 'public'::name, 'project_member'::name, array['id', 'project_id']::name[]);
 select has_index('public'::name, 'customer'::name, 'idx_customer_project_grade'::name, array['project_id', 'grade']::name[]);

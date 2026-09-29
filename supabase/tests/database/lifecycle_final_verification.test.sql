@@ -21,13 +21,7 @@ begin
 end
 $roles$;
 
-create or replace function auth.uid()
-returns uuid
-language sql
-stable
-as $$
-  select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid;
-$$;
+-- Local Supabase owns auth.uid(); pg_temp.impersonate controls its JWT claim.
 
 create function pg_temp.impersonate(p_user_id uuid)
 returns void
@@ -275,9 +269,15 @@ select is_empty(
     select event_object_table || '.' || trigger_name
     from information_schema.triggers
     where trigger_schema = 'public'
-      and action_statement not like '%private.set_updated_at%'
+      and not (
+        action_statement like '%private.set_updated_at%'
+        or (
+          event_object_table = 'customer'
+          and action_statement like '%private.customer_phone_guard%'
+        )
+      )
   $$,
-  'lifecycle triggers are only private.set_updated_at'
+  'lifecycle triggers are only audit or the customer phone guard'
 );
 
 select is(

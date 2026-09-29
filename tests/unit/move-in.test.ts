@@ -24,6 +24,9 @@ function row(partial: Partial<UnitListRow> & Pick<UnitListRow, "unitId">): UnitL
     lastContactAt: null,
     nextContactAt: null,
     ...partial,
+    operationalIntent: partial.operationalIntent ?? null,
+    operationalIntentAsOf: partial.operationalIntentAsOf ?? null,
+    currentContractId: partial.currentContractId ?? null,
   };
 }
 
@@ -258,6 +261,7 @@ describe("unit list filters", () => {
         occupancyIntent: "",
         fundingStatus: "",
         moveInStatus: "",
+        operationalIntent: [],
       }).map((item) => item.unitId),
     ).toEqual(["a"]);
 
@@ -269,6 +273,7 @@ describe("unit list filters", () => {
         occupancyIntent: "",
         fundingStatus: "",
         moveInStatus: "",
+        operationalIntent: [],
       }).map((item) => item.unitId),
     ).toEqual(["b"]);
 
@@ -280,6 +285,7 @@ describe("unit list filters", () => {
         occupancyIntent: "UNDECIDED",
         fundingStatus: "FUNDING_SHORTAGE",
         moveInStatus: "DELAYED",
+        operationalIntent: [],
       }).map((item) => item.unitId),
     ).toEqual(["a"]);
   });
