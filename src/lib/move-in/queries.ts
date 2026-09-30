@@ -150,43 +150,42 @@ export async function loadUnitRows(
   const supabase = await createServerClient();
   type ListProjection = {
     unit_id: string; building_no: string; unit_no: string;
-    occupancy: (Pick<OccupancyRow, "occupancy_intent" | "funding_status" | "move_in_status" | "operational_intent" | "operational_intent_as_of" | "balance_paid_at" | "actual_move_in_date" | "planned_move_in_date" | "last_contact_at" | "next_contact_at"> & {
+    occupancy: (Pick<OccupancyRow, "occupancy_intent" | "funding_status" | "move_in_status" | "legacy_grade" | "operational_intent" | "operational_intent_as_of" | "balance_paid_at" | "actual_move_in_date" | "planned_move_in_date" | "last_contact_at" | "next_contact_at"> & {
       contract: { contract_id: string; customer_id: string; holder: { name: string; phone: string; phone_quality: string | null; assigned_counselor_id: string | null } | null } | null;
     }) | null;
     latest: Array<{ id: string; customer_id: string; consulted_at: string; content: string | null; next_action_at: string | null }>;
-    grade: Array<{ customer_id: string; legacy_grade: string }>;
   };
   // Embedded limits apply per unit in PostgreSQL, before history reaches this server.
+  // Current grades are stored on the active occupancy snapshot. Avoid joining a
+  // second consultation history per unit on every list visit.
   const units = await readAllRows((from,to)=>supabase.from("project_unit").select(`
     unit_id, building_no, unit_no,
     occupancy:unit_occupancy_status!unit_occupancy_status_project_id_unit_id_fkey(
-      occupancy_intent,funding_status,move_in_status,operational_intent,operational_intent_as_of,balance_paid_at,actual_move_in_date,planned_move_in_date,last_contact_at,next_contact_at,
+      occupancy_intent,funding_status,move_in_status,legacy_grade,operational_intent,operational_intent_as_of,balance_paid_at,actual_move_in_date,planned_move_in_date,last_contact_at,next_contact_at,
       contract:contract!unit_occupancy_status_contract_id_project_id_unit_id_fkey(
         contract_id,customer_id,holder:customer!contract_customer_id_project_id_fkey(name,phone,phone_quality,assigned_counselor_id))),
-    latest:consultation!consultation_unit_project_fkey(id,customer_id,consulted_at,content,next_action_at),
-    grade:consultation!consultation_unit_project_fkey(customer_id,legacy_grade:structured_tags->>legacy_grade)
+    latest:consultation!consultation_unit_project_fkey(id,customer_id,consulted_at,content,next_action_at)
   `,{count:"exact"}).eq("project_id",projectId).order("unit_id")
     .order("consulted_at",{referencedTable:"latest",ascending:false}).order("id",{referencedTable:"latest",ascending:false}).limit(1,{referencedTable:"latest"})
-    .in("grade.structured_tags->>legacy_grade",[...LEGACY_GRADE_VALUES])
-    .order("consulted_at",{referencedTable:"grade",ascending:false}).order("id",{referencedTable:"grade",ascending:false}).limit(1,{referencedTable:"grade"})
     .range(from,to).returns<ListProjection[]>());
   if (units.error) return {rows:[],error:true};
   const visible = units.data.filter(unit => !usesAssignedCustomerScope(projectId, access.role) || unit.occupancy?.contract?.holder?.assigned_counselor_id === access.memberId);
   const gradeByUnit = new Map<string,string>();
-  const mismatches = new Map<string,string>();
+  const missingSnapshotGrades = new Map<string,string>();
   for (const unit of visible) {
     const holderId = unit.occupancy?.contract?.customer_id;
-    const grade = unit.grade[0];
-    if (!holderId || !grade) continue;
-    if (grade.customer_id === holderId) gradeByUnit.set(unit.unit_id,grade.legacy_grade);
-    else mismatches.set(unit.unit_id,holderId);
+    const grade = unit.occupancy?.legacy_grade;
+    if (grade) gradeByUnit.set(unit.unit_id, grade);
+    else if (holderId) missingSnapshotGrades.set(unit.unit_id, holderId);
   }
-  if (mismatches.size) {
-    // Exact (unit, current holder) pairs, in bounded batches. No name matching.
-    const corrected = await readByIds([...mismatches.keys()], (ids,from,to)=>supabase.from("project_unit")
+  if (missingSnapshotGrades.size) {
+    // A legacy project without the current snapshot can still fall back to its
+    // latest grade for the exact current (unit, holder) pair. Seeded/current
+    // projects skip this query entirely.
+    const corrected = await readByIds([...missingSnapshotGrades.keys()], (ids,from,to)=>supabase.from("project_unit")
       .select("unit_id,grade:consultation!consultation_unit_project_fkey(customer_id,legacy_grade:structured_tags->>legacy_grade)")
       .eq("project_id",projectId).in("unit_id",ids)
-      .or(ids.map(id=>`and(unit_id.eq.${id},customer_id.eq.${mismatches.get(id)})`).join(","),{referencedTable:"grade"})
+      .or(ids.map(id=>`and(unit_id.eq.${id},customer_id.eq.${missingSnapshotGrades.get(id)})`).join(","),{referencedTable:"grade"})
       .in("grade.structured_tags->>legacy_grade",[...LEGACY_GRADE_VALUES])
       .order("consulted_at",{referencedTable:"grade",ascending:false}).order("id",{referencedTable:"grade",ascending:false})
       .limit(1,{referencedTable:"grade"}).order("unit_id").range(from,to)
@@ -194,7 +193,7 @@ export async function loadUnitRows(
     if (corrected.error) return {rows:[],error:true};
     for (const unit of corrected.data) {
       const grade = unit.grade[0];
-      if (grade && grade.customer_id === mismatches.get(unit.unit_id)) gradeByUnit.set(unit.unit_id,grade.legacy_grade);
+      if (grade && grade.customer_id === missingSnapshotGrades.get(unit.unit_id)) gradeByUnit.set(unit.unit_id,grade.legacy_grade);
     }
   }
   const rows: UnitListRow[] = [];
@@ -819,6 +818,11 @@ export type MoveInTodayQueueRow = MoveInTodayQueueSourceRow & {
   operationalIntentAsOf: string | null;
 };
 
+/** Queue enrichment is bounded to current Queue units, never the full unit list. */
+export function currentQueueUnitIds(queueRows: MoveInTodayQueueSourceRow[]): string[] {
+  return [...new Set(queueRows.map((row) => row.unitId))];
+}
+
 type TodayQueueRpcRow = {
   unit_id: string;
   contract_id: string;
@@ -833,6 +837,56 @@ type TodayQueueRpcRow = {
   priority: string;
   source_fingerprint: string;
 };
+
+type TodayQueueCurrentUnitProjection = {
+  unit_id: string;
+  building_no: string;
+  unit_no: string;
+  occupancy: (Pick<OccupancyRow, "operational_intent" | "operational_intent_as_of"> & {
+    contract: {
+      contract_id: string;
+      holder: { name: string; assigned_counselor_id: string | null } | null;
+    } | null;
+  }) | null;
+};
+
+async function loadCurrentQueueUnitRows(
+  projectId: string,
+  unitIds: string[],
+  access: Awaited<ReturnType<typeof requireMoveInAccess>> & { ok: true },
+): Promise<
+  | { error: true; rows: [] }
+  | { error: false; rows: Array<Pick<UnitListRow, "unitId" | "currentContractId" | "customerName" | "operationalIntent" | "operationalIntentAsOf"> & { buildingNo: string; unitNo: string }> }
+> {
+  if (unitIds.length === 0) return { error: false, rows: [] };
+
+  const supabase = await createServerClient();
+  const current = await readByIds(unitIds, (ids, from, to) => supabase.from("project_unit").select(`
+    unit_id,building_no,unit_no,
+    occupancy:unit_occupancy_status!unit_occupancy_status_project_id_unit_id_fkey(
+      operational_intent,operational_intent_as_of,
+      contract:contract!unit_occupancy_status_contract_id_project_id_unit_id_fkey(
+        contract_id,holder:customer!contract_customer_id_project_id_fkey(name,assigned_counselor_id)))
+  `).eq("project_id", projectId).in("unit_id", ids).order("unit_id").range(from, to)
+    .returns<TodayQueueCurrentUnitProjection[]>());
+  if (current.error) return { error: true, rows: [] };
+
+  return {
+    error: false,
+    rows: current.data
+      .filter((unit) => !usesAssignedCustomerScope(projectId, access.role)
+        || unit.occupancy?.contract?.holder?.assigned_counselor_id === access.memberId)
+      .map((unit) => ({
+        unitId: unit.unit_id,
+        buildingNo: unit.building_no,
+        unitNo: unit.unit_no,
+        currentContractId: unit.occupancy?.contract?.contract_id ?? null,
+        customerName: unit.occupancy?.contract?.holder?.name ?? null,
+        operationalIntent: unit.occupancy?.operational_intent ?? null,
+        operationalIntentAsOf: unit.occupancy?.operational_intent_as_of ?? null,
+      })),
+  };
+}
 
 /** Pure server-side pair: a stale contract never receives a current holder's intent. */
 export function joinMoveInTodayQueueRows(
@@ -886,11 +940,8 @@ export async function loadMoveInTodayQueueRows(projectId: string, now = new Date
       error: unknown;
     }>;
   };
-  const [queueResult, currentResult] = await Promise.all([
-    queueClient.rpc("get_move_in_today_queue", { p_project_id: projectId, p_now: now.toISOString() }),
-    loadUnitRows(projectId),
-  ]);
-  if (queueResult.error || currentResult.error || !queueResult.data) return { error: true, rows: [] };
+  const queueResult = await queueClient.rpc("get_move_in_today_queue", { p_project_id: projectId, p_now: now.toISOString() });
+  if (queueResult.error || !queueResult.data) return { error: true, rows: [] };
   const source = queueResult.data.map((row): MoveInTodayQueueSourceRow => ({
     unitId: row.unit_id,
     contractId: row.contract_id,
@@ -905,5 +956,7 @@ export async function loadMoveInTodayQueueRows(projectId: string, now = new Date
     priority: row.priority,
     sourceFingerprint: row.source_fingerprint,
   }));
+  const currentResult = await loadCurrentQueueUnitRows(projectId, currentQueueUnitIds(source), access);
+  if (currentResult.error) return { error: true, rows: [] };
   return { error: false, rows: joinMoveInTodayQueueRows(source, currentResult.rows) };
 }

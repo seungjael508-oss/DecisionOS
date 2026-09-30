@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { UnitFilters } from "@/components/move-in/unit-filters";
 import { UnitTable } from "@/components/move-in/unit-table";
 import { UnitPrintTable } from "@/components/move-in/unit-print-table";
@@ -36,8 +36,23 @@ export function UnitListClient({ projectId, rows, initialFilters, initialReturnT
   const [sortKey, setSortKey] = useState<UnitSortKey>(initialSortKey);
   const [sortDirection, setSortDirection] = useState<SortDirection>(initialSortDirection);
   const [resetSignal, setResetSignal] = useState(0);
+  const [isPrinting, setIsPrinting] = useState(false);
   const returnToRef = useRef(initialReturnTo);
   const [returnTo, setReturnTo] = useState(initialReturnTo);
+
+  // The print layout contains one row per unit, so mounting it beside the
+  // interactive table doubles the DOM for every ordinary visit. Mount it only
+  // after the user requests printing, then remove it when the native dialog
+  // closes.
+  useEffect(() => {
+    if (!isPrinting) return;
+
+    const finishPrinting = () => setIsPrinting(false);
+    window.addEventListener("afterprint", finishPrinting, { once: true });
+    window.print();
+
+    return () => window.removeEventListener("afterprint", finishPrinting);
+  }, [isPrinting]);
 
   const updateListUrl = useCallback((nextFilters: UnitListFilters, nextSortKey: UnitSortKey, nextSortDirection: SortDirection) => {
     const current = typeof window === "undefined"
@@ -110,6 +125,7 @@ export function UnitListClient({ projectId, rows, initialFilters, initialReturnT
         gradeCounts={counts}
         sortKey={sortKey}
         sortDirection={sortDirection}
+        onPrint={() => setIsPrinting(true)}
         onSortChange={(key, direction) => {
           setSortKey(key);
           setSortDirection(direction);
@@ -119,6 +135,6 @@ export function UnitListClient({ projectId, rows, initialFilters, initialReturnT
       {visible.length === 0 ? <EmptyState>등록된 동호수가 없습니다.</EmptyState>
         : <UnitTable projectId={projectId} rows={visible} returnTo={returnTo} sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />}
     </div>
-    <UnitPrintTable filterSummary={describeActiveFilters(filters)} rows={visible} />
+    {isPrinting ? <UnitPrintTable filterSummary={describeActiveFilters(filters)} rows={visible} /> : null}
   </>;
 }

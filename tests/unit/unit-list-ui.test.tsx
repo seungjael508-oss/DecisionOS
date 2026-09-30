@@ -56,8 +56,8 @@ const rows: UnitListRow[] = [
   row({ unitId: "u-106-401", buildingNo: "106", unitNo: "401", customerName: "최지훈", latestGrade: "D", customerPhone: "010-5678-2222" }),
 ];
 
-// jsdom은 @media print를 평가하지 않으므로 화면용 영역(.print:hidden)과
-// 인쇄 전용 표(.print:block)가 동시에 DOM에 남는다. 화면 단언은 반드시 이 스코프로 좁힌다.
+// 인쇄 표는 인쇄 요청 중에만 마운트된다. 화면 단언은 화면용 영역으로 좁혀
+// 인쇄 레이아웃과 독립적으로 유지한다.
 function screenArea() {
   const container = document.querySelector(".print\\:hidden");
   if (!container) throw new Error("screen container not found");
@@ -83,6 +83,46 @@ function expectNoNetworkOrNavigation(fetch: ReturnType<typeof vi.fn>, before: st
 }
 
 describe("unit list UI", () => {
+  it("does not mount the print-only table before the user requests printing", () => {
+    renderClient();
+
+    expect(document.querySelector(".print\\:block")).toBeNull();
+  });
+
+  it("mounts one table row per unit on an ordinary 851-unit visit", () => {
+    const largeRows = Array.from({ length: 851 }, (_, index) => row({
+      unitId: `large-${index + 1}`,
+      buildingNo: "101",
+      unitNo: String(index + 201),
+      customerName: `Synthetic ${index + 1}`,
+    }));
+    render(
+      <UnitListClient
+        projectId="p1"
+        rows={largeRows}
+        initialFilters={DEFAULT_UNIT_LIST_FILTERS}
+        initialReturnTo="/projects/p1/move-in/units"
+      />,
+    );
+
+    expect(document.querySelectorAll("tbody tr")).toHaveLength(851);
+    expect(document.querySelector(".print\\:block")).toBeNull();
+  });
+
+  it("mounts the print-only table only for the native print dialog, then removes it", async () => {
+    const print = vi.fn();
+    vi.stubGlobal("print", print);
+    renderClient();
+
+    fireEvent.click(screen.getByRole("button", { name: "인쇄" }));
+
+    await waitFor(() => expect(print).toHaveBeenCalledTimes(1));
+    expect(document.querySelector(".print\\:block")).toBeTruthy();
+
+    window.dispatchEvent(new Event("afterprint"));
+    await waitFor(() => expect(document.querySelector(".print\\:block")).toBeNull());
+  });
+
   it("shows the current final intent in the desktop and mobile unit list", () => {
     const { fetch, before } = renderClient();
     expect(screen.getAllByText("전매/매도").length).toBeGreaterThan(0);

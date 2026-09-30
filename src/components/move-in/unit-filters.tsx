@@ -32,6 +32,7 @@ export function UnitFilters({
   gradeCounts,
   sortKey,
   sortDirection,
+  onPrint,
   onSortChange,
 }: {
   filters: UnitListFilters;
@@ -42,6 +43,7 @@ export function UnitFilters({
   gradeCounts: Record<LegacyGrade, number>;
   sortKey: UnitSortKey;
   sortDirection: SortDirection;
+  onPrint: () => void;
   onSortChange: (key: UnitSortKey, direction: SortDirection) => void;
 }) {
   const [buildingNo, setBuildingNo] = useState(filters.buildingNo);
@@ -230,7 +232,7 @@ export function UnitFilters({
         </button>
         <button
           type="button"
-          onClick={() => window.print()}
+          onClick={onPrint}
           className="border border-neutral-800 px-3 py-1 text-sm"
         >
           인쇄

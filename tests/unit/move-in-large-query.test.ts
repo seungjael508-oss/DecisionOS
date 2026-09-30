@@ -16,7 +16,7 @@ beforeEach(() => {
     fixtures.project_unit.push({ unit_id:id(i), building_no:'101', unit_no:String(i) });
     fixtures.contract.push({ contract_id:id(i+1000), customer_id:id(i+2000), unit_id:id(i), contract_status:'ACTIVE' });
     fixtures.customer.push({ id:id(i+2000), name:`Synthetic ${i}`, phone:'', phone_normalized:null, phone_quality:'PHONE_INVALID', assigned_counselor_id:null });
-    fixtures.unit_occupancy_status.push({ unit_id:id(i), contract_id:id(i+1000), occupancy_intent:'UNDECIDED', funding_status:'UNKNOWN', move_in_status:'NOT_CONTACTED' });
+    fixtures.unit_occupancy_status.push({ unit_id:id(i), contract_id:id(i+1000), occupancy_intent:'UNDECIDED', funding_status:'UNKNOWN', move_in_status:'NOT_CONTACTED', legacy_grade:'B' });
   }
   state.client = createClient('https://example.invalid','synthetic-key',{ global:{ fetch:async (input) => {
     const url = new URL(String(input));
@@ -78,15 +78,17 @@ it('reads every floorplan grade beyond the default 1000 history row cap',async (
  expect(result.rows.filter(row=>row.latestGrade).length).toBe(851);
 });
 
-it('loads latest content, latest valid holder grade and phone without N+1',async()=>{
+it('uses the current occupancy grade snapshot without a second embedded consultation relationship',async()=>{
  fixtures.project_unit[0].unit_no='201';fixtures.project_unit[1].unit_no='1001';
+ fixtures.unit_occupancy_status[0].legacy_grade='B';
  fixtures.consultation=Array.from({length:2031},(_,i)=>({id:id(i+10000),unit_id:id(1),customer_id:id(2001),consulted_at:i===0?'2026-09-17T01:00:00Z':'2026-08-01T00:00:00Z',content:i===0?'Synthetic latest':'Synthetic prior',structured_tags:i===0?{}:{legacy_grade:'B'}}));
  const result=await loadUnitRows('synthetic-project');
  expect(result.error).toBe(false);
  const first=result.rows.find(r=>r.unitId===id(1))!;
  expect(first).toMatchObject({latestConsultation:'Synthetic latest',latestGrade:'B',customerPhone:'',lastContactAt:'2026-09-17T01:00:00Z'});
  expect(state.requests.filter(t=>t==='consultation')).toHaveLength(0);
- expect(state.urls.every(u=>u.searchParams.get('latest.limit')==='1' && u.searchParams.get('grade.limit')==='1')).toBe(true);
+ expect(state.urls.every(u=>u.searchParams.get('latest.limit')==='1')).toBe(true);
+ expect(state.urls.every(u=>!u.searchParams.get('select')?.includes('grade:'))).toBe(true);
  expect(state.requests.length).toBe(2);
  expect(result.rows.findIndex(r=>r.unitId===id(1))).toBeLessThan(result.rows.findIndex(r=>r.unitId===id(2)));
 });
@@ -97,6 +99,7 @@ it('limits counselors to their current assigned holders even if a response conta
 });
 
 it('resolves a former-holder grade with one bounded query without losing unit history',async()=>{
+ fixtures.unit_occupancy_status[0].legacy_grade=null;
  fixtures.consultation=[
  {id:id(10001),unit_id:id(1),customer_id:id(9999),consulted_at:'2026-09-17T00:00:00Z',content:'Prior holder latest',structured_tags:{legacy_grade:'D'}},
  {id:id(10002),unit_id:id(1),customer_id:id(2001),consulted_at:'2026-08-01T00:00:00Z',content:'Current holder earlier',structured_tags:{legacy_grade:'B'}}

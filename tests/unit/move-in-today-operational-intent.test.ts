@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  currentQueueUnitIds,
   filterTodayQueueRows,
   joinMoveInTodayQueueRows,
   type MoveInTodayQueueSourceRow,
@@ -32,6 +33,14 @@ const current = [{
 }];
 
 describe("Today Queue operational-intent projection", () => {
+  it("enriches only the units represented by the current Queue", () => {
+    expect(currentQueueUnitIds([
+      source({ unitId: "u-3" }),
+      source({ unitId: "u-1" }),
+      source({ unitId: "u-3", contractId: "other-contract" }),
+    ])).toEqual(["u-3", "u-1"]);
+  });
+
   it("attaches the Korean-displayable intent only for matching unit and active contract", () => {
     const rows = joinMoveInTodayQueueRows([source()], current);
     expect(rows).toHaveLength(1);
