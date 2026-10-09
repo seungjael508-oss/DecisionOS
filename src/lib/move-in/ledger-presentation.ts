@@ -3,7 +3,7 @@ import type { LedgerSummaryRow } from '@/lib/move-in/ledger-types';
 import { FUNDING_STATUS_LABELS, MOVE_IN_STATUS_LABELS, OPERATIONAL_INTENT_LABELS, OCCUPANCY_INTENT_LABELS, formatUnitLabel, formatDateTime } from '@/lib/move-in/labels';
 import { SPECIAL_REASON_LABELS } from '@/lib/move-in/intent';
 
-export const LEDGER_COLUMNS = ['동/호수','현재등급','전화번호','납부내역/잔금','계약자','입주의향','자금/대출','입주진행','매매/임대','다음접촉','담당자','특별관리','금전소비대차','입주예약','이사예정일','문제세대','관리사유'] as const;
+export const LEDGER_COLUMNS = ['동/호수','현재등급','전화번호','납부내역/잔금','계약자','입주의향','자금/대출','입주진행','매매/임대','최종접촉','담당자','특별관리','금전소비대차','입주예약','이사예정일','문제세대','관리사유'] as const;
 export const LEDGER_AXIS_LABELS: Record<LedgerAxis,string> = {building:'동',unit:'호수',customer:'계약자',phone:'전화번호',grade:'현재등급',intent:'입주의향',funding:'자금/대출',moveIn:'입주진행',assignee:'담당자',specialReason:'특별관리',nextContact:'다음접촉',deal:'매매/임대',payment:'납부상태',loanAgreement:'금전소비대차',moveReservation:'입주예약',problemHousehold:'문제세대'};
 const reasonLabels: Record<string,string> = {...SPECIAL_REASON_LABELS, ASEL:'아셀',INVESTOR:'투자',DELINQUENT:'연체자'};
 const intentLabels: Record<string,string> = {...OPERATIONAL_INTENT_LABELS,...OCCUPANCY_INTENT_LABELS,RENT:'임대(전체)'};
@@ -16,7 +16,9 @@ export function ledgerCells(row: LedgerSummaryRow, assignees: Record<string,stri
     row.customerName || '미등록', row.effectiveIntent === 'RENT' ? row.rentalType ? lookup(OCCUPANCY_INTENT_LABELS,row.rentalType) : '임대(유형 확인 필요)' : lookup(OPERATIONAL_INTENT_LABELS,row.effectiveIntent),
     row.funding === 'NORMAL' ? `${FUNDING_STATUS_LABELS.NORMAL} (기존)` : lookup(FUNDING_STATUS_LABELS,row.funding),
     lookup(MOVE_IN_STATUS_LABELS,row.moveIn),row.dealTypes.map(v=>lookup(OCCUPANCY_INTENT_LABELS,v)).join(' · ') || '—',
-    formatDateTime(row.nextContact),assigneeLabel(row.assigneeId,assignees),row.specialReasons.map(v=>lookup(reasonLabels,v)).join(' · ') || '—',
+    // lastContact는 서버에서 현재 ACTIVE 계약자 상담만 채택(이전 계약자 기록은 occupancy 값으로 대체)
+    // 다음접촉은 열에서만 제외. nextContact 필터·정렬·DB 값은 그대로 유지
+    formatDateTime(row.lastContact),assigneeLabel(row.assigneeId,assignees),row.specialReasons.map(v=>lookup(reasonLabels,v)).join(' · ') || '—',
     sourceTarget(row.management?.loanAgreement),reservationLabel(row.management?.moveReservation),row.management?.movingDate || '—',
     sourceTarget(row.management?.problemHousehold),row.management?.managementReasons.join(' · ') || '—'];
 }
