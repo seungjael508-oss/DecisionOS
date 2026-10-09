@@ -1,10 +1,26 @@
 -- 부재 처리 데이터 무결성 수정안 (Production 미적용, 별도 승인 필요)
--- 1) create_move_in_consultation(17): 부재 저장 시 기본등급·last_contact_at 미갱신
+-- 1) create_move_in_consultation(17): 부재·상담거절 저장 시 기본등급 미갱신, 부재는 last_contact_at도 미갱신
+--    (상담거절은 고객이 응답한 실제 접촉이므로 최종 접촉일 갱신)
 --    18인자(계약 경합 방어)는 17인자를 그대로 호출하므로 변경하지 않음
 -- 2) get_move_in_today_queue: 현재 계약자 상담만 사용, C/D 재접촉은 실제 접촉일 기준,
 --    부재 재접촉은 마지막 시도일 기준
 -- CREATE OR REPLACE는 signature·owner·ACL을 유지한다. 기존 부재 18세대 등급은 변경하지 않음.
 begin;
+
+-- 사전 점검: 운영 정의가 진단 시점(2026-10-09)과 다르면 아무것도 바꾸지 않고 중단
+do $preflight$
+begin
+  if (select md5(pg_get_functiondef(oid)) from pg_proc where pronamespace = 'public'::regnamespace
+        and proname = 'create_move_in_consultation' and pronargs = 17) is distinct from 'effdccd8899fe1cfbe997c7a68d3f7a4'
+     or (select md5(pg_get_functiondef(oid)) from pg_proc where pronamespace = 'public'::regnamespace
+        and proname = 'create_move_in_consultation' and pronargs = 18) is distinct from '7616f0e103239a9cf9f71e10bba1daa1'
+     or (select md5(pg_get_functiondef(oid)) from pg_proc where pronamespace = 'public'::regnamespace
+        and proname = 'get_move_in_today_queue') is distinct from 'cc2e005a30921e116f1d70c1619f8fcd' then
+    raise exception 'unexpected function definition; abort';
+  end if;
+  perform set_config('lock_timeout', '5s', true);
+end
+$preflight$;
 
 CREATE OR REPLACE FUNCTION public.create_move_in_consultation(p_project_id uuid, p_unit_id uuid, p_customer_id uuid, p_consultation_type text, p_content text, p_legacy_grade text DEFAULT NULL::text, p_next_contact_at timestamp with time zone DEFAULT NULL::timestamp with time zone, p_occupancy_intent occupancy_intent DEFAULT NULL::occupancy_intent, p_funding_status funding_status DEFAULT NULL::funding_status, p_move_in_status move_in_status DEFAULT NULL::move_in_status, p_planned_move_in_date date DEFAULT NULL::date, p_balance_paid_at timestamp with time zone DEFAULT NULL::timestamp with time zone, p_actual_move_in_date timestamp with time zone DEFAULT NULL::timestamp with time zone, p_reason text DEFAULT NULL::text, p_business_purpose text DEFAULT NULL::text, p_clear_next_contact_at boolean DEFAULT false, p_operational_intent operational_intent DEFAULT NULL::operational_intent)
  RETURNS uuid
@@ -100,8 +116,9 @@ begin
     p_reason := nullif(btrim(coalesce(p_reason, '')), '')
   );
 
-  -- 부재는 접촉상태이지 기본등급이 아님: 기존 A/B/C/D·상담거절을 덮어쓰지 않음
-  if v_grade is not null and v_grade <> '부재' then
+  -- 부재·상담거절은 접촉 결과(상담이력 structured_tags에 기록)이지 기본등급이 아님.
+  -- 기본등급은 A/B/C/D 선택 시에만 변경한다.
+  if v_grade in ('A', 'B', 'C', 'D') then
     update public.unit_occupancy_status
     set legacy_grade = v_grade,
         legacy_grade_as_of = v_consulted_at,

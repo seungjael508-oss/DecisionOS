@@ -70,12 +70,18 @@ select ok(exists(select 1 from public.get_move_in_today_queue('20000000-0000-400
   where unit_id='8f000000-0000-4000-8000-0000000000b3' and reason_codes @> array['ABSENCE_RETRY']),'기존 부재 등급 세대 부재 재접촉 유지');
 select is((pg_temp.occ('8f000000-0000-4000-8000-0000000000b3')).legacy_grade,'부재','기존 부재 등급값 자동 변경 없음');
 
--- 5) 상담거절은 실제 접촉: 기존 동작(등급 저장·최종 접촉일 갱신) 유지
+-- 5) 상담거절: 기본등급은 유지(접촉 결과로만 기록), 고객 응답이 있었으므로 실제 접촉일은 갱신
 set local role authenticated;
-select lives_ok($$select pg_temp.save('8f000000-0000-4000-8000-0000000000b3','상담거절')$$,'상담거절 저장');
+select lives_ok($$select pg_temp.save('8f000000-0000-4000-8000-0000000000b1','상담거절')$$,'상담거절 저장');
 reset role;
-select is((pg_temp.occ('8f000000-0000-4000-8000-0000000000b3')).legacy_grade,'상담거절','상담거절은 기존대로 저장');
-select is((pg_temp.occ('8f000000-0000-4000-8000-0000000000b3')).last_contact_at,now(),'상담거절은 실제 접촉일 갱신');
+select is((pg_temp.occ('8f000000-0000-4000-8000-0000000000b1')).legacy_grade,'C','상담거절이 기본등급 C를 덮어쓰지 않음');
+select is((pg_temp.occ('8f000000-0000-4000-8000-0000000000b1')).last_contact_at,now(),'상담거절은 실제 접촉일 갱신');
+select is((select count(*)::int from public.consultation where unit_id='8f000000-0000-4000-8000-0000000000b1' and structured_tags->>'legacy_grade'='상담거절'),1,'상담거절 결과는 상담이력에 기록');
+-- A~D 선택은 기존대로 기본등급 변경
+set local role authenticated;
+select lives_ok($$select pg_temp.save('8f000000-0000-4000-8000-0000000000b1','B')$$,'B 등급 저장');
+reset role;
+select is((pg_temp.occ('8f000000-0000-4000-8000-0000000000b1')).legacy_grade,'B','A~D 선택 시에만 기본등급 변경');
 
 -- 6) 이전 계약자 최근 상담은 현재 계약자 C/D 경과에 섞이지 않음
 update public.unit_occupancy_status set legacy_grade='D', last_contact_at=now()-interval '20 days' where unit_id='8f000000-0000-4000-8000-0000000000b3';
@@ -86,7 +92,18 @@ insert into public.consultation(project_id,customer_id,counselor_id,consulted_at
 select ok(exists(select 1 from public.get_move_in_today_queue('20000000-0000-4000-8000-000000000001',now())
   where unit_id='8f000000-0000-4000-8000-0000000000b3' and reason_codes @> array['D_GRADE_STALE']),'이전 계약자 최근 상담이 D 재접촉 경과를 가리지 않음');
 
--- 7) 계약 경합 방어·권한 유지
+-- 7) 계약 ID 누락 거절·원자성, 계약 경합 방어·권한 유지
+create temporary table facts as select (select count(*) from public.consultation where unit_id='8f000000-0000-4000-8000-0000000000b1') c,
+  (select to_jsonb(o) from public.unit_occupancy_status o where unit_id='8f000000-0000-4000-8000-0000000000b1') o;
+set local role authenticated;
+select throws_ok($$select public.create_move_in_consultation(p_project_id:='20000000-0000-4000-8000-000000000001',p_unit_id:='8f000000-0000-4000-8000-0000000000b1',
+  p_customer_id:='50000000-0000-4000-8000-0000000000a1',p_consultation_type:='OUTBOUND',p_content:='x',p_expected_contract_id:=null::uuid,p_legacy_grade:='부재',
+  p_next_contact_at:=null::timestamptz,p_occupancy_intent:=null::public.occupancy_intent,p_funding_status:=null::public.funding_status,p_move_in_status:=null::public.move_in_status,
+  p_planned_move_in_date:=null::date,p_balance_paid_at:=null::timestamptz,p_actual_move_in_date:=null::timestamptz,p_reason:=null::text,p_business_purpose:=null::text,
+  p_clear_next_contact_at:=false,p_operational_intent:=null::public.operational_intent)$$,'23514','expected contract is required','계약 ID 누락 저장 거절');
+reset role;
+select is((select count(*) from public.consultation where unit_id='8f000000-0000-4000-8000-0000000000b1'),(select c from facts),'거절된 저장은 상담 0건 추가');
+select is((select to_jsonb(o) from public.unit_occupancy_status o where unit_id='8f000000-0000-4000-8000-0000000000b1'),(select o from facts),'거절된 저장은 등급·접촉일 불변');
 set local role authenticated;
 select throws_ok($$select pg_temp.save('8f000000-0000-4000-8000-0000000000b1','부재','8f000000-0000-4000-8000-000000000099')$$,'23514','stale contract','부재 저장도 계약 경합 방어 유지');
 reset role;

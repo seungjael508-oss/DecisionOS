@@ -6,8 +6,9 @@ import { SPECIAL_REASON_LABELS } from '@/lib/move-in/intent';
 export const LEDGER_COLUMNS = ['동/호수','현재등급','전화번호','납부내역/잔금','계약자','입주의향','자금/대출','입주진행','매매/임대','접촉상태','최종접촉','최근시도','담당자','특별관리','금전소비대차','입주예약','이사예정일','문제세대','관리사유'] as const;
 export const LEDGER_AXIS_LABELS: Record<LedgerAxis,string> = {building:'동',unit:'호수',customer:'계약자',phone:'전화번호',grade:'현재등급',intent:'입주의향',funding:'자금/대출',moveIn:'입주진행',assignee:'담당자',specialReason:'특별관리',nextContact:'다음접촉',contactStatus:'접촉상태',deal:'매매/임대',payment:'납부상태',loanAgreement:'금전소비대차',moveReservation:'입주예약',problemHousehold:'문제세대'};
 export const CONTACT_STATUS_LABELS: Record<string,string> = {CONTACTED:'접촉',ABSENT:'부재',NONE:'미접촉'};
-// 부재는 접촉상태로 분리 표시. 기존 부재 등급값은 원본 확인 전까지 A~D로 바꾸지 않고 확인필요로만 표시
-function gradeLabel(grade: string | null) { return grade === '부재' ? '확인필요 (기존 부재)' : grade ?? '미등록'; }
+// 부재·상담거절은 접촉 결과로 분리. 기존에 등급값으로 저장된 세대는 원본 확인 전까지 A~D로 바꾸지 않고 확인필요로만 표시
+const CONTACT_RESULT_GRADES = new Set(['부재','상담거절']);
+function gradeLabel(grade: string | null) { return grade && CONTACT_RESULT_GRADES.has(grade) ? `확인필요 (기존 ${grade})` : grade ?? '미등록'; }
 const reasonLabels: Record<string,string> = {...SPECIAL_REASON_LABELS, ASEL:'아셀',INVESTOR:'투자',DELINQUENT:'연체자'};
 const intentLabels: Record<string,string> = {...OPERATIONAL_INTENT_LABELS,...OCCUPANCY_INTENT_LABELS,RENT:'임대(전체)'};
 function lookup(labels: Record<string,string>, value: string | null) { return value ? labels[value] ?? value : '미등록'; }
@@ -38,7 +39,7 @@ export function ledgerOptionLabel(axis: LedgerAxis, value: string, assignees: Re
   if(axis==='moveReservation')return value==='NONE'?'미예약':reservationLabel(value);
   if(value===LEDGER_BLANK)return '빈값';
   if(axis==='contactStatus')return CONTACT_STATUS_LABELS[value] ?? value;
-  if(axis==='grade'&&value==='부재')return gradeLabel(value);
+  if(axis==='grade'&&CONTACT_RESULT_GRADES.has(value))return gradeLabel(value);
   if(axis==='intent')return lookup(intentLabels,value);
   if(axis==='funding')return value==='NORMAL'?'정상 (기존)':lookup(FUNDING_STATUS_LABELS,value);
   if(axis==='moveIn')return lookup(MOVE_IN_STATUS_LABELS,value);
