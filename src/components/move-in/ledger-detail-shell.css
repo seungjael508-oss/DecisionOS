@@ -1,0 +1,6 @@
+.ledger-detail-shell { display: flex; align-items: flex-start; min-width: 0; }
+.ledger-detail-panel { position: sticky; top: 0; flex: 0 0 clamp(26rem, 45vw, 54rem); height: 100dvh; overflow-y: auto; background: white; border-left: 1px solid #d4d4d4; }
+@media (max-width: 1099px) {
+ .ledger-detail-panel { position: fixed; inset: 0; z-index: 40; height: 100dvh; width: 100%; border: 0; }
+}
+@media print { .ledger-detail-shell { display: block; } .ledger-detail-panel { display: none; } }
