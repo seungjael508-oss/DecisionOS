@@ -3,7 +3,7 @@ import { gradeSortRank } from "@/lib/move-in/filters";
 import { digitsOnly, parseDongHoQuery } from "@/lib/move-in/calls";
 import { matchesSpecialManagementFilter, type SpecialManagementFilter } from "@/lib/move-in/intent";
 
-export const LEDGER_AXES = ["building", "unit", "customer", "phone", "grade", "intent", "funding", "moveIn", "assignee", "specialReason", "nextContact", "deal", "payment", "loanAgreement", "moveReservation", "problemHousehold"] as const;
+export const LEDGER_AXES = ["building", "unit", "customer", "phone", "grade", "intent", "funding", "moveIn", "assignee", "specialReason", "nextContact", "contactStatus", "deal", "payment", "loanAgreement", "moveReservation", "problemHousehold"] as const;
 export type LedgerAxis = typeof LEDGER_AXES[number];
 export type AxisSelection = { include: string[]; exclude: string[] };
 export const LEDGER_VIEWS = ["all", "today", "sale", "rental", "special"] as const;
@@ -29,6 +29,7 @@ export type LedgerFilterRow = {
   currentGrade: string | null; customerName: string | null; phone: string | null;
   assigneeId: string | null; effectiveIntent: string | null; rentalType: string | null;
   funding: string | null; moveIn: string | null; nextContact: string | null;
+  contactStatus?: string | null;
   specialReasons: readonly string[]; specialPriority: number | null;
   dealTypes: readonly string[]; payment: string | null; balance: number | null;
   views: readonly ("sale" | "rental" | "special")[];
@@ -117,6 +118,7 @@ export function parseLedgerQuery(params: URLSearchParams): LedgerQueryState {
 const normalized = (value: string | null | undefined) => value?.trim() || LEDGER_BLANK;
 function axisValues(row: LedgerFilterRow, axis: LedgerAxis, now: Date): readonly string[] {
   if (axis === "loanAgreement" || axis === "moveReservation" || axis === "problemHousehold") return [row.management?.[axis] ?? "UNKNOWN"];
+  if (axis === "contactStatus") return [row.contactStatus ?? "NONE"];
   if (axis === "intent") return [normalized(row.effectiveIntent), ...(row.effectiveIntent === "RENT" && row.rentalType ? [row.rentalType] : [])];
   if (axis === "specialReason") return row.specialReasons.length ? row.specialReasons : [LEDGER_BLANK];
   if (axis === "deal") return row.dealTypes.length ? row.dealTypes : [LEDGER_BLANK];

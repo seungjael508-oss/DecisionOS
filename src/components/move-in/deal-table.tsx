@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { processingStatusLabel } from "@/lib/move-in/special-case";
 import {
   OCCUPANCY_INTENT_LABELS,
   formatDateTime,
@@ -85,7 +86,7 @@ export function DealTable({
               {displayTab === "special" && tab !== undefined ? <td className="py-2 pr-3">{(row.specialReasons ?? []).map((reason) => SPECIAL_REASON_LABELS[reason]).join(", ") || "—"}</td> : null}
               {displayTab === "special" && tab !== undefined ? <td className="py-2 pr-3">{row.fundingStatus ? FUNDING_STATUS_LABELS[row.fundingStatus] : "—"}</td> : null}
               {displayTab === "special" && tab !== undefined ? <td className="py-2 pr-3">{row.manuallyFlagged ? "수동지정" : "자동"}{row.visitRequired ? " · 방문" : ""}{row.abandonmentDocumentReceived ? " · 포기각서" : ""}{row.terminationDocumentReceived ? " · 해지서" : ""}{row.legalConsultationRequired ? " · 법무" : ""}</td> : null}
-              {displayTab === "special" && tab !== undefined ? <td className="py-2 pr-3">{row.processingStatus ?? "OPEN"}</td> : null}
+              {displayTab === "special" && tab !== undefined ? <td className="py-2 pr-3">{processingStatusLabel(row.processingStatus ?? "OPEN")}</td> : null}
               {displayTab === "sale" && tab !== undefined ? <><td className="py-2 pr-3">{money(row.typed?.askingSalePriceKrw)}</td><td className="py-2 pr-3">{listingStatus(row.typed?.saleListingStatus)}</td></> : null}
               {displayTab === "rental" && tab !== undefined ? <><td className="py-2 pr-3">{money(row.rentalType === "JEONSE" ? row.typed?.jeonseDepositKrw : row.typed?.monthlyRentDepositKrw)}</td><td className="py-2 pr-3">{row.rentalType === "MONTHLY_RENT" ? money(row.typed?.monthlyRentAmountKrw) : "—"}</td><td className="py-2 pr-3">{listingStatus(row.rentalType === "JEONSE" ? row.typed?.jeonseListingStatus : row.typed?.monthlyRentListingStatus)}</td></> : null}
               {tab !== undefined ? <><td className="py-2 pr-3">{formatDateTime(row.lastContactAt ?? null)}</td><td className="py-2 pr-3">{formatDateTime(row.nextContactAt ?? null)}</td></> : null}

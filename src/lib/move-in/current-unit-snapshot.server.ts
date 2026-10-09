@@ -67,15 +67,16 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
     if (current.some(u => !uuid.test(u.unit_id) || !uuid.test(currentCustomer.get(u.unit_id)!))) return failure();
     // Disjoint UUID ranges avoid repeating every unit ID in the parent IN filter.
     // The embedded predicate still matches each exact (unit, current customer)
-    // pair BEFORE limit(1). Keep the left embed so no-history units are retained.
+    // pair. Keep the left embed so no-history units are retained.
     const contacts = async () => summary ? readByIds(current.map(u => u.unit_id).sort(), (ids, from, to) => {
       queryCounts.contacts++;
       return supabase.from('project_unit')
-        .select('project_id,unit_id,contact:consultation!consultation_unit_project_fkey(project_id,unit_id,customer_id,id,consulted_at,next_action_at)', { count: 'exact' })
+        .select('project_id,unit_id,contact:consultation!consultation_unit_project_fkey(project_id,unit_id,customer_id,id,consulted_at,next_action_at,structured_tags)', { count: 'exact' })
         .eq('project_id', projectId).gte('unit_id', ids[0]).lte('unit_id', ids[ids.length - 1]).eq('contact.project_id', projectId)
         .or(ids.map(id => `and(unit_id.eq.${id},customer_id.eq.${currentCustomer.get(id)})`).join(','), { referencedTable: 'contact' })
         .order('unit_id').order('consulted_at', { referencedTable: 'contact', ascending: false }).order('id', { referencedTable: 'contact', ascending: false })
-        .limit(1, { referencedTable: 'contact' }).range(from, to).returns<{ project_id: string; unit_id: string; contact: ContactRecord[] }[]>();
+        // limit 없이 현재 계약자 이력 전체: 최신 기록이 부재여도 마지막 실제 접촉일을 정확히 계산
+        .range(from, to).returns<{ project_id: string; unit_id: string; contact: ContactRecord[] }[]>();
     // 64 pairs fit below an 8KB gateway limit, including the range bounds.
     }, 64) : { data: [], error: false };
     // Additive schema capabilities were verified in the disposable gate. This narrow
@@ -94,7 +95,7 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
     const recheck = await readCurrent(true);
     if (recheck.error) return failure();
     const finalByUnit = groupByUnit(recheck.data), specialByUnit = groupByUnit(s.data), dealByUnit = groupByUnit(d.data);
-    const contactByUnit = new Map(c.data.filter(r => r.project_id === projectId).map(r => [r.unit_id, r.contact?.[0] ?? null]));
+    const contactByUnit = new Map(c.data.filter(r => r.project_id === projectId).map(r => [r.unit_id, r.contact ?? []]));
     const rows: (CurrentUnitSnapshot | LedgerSummaryRow)[] = [];
     for (const unit of byUnit.values()) {
       const final = finalByUnit.get(unit.unit_id);
@@ -106,7 +107,7 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
         sourceTags: approvedUnitSourceTags(projectId, unit.building_no, unit.unit_no) });
       if (result.kind === 'anomaly') { flag(result.reason); continue; }
       const ds = dealByUnit.get(unit.unit_id) ?? [];
-      rows.push(summary ? attachLedgerManagement(toLedgerSummaryRow(unit, result.snapshot, ds.length === 1 ? ds[0] : null, contactByUnit.get(unit.unit_id) ?? null)) : result.snapshot);
+      rows.push(summary ? attachLedgerManagement(toLedgerSummaryRow(unit, result.snapshot, ds.length === 1 ? ds[0] : null, contactByUnit.get(unit.unit_id) ?? [])) : result.snapshot);
     }
     return finish(rows);
   } catch { return failure(); }

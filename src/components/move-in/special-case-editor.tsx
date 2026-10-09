@@ -7,6 +7,8 @@ import { saveMoveInSpecialCase, type SaveMoveInSpecialCaseInput } from "@/app/pr
 import type { MoveInRole } from "@/lib/move-in/access";
 import {
   LEGAL_CONSULTATION_STATUS_VALUES,
+  legalConsultationStatusLabel,
+  processingStatusLabel,
   PROCESSING_STATUS_VALUES,
   SPECIAL_CASE_MANUAL_FLAG_MESSAGE,
   hasActiveManualMetadata,
@@ -105,8 +107,8 @@ export function SpecialCaseEditor({
             <dt>포기각서 수령</dt><dd>{initial.abandonmentDocumentReceived ? "예" : "아니오"}</dd>
             <dt>해지신청서 수령</dt><dd>{initial.terminationDocumentReceived ? "예" : "아니오"}</dd>
             <dt>법무 협의 필요</dt><dd>{initial.legalConsultationRequired ? "예" : "아니오"}</dd>
-            <dt>법무 협의 상태</dt><dd>{initial.legalConsultationStatus}</dd>
-            <dt>처리상태</dt><dd>{initial.processingStatus}</dd>
+            <dt>법무 협의 상태</dt><dd>{legalConsultationStatusLabel(initial.legalConsultationStatus)}</dd>
+            <dt>처리상태</dt><dd>{processingStatusLabel(initial.processingStatus)}</dd>
             <dt>메모</dt><dd>{initial.memo || "—"}</dd>
           </dl>
         </div>
@@ -124,12 +126,12 @@ export function SpecialCaseEditor({
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="legal_consultation_required" value="1" defaultChecked={initial.legalConsultationRequired} />법무 협의 필요</label>
           <label className="flex flex-col gap-1 text-sm">법무 협의 상태
             <select name="legal_consultation_status" defaultValue={initial.legalConsultationStatus} className="border border-neutral-400 px-2 py-1">
-              {LEGAL_CONSULTATION_STATUS_VALUES.map((value) => <option key={value} value={value}>{value}</option>)}
+              {LEGAL_CONSULTATION_STATUS_VALUES.map((value) => <option key={value} value={value}>{legalConsultationStatusLabel(value)}</option>)}
             </select>
           </label>
           <label className="flex flex-col gap-1 text-sm">처리상태
             <select name="processing_status" defaultValue={initial.processingStatus} className="border border-neutral-400 px-2 py-1">
-              {PROCESSING_STATUS_VALUES.map((value) => <option key={value} value={value}>{value}</option>)}
+              {PROCESSING_STATUS_VALUES.map((value) => <option key={value} value={value}>{processingStatusLabel(value)}</option>)}
             </select>
           </label>
           <label className="flex flex-col gap-1 text-sm">메모

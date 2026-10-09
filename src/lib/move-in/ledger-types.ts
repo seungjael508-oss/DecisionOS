@@ -24,7 +24,9 @@ export type DealRecord = {
   sale_listing_status: UnitDealTypedFields['saleListingStatus']; jeonse_listing_status: UnitDealTypedFields['jeonseListingStatus']; monthly_rent_listing_status: UnitDealTypedFields['monthlyRentListingStatus'];
   updated_at: string; offices: { brokerage_office_id: string }[];
 };
-export type ContactRecord = { project_id: string; unit_id: string; customer_id: string; id: string; consulted_at: string; next_action_at: string | null };
+export type ContactRecord = { project_id: string; unit_id: string; customer_id: string; id: string; consulted_at: string; next_action_at: string | null; structured_tags?: { legacy_grade?: unknown } | null };
+/** 부재 = 접촉 시도(미응답). 상담거절 등 그 외 기록은 실제 접촉으로 본다. */
+export type ContactStatus = 'CONTACTED' | 'ABSENT' | 'NONE';
 export type DealSummary = UnitDealTypedFields & { id: string; consentStatus: string; dealStatus: string; enabledTypes: string[]; officeIds: string[]; updatedAt: string };
 export type CurrentUnitSnapshot = {
   projectId: string; unitId: string; currentContractId: string; currentCustomerId: string;
@@ -37,6 +39,7 @@ export type CurrentUnitSnapshot = {
 };
 export type LedgerSummaryRow = LedgerFilterRow & CurrentUnitSnapshot & {
   unitType: string | null; phoneQuality: string | null; lastContact: string | null;
+  contactStatus: ContactStatus; lastAttempt: string | null;
   dealSummary: DealSummary | null; paymentAvailability: 'unregistered';
 };
 export type AnomalyReason = 'no_active_contract' | 'multiple_active_contracts' | 'invalid_relation' | 'duplicate_unit' | 'changed_during_read';

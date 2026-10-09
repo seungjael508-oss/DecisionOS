@@ -8,12 +8,12 @@ import { buildLedgerWorkbook } from '@/lib/move-in/ledger-export';
 import { LedgerPrintTable } from '@/components/move-in/ledger-print-table';
 import { LedgerTable } from '@/components/move-in/ledger-table';
 
-const EXPECTED = ['동/호수','현재등급','전화번호','납부내역/잔금','계약자','입주의향','자금/대출','입주진행','매매/임대','최종접촉','담당자','특별관리','금전소비대차','입주예약','이사예정일','문제세대','관리사유'];
+const EXPECTED = ['동/호수','현재등급','전화번호','납부내역/잔금','계약자','입주의향','자금/대출','입주진행','매매/임대','접촉상태','최종접촉','최근시도','담당자','특별관리','금전소비대차','입주예약','이사예정일','문제세대','관리사유'];
 const row = { unitId:'u1', buildingNo:'101', unitNo:'1001', currentGrade:'C', phone:'010-0000-0000', customerName:'테스트', effectiveIntent:'UNDECIDED', rentalType:null,
-  funding:'LOAN_NEEDED', moveIn:'NOT_STARTED', dealTypes:[], lastContact:'2026-10-01T01:00:00Z', nextContact:'2026-12-31T01:00:00Z', assigneeId:null, specialReasons:[],
+  funding:'LOAN_NEEDED', moveIn:'NOT_STARTED', dealTypes:[], contactStatus:'CONTACTED', lastAttempt:'2026-10-01T01:00:00Z', lastContact:'2026-10-01T01:00:00Z', nextContact:'2026-12-31T01:00:00Z', assigneeId:null, specialReasons:[],
   management:{ loanAgreement:'TARGET', moveReservation:'BOOKED', movingDate:'2026-11-01', problemHousehold:'UNKNOWN', managementReasons:[] } } as never;
 
-test('컬럼: 최종접촉 포함, 다음접촉 제외, 나머지 순서 유지', () => {
+test('컬럼: 접촉상태·최종접촉·최근시도 포함, 다음접촉 제외, 나머지 순서 유지', () => {
   expect([...LEDGER_COLUMNS]).toEqual(EXPECTED);
 });
 test('셀: 컬럼 수 일치, 최종접촉=lastContact, nextContact 미노출', () => {
@@ -33,9 +33,9 @@ test('화면 표·인쇄 헤더', () => {
   expect((screen.match(/role="cell"/g) ?? []).length).toBe(EXPECTED.length);
 });
 test('엑셀 내보내기 헤더·행', async () => {
-  const wb = new ExcelJS.Workbook(); await wb.xlsx.load(Buffer.from(await buildLedgerWorkbook([ledgerCells(row, {})]), 'base64'));
+  const wb = new ExcelJS.Workbook(); await wb.xlsx.load(Buffer.from(await buildLedgerWorkbook([ledgerCells(row, {})]), 'base64') as never);
   const sheet = wb.getWorksheet('통합원장')!;
   expect((sheet.getRow(1).values as unknown[]).slice(1)).toEqual(EXPECTED);
   expect((sheet.getRow(2).values as unknown[]).length - 1).toBe(EXPECTED.length);
-  expect(sheet.autoFilter).toBe('A1:Q2');  // Q = 17번째 열
+  expect(sheet.autoFilter).toBe('A1:S2');  // S = 19번째 열
 });

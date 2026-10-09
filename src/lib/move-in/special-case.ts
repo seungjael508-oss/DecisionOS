@@ -19,6 +19,29 @@ export const PROCESSING_STATUS_VALUES = [
 
 export type ProcessingStatus = (typeof PROCESSING_STATUS_VALUES)[number];
 
+// 표시 전용 한글명. DB enum 값과 저장 payload는 영문 그대로 유지
+export const LEGAL_CONSULTATION_STATUS_LABELS: Record<LegalConsultationStatus, string> = {
+  NOT_REQUIRED: "협의 불필요",
+  REQUESTED: "협의 요청",
+  IN_REVIEW: "검토 중",
+  COMPLETED: "협의 완료",
+};
+
+export const PROCESSING_STATUS_LABELS: Record<ProcessingStatus, string> = {
+  OPEN: "미처리",
+  IN_PROGRESS: "처리 중",
+  WAITING_EXTERNAL: "외부 회신 대기",
+  COMPLETED: "처리 완료",
+};
+
+/** 알 수 없는 값은 추정하지 않고 원문을 그대로 보여준다. */
+export function legalConsultationStatusLabel(value: string | null | undefined): string {
+  return value ? LEGAL_CONSULTATION_STATUS_LABELS[value as LegalConsultationStatus] ?? value : "—";
+}
+export function processingStatusLabel(value: string | null | undefined): string {
+  return value ? PROCESSING_STATUS_LABELS[value as ProcessingStatus] ?? value : "—";
+}
+
 export type SpecialCaseMetadata = {
   projectId?: string;
   unitId?: string;
