@@ -1,11 +1,11 @@
-import type { LedgerSummaryRow } from '@/lib/move-in/ledger-types';
+import type { LedgerClientRow } from '@/lib/move-in/ledger-types';
 import { LEDGER_COLUMNS, ledgerCells } from '@/lib/move-in/ledger-presentation';
 
 const sticky = ['min-[1100px]:sticky min-[1100px]:left-0 min-[1100px]:w-32 min-[1100px]:min-w-32',
   'min-[1100px]:sticky min-[1100px]:left-32 min-[1100px]:w-28 min-[1100px]:min-w-28',
   'min-[1100px]:sticky min-[1100px]:left-60 min-[1100px]:w-44 min-[1100px]:min-w-44',
   'min-[1100px]:sticky min-[1100px]:left-[416px] min-[1100px]:w-48 min-[1100px]:min-w-48'];
-export function LedgerTable({rows,assignees}: {rows:readonly LedgerSummaryRow[];assignees:Record<string,string>}) {
+export function LedgerTable({rows,assignees}: {rows:readonly LedgerClientRow[];assignees:Record<string,string>}) {
   return <div className="min-[1100px]:overflow-x-auto">
     <table role="table" aria-label="통합원장 목록" className="block w-full border-separate border-spacing-0 text-sm min-[1100px]:table">
       <thead className="sr-only min-[1100px]:not-sr-only min-[1100px]:table-header-group"><tr role="row">

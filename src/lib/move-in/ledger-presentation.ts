@@ -1,9 +1,9 @@
 import { LEDGER_BLANK, type LedgerAxis, type LedgerStatePatch } from '@/lib/move-in/ledger-filters';
-import type { LedgerSummaryRow } from '@/lib/move-in/ledger-types';
+import type { LedgerClientRow } from '@/lib/move-in/ledger-types';
 import { FUNDING_STATUS_LABELS, MOVE_IN_STATUS_LABELS, OPERATIONAL_INTENT_LABELS, OCCUPANCY_INTENT_LABELS, formatUnitLabel, formatDateTime } from '@/lib/move-in/labels';
 import { SPECIAL_REASON_LABELS } from '@/lib/move-in/intent';
 
-export const LEDGER_COLUMNS = ['동/호수','현재등급','전화번호','납부내역/잔금','계약자','입주의향','자금/대출','입주진행','매매/임대','접촉상태','최종접촉','최근시도','담당자','특별관리','금전소비대차','입주예약','이사예정일','문제세대','관리사유'] as const;
+export const LEDGER_COLUMNS = ['동/호수','현재등급','전화번호','납부내역/잔금','계약자','계약자 주소','입주의향','자금/대출','입주진행','매매/임대','접촉상태','최종접촉','최근시도','담당자','특별관리','금전소비대차','입주예약','이사예정일','문제세대','관리사유'] as const;
 export const LEDGER_AXIS_LABELS: Record<LedgerAxis,string> = {building:'동',unit:'호수',customer:'계약자',phone:'전화번호',grade:'현재등급',intent:'입주의향',funding:'자금/대출',moveIn:'입주진행',assignee:'담당자',specialReason:'특별관리',nextContact:'다음접촉',contactStatus:'접촉상태',deal:'매매/임대',payment:'납부상태',loanAgreement:'금전소비대차',moveReservation:'입주예약',problemHousehold:'문제세대'};
 export const CONTACT_STATUS_LABELS: Record<string,string> = {CONTACTED:'접촉',ABSENT:'부재',NONE:'미접촉'};
 // 부재·상담거절은 접촉 결과로 분리. 기존에 등급값으로 저장된 세대는 원본 확인 전까지 A~D로 바꾸지 않고 확인필요로만 표시
@@ -15,9 +15,9 @@ function lookup(labels: Record<string,string>, value: string | null) { return va
 export function assigneeLabel(id: string | null, names: Record<string,string>) { return id ? names[id] || `이름 미등록 · ${id.slice(0,8)}` : '미배정'; }
 
 /** Presentation of server-resolved fields only. Never resolves grade, intent or reasons. */
-export function ledgerCells(row: LedgerSummaryRow, assignees: Record<string,string>): string[] {
+export function ledgerCells(row: LedgerClientRow, assignees: Record<string,string>): string[] {
   return [formatUnitLabel(row.buildingNo,row.unitNo),gradeLabel(row.currentGrade),row.phone || '미등록','납부정보 미등록',
-    row.customerName || '미등록', row.effectiveIntent === 'RENT' ? row.rentalType ? lookup(OCCUPANCY_INTENT_LABELS,row.rentalType) : '임대(유형 확인 필요)' : lookup(OPERATIONAL_INTENT_LABELS,row.effectiveIntent),
+    row.customerName || '미등록', row.contractAddress || '미등록', row.effectiveIntent === 'RENT' ? row.rentalType ? lookup(OCCUPANCY_INTENT_LABELS,row.rentalType) : '임대(유형 확인 필요)' : lookup(OPERATIONAL_INTENT_LABELS,row.effectiveIntent),
     row.funding === 'NORMAL' ? `${FUNDING_STATUS_LABELS.NORMAL} (기존)` : lookup(FUNDING_STATUS_LABELS,row.funding),
     lookup(MOVE_IN_STATUS_LABELS,row.moveIn),row.dealTypes.map(v=>lookup(OCCUPANCY_INTENT_LABELS,v)).join(' · ') || '—',
     // lastContact는 서버에서 현재 ACTIVE 계약자 상담만 채택(이전 계약자 기록은 occupancy 값으로 대체)
@@ -51,7 +51,7 @@ export function ledgerOptionLabel(axis: LedgerAxis, value: string, assignees: Re
   return value;
 }
 /** Option discovery only, not filtering or current-state inference. */
-export function ledgerOptions(rows: readonly LedgerSummaryRow[], axis: LedgerAxis, assignees: Record<string,string>) {
+export function ledgerOptions(rows: readonly LedgerClientRow[], axis: LedgerAxis, assignees: Record<string,string>) {
   if(axis==='loanAgreement'||axis==='problemHousehold')return ['TARGET','NOT_TARGET','UNKNOWN'].map(value=>({value,label:ledgerOptionLabel(axis,value,assignees)}));
   if(axis==='moveReservation')return ['BOOKED','CANCELLED','NONE','UNKNOWN'].map(value=>({value,label:ledgerOptionLabel(axis,value,assignees)}));
   if(axis==='contactStatus')return ['CONTACTED','ABSENT','NONE'].map(value=>({value,label:ledgerOptionLabel(axis,value,assignees)}));

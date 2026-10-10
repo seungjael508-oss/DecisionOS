@@ -152,6 +152,8 @@ export type UnitDetail = {
   contractId: string | null;
   customerName: string | null;
   customerPhone: string | null;
+  // 계약자 명부 주소. 현재 ACTIVE 계약·고객 ID가 명부와 일치할 때만 값이 있다
+  contractAddress?: string | null;
   phoneQuality: string | null;
   assignedCounselorId: string | null;
   occupancy: OccupancyRow | null;

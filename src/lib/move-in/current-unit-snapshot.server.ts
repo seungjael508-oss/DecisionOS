@@ -1,5 +1,6 @@
 import 'server-only';
 import { attachLedgerManagement } from '@/lib/move-in/ledger-management.server';
+import { attachContractAddress } from '@/lib/move-in/contract-address.server';
 import { requireMoveInAccess } from '@/lib/move-in/access';
 import { createServerClient } from '@/lib/supabase/server';
 import { readAllRows } from '@/lib/supabase/read-all';
@@ -78,7 +79,8 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
         // limit 없이 현재 계약자 이력 전체: 최신 기록이 부재여도 마지막 실제 접촉일을 정확히 계산
         .range(from, to).returns<{ project_id: string; unit_id: string; contact: ContactRecord[] }[]>();
     // 64 pairs fit below an 8KB gateway limit, including the range bounds.
-    }, 64) : { data: [], error: false };
+    // 서버(iad1)↔DB(서울) 왕복이 커서 14개 배치를 4개씩 동시에 읽는다. 요청 수는 동일.
+    }, 64, 4) : { data: [], error: false };
     // Additive schema capabilities were verified in the disposable gate. This narrow
     // cast affects only the table name; .returns enforces the selected projection type.
     const special = () => readAllRows((from, to) => {
@@ -107,7 +109,7 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
         sourceTags: approvedUnitSourceTags(projectId, unit.building_no, unit.unit_no) });
       if (result.kind === 'anomaly') { flag(result.reason); continue; }
       const ds = dealByUnit.get(unit.unit_id) ?? [];
-      rows.push(summary ? attachLedgerManagement(toLedgerSummaryRow(unit, result.snapshot, ds.length === 1 ? ds[0] : null, contactByUnit.get(unit.unit_id) ?? [])) : result.snapshot);
+      rows.push(summary ? attachContractAddress(attachLedgerManagement(toLedgerSummaryRow(unit, result.snapshot, ds.length === 1 ? ds[0] : null, contactByUnit.get(unit.unit_id) ?? []))) : result.snapshot);
     }
     return finish(rows);
   } catch { return failure(); }

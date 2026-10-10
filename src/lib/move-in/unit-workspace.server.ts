@@ -1,5 +1,6 @@
 import 'server-only';
 import { attachLedgerManagement } from '@/lib/move-in/ledger-management.server';
+import { attachContractAddress, contractAddressFor } from '@/lib/move-in/contract-address.server';
 import type {Json} from '@/lib/supabase/types';
 import { requireMoveInAccess } from '@/lib/move-in/access';
 import { createServerClient } from '@/lib/supabase/server';
@@ -60,7 +61,7 @@ export async function loadUnitWorkspace(projectId:string,unitId:string,provided:
   const resolved=resolveCurrentUnitSnapshot({unit,access,special,sourceTags:approvedUnitSourceTags(projectId,unit.building_no,unit.unit_no),now:new Date()});if(resolved.kind!=='ok')return {kind:'unavailable'};
   const h=unit.contracts.find(c=>c.contract_status==='ACTIVE')!.holder!;
   const payment=paymentForCurrentContract({projectId,unitId,contractId:id.contractId,buildingNo:unit.building_no,unitNo:unit.unit_no});
-  return {kind:'ok',workspace:{projectId,identity:id,snapshot:resolved.snapshot,detail:{unitId,buildingNo:unit.building_no,unitNo:unit.unit_no,unitType:unit.unit_type,customerId:id.customerId,contractId:id.contractId,customerName:h.name,customerPhone:h.phone,phoneQuality:h.phone_quality,assignedCounselorId:h.assigned_counselor_id,occupancy:unit.occupancy,relatedUnits:[]},capabilities:{role:access.role,memberId:access.memberId,fieldWrite:canManageField(projectId,access.role)||access.role==='COUNSELOR',specialWrite:access.role==='PROJECT_ADMIN'||access.role==='CLIENT_MANAGER',saveEnabled:options.saving===true},...(options.summary?{summary:attachLedgerManagement(toLedgerSummaryRow(unit,resolved.snapshot,deal,contact.data??[]))}:{}),history,deal:deal?toDeal(deal):null,special:special?toSpecialCaseMetadata(special):null,paymentAvailability:payment?'registered':'unregistered',payment}};
+  return {kind:'ok',workspace:{projectId,identity:id,snapshot:resolved.snapshot,detail:{unitId,buildingNo:unit.building_no,unitNo:unit.unit_no,unitType:unit.unit_type,customerId:id.customerId,contractId:id.contractId,customerName:h.name,customerPhone:h.phone,contractAddress:contractAddressFor({projectId,unitId,contractId:id.contractId,customerId:id.customerId}),phoneQuality:h.phone_quality,assignedCounselorId:h.assigned_counselor_id,occupancy:unit.occupancy,relatedUnits:[]},capabilities:{role:access.role,memberId:access.memberId,fieldWrite:canManageField(projectId,access.role)||access.role==='COUNSELOR',specialWrite:access.role==='PROJECT_ADMIN'||access.role==='CLIENT_MANAGER',saveEnabled:options.saving===true},...(options.summary?{summary:attachContractAddress(attachLedgerManagement(toLedgerSummaryRow(unit,resolved.snapshot,deal,contact.data??[])))}:{}),history,deal:deal?toDeal(deal):null,special:special?toSpecialCaseMetadata(special):null,paymentAvailability:payment?'registered':'unregistered',payment}};
  }catch{return {kind:'unavailable'};}
 }
 export async function loadUnitWorkspaceSection(p:string,u:string,provided:AuthorizedAccess,expected:WorkspaceIdentity,section:'history'|'brokers'|'related'|'identity',offset=0):Promise<UnitWorkspaceSectionResult>{

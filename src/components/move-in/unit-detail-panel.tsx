@@ -47,7 +47,7 @@ function UnitDetailPanelContent({workspace,returnTo,onInvalidated,onRelatedSelec
  const intentLabel=snapshot.effectiveIntent==='RENT'?(snapshot.rentalType?OCCUPANCY_INTENT_LABELS[snapshot.rentalType]:'임대(유형 확인 필요)'):OPERATIONAL_INTENT_LABELS[snapshot.effectiveIntent];
  return <div className="p-4" onChangeCapture={()=>{if(!saving)guard?.setDirty(true);}}>
   <h1 className="text-2xl font-semibold">{formatUnitLabel(detail.buildingNo,detail.unitNo)} · {detail.unitType?.trim()||'타입 미등록'} · {detail.customerName??'계약자 미등록'} · {snapshot.currentGrade?`${snapshot.currentGrade}등급`:'등급 미등록'}</h1>
-  <dl className="mt-4 grid grid-cols-[7rem_1fr] gap-2 text-sm"><dt>전화번호</dt><dd><CustomerPhone raw={detail.customerPhone} status={detail.phoneQuality}/></dd><dt>현재등급</dt><dd>{snapshot.currentGrade??'미등록'}</dd><dt>최근접촉</dt><dd>{formatDateTime(detail.occupancy?.last_contact_at??null)}</dd><dt>다음접촉</dt><dd>{formatDateTime(detail.occupancy?.next_contact_at??null)}</dd></dl>
+  <dl className="mt-4 grid grid-cols-[7rem_1fr] gap-2 text-sm"><dt>전화번호</dt><dd><CustomerPhone raw={detail.customerPhone} status={detail.phoneQuality}/></dd><dt>계약자 주소</dt><dd>{detail.contractAddress||'미등록'}</dd><dt>현재등급</dt><dd>{snapshot.currentGrade??'미등록'}</dd><dt>최근접촉</dt><dd>{formatDateTime(detail.occupancy?.last_contact_at??null)}</dd><dt>다음접촉</dt><dd>{formatDateTime(detail.occupancy?.next_contact_at??null)}</dd></dl>
   <div aria-label="관리 태그" className="mt-3 flex flex-wrap gap-2">
    {snapshot.effectiveIntent==='MOVE_IN'?<span className="border px-2">입주</span>:null}
    {snapshot.effectiveIntent==='SALE_TRANSFER'?<span className="border px-2">전매</span>:null}

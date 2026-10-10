@@ -1,10 +1,11 @@
 'use client';
 import {useEffect,useLayoutEffect,useRef,useState,type ReactNode} from 'react';
-import {buildWorkspaceSelectionHref,parseWorkspaceContext,resolveWorkspaceAdjacentIds} from '@/lib/move-in/ledger-context';
+import {buildWorkspaceSelectionHref,orderedIdsFromLoadedLedger,parseWorkspaceContext,resolveWorkspaceAdjacentIds} from '@/lib/move-in/ledger-context';
 import {observeLedgerHistory} from '@/lib/move-in/ledger-selection-url';
 import {UnitDetailWorkspace,type UnitDetailWorkspaceHandle} from './unit-detail-workspace';
 import {UnitDetailPanel} from './unit-detail-panel';
 import {LedgerReadyRowInteraction} from './ledger-ready-row-interaction';
+import {useLedgerSummaryStore} from './ledger-summary-store';
 import type {UnitWorkspaceResult,UnitWorkspaceSectionResult} from '@/lib/move-in/unit-workspace-types';
 
 type ContextIds={query:string;ids:string[]};
@@ -31,7 +32,11 @@ export function LedgerDetailShell({projectId,children}:{projectId:string;childre
   // The protected list already restores its local filter state on popstate.
   window.dispatchEvent(new PopStateEvent('popstate',{state:history.state}));
  }
+ const ledgerStore=useLedgerSummaryStore();
+ // 이미 받은 851세대 원장으로 이전·다음 순서를 계산한다. 서버 /context는 원장 전체를 DB에서 다시 읽어 5초 이상 걸린다.
+ // 순서는 접근 권한이 아니다: 실제 세대 열람은 /unit/{id}가 서버에서 권한·현재 계약자를 매번 검증한다.
  async function contextIds(query:string,signal:AbortSignal):Promise<string[]|null>{
+  const loaded=orderedIdsFromLoadedLedger(projectId,query,ledgerStore?.snapshot()??null);if(loaded)return loaded;
   const response=await fetch(`${base}/context?returnTo=${encodeURIComponent(query)}`,{signal,cache:'no-store'});
   const data=await response.json();return response.ok&&data.kind==='ok'&&Array.isArray(data.orderedIds)?data.orderedIds:null;
  }

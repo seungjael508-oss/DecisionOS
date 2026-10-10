@@ -1,5 +1,5 @@
 'use client';
-import type { LedgerSummaryRow, ProjectionResult } from '@/lib/move-in/ledger-types';
+import type { LedgerClientRow, ProjectionResult } from '@/lib/move-in/ledger-types';
 import { useLedgerSummaryResult } from '@/components/move-in/ledger-summary-store';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { LEDGER_AXES, applyLedgerQuery, parseLedgerQuery, patchLedgerQuery, type LedgerStatePatch, type LedgerSortKey, type LedgerView } from '@/lib/move-in/ledger-filters';
@@ -12,7 +12,7 @@ import { exportLedgerXlsx, prepareLedgerPrint } from '@/app/projects/[projectId]
 
 const sorts: {value:LedgerSortKey;label:string}[]=[{value:'unit',label:'동/호수'},{value:'grade',label:'현재등급'},{value:'phone',label:'전화번호'},{value:'name',label:'계약자'},
   {value:'funding',label:'자금/대출'},{value:'moveIn',label:'입주진행'},{value:'nextContact',label:'다음접촉'},{value:'priority',label:'특별관리 위험순'},{value:'balance',label:'잔금 (미등록)'},{value:'queue',label:'기존 Queue 순서'}];
-export function MasterLedgerClient({projectId,result:initialResult,initialQuery,assignees}: {projectId:string; result:ProjectionResult<LedgerSummaryRow>;initialQuery:string;assignees:Record<string,string>}) {
+export function MasterLedgerClient({projectId,result:initialResult,initialQuery,assignees}: {projectId:string; result:ProjectionResult<LedgerClientRow>;initialQuery:string;assignees:Record<string,string>}) {
   const result=useLedgerSummaryResult(projectId,initialResult);
   const [query,setQuery]=useState(initialQuery),[busy,setBusy]=useState(false),[error,setError]=useState('');
   const [printData,setPrintData]=useState<{rows:string[][];asOf:string}|null>(null);

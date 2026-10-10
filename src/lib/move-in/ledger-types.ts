@@ -41,7 +41,11 @@ export type LedgerSummaryRow = LedgerFilterRow & CurrentUnitSnapshot & {
   unitType: string | null; phoneQuality: string | null; lastContact: string | null;
   contactStatus: ContactStatus; lastAttempt: string | null;
   dealSummary: DealSummary | null; paymentAvailability: 'unregistered';
+  contractAddress?: string | null;
 };
+/** 브라우저로 직렬화하지 않는 서버 전용 필드(851세대 초기 HTML 크기 절감). 클라이언트에서 읽으면 타입 오류. */
+export const LEDGER_SERVER_ONLY_KEYS = ['revision', 'sourceUpdatedAt', 'fetchedAt', 'paymentAvailability', 'dealSummary'] as const;
+export type LedgerClientRow = Omit<LedgerSummaryRow, (typeof LEDGER_SERVER_ONLY_KEYS)[number]>;
 export type AnomalyReason = 'no_active_contract' | 'multiple_active_contracts' | 'invalid_relation' | 'duplicate_unit' | 'changed_during_read';
 export type QueryCounts = { current: number; contacts: number; deals: number; special: number; recheck: number };
 export type ProjectionResult<T> = {

@@ -1,5 +1,5 @@
 import { getSafeMoveInListUrl } from "@/lib/move-in/return-to";
-import { parseLedgerQuery, type LedgerQueryState, type LedgerView } from "@/lib/move-in/ledger-filters";
+import { applyLedgerQuery, parseLedgerQuery, type LedgerFilterRow, type LedgerQueryState, type LedgerView } from "@/lib/move-in/ledger-filters";
 
 export type WorkspaceContext = {
   valid: boolean; returnTo: string; view: LedgerView; state: LedgerQueryState;
@@ -40,6 +40,19 @@ export function buildWorkspaceSelectionHref(projectId: string, raw: string, unit
   const context = parseWorkspaceContext(projectId, raw);
   if (!context.valid || !unitId) return context.returnTo;
   return `${context.returnTo}${context.returnTo.includes("?") ? "&" : "?"}selectedUnit=${encodeURIComponent(unitId)}`;
+}
+
+/**
+ * 이미 받은 원장 행으로 /context와 같은 순서를 계산한다(같은 applyLedgerQuery 사용).
+ * 다른 프로젝트 행이 섞였거나 조건이 잘못되면 null → 호출측이 서버 /context로 대체한다.
+ */
+export function orderedIdsFromLoadedLedger<T extends LedgerFilterRow & { projectId: string; unitId: string }>(
+  projectId: string, returnTo: string, loaded: { rows: readonly T[]; snapshotAsOf: string } | null,
+): string[] | null {
+  if (!loaded?.rows.length || loaded.rows.some((row) => row.projectId !== projectId)) return null;
+  const context = parseWorkspaceContext(projectId, returnTo);
+  if (!context.valid) return null;
+  return applyLedgerQuery(loaded.rows, context.state, new Date(loaded.snapshotAsOf)).filteredSorted.map((row) => row.unitId);
 }
 
 /** Only a caller's authorized, filtered, sorted full result may be passed here. */

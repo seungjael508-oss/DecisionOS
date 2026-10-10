@@ -1,8 +1,8 @@
 'use client';
-import type {LedgerSummaryRow,ProjectionResult} from '@/lib/move-in/ledger-types';
+import type {LedgerClientRow,ProjectionResult} from '@/lib/move-in/ledger-types';
 import type {WorkspaceIdentity} from '@/lib/move-in/unit-workspace-types';
 import {createContext,useContext,useLayoutEffect,useState,useSyncExternalStore,type ReactNode} from 'react';
-type Result=ProjectionResult<LedgerSummaryRow>;
+type Result=ProjectionResult<LedgerClientRow>;
 type Token={projectId:string;unitId:string;identity:WorkspaceIdentity;generation:number;sequence:number};
 export function createLedgerSummaryStore(){
  let project:string|null=null,base:Result|null=null,result:Result|null=null,generation=0;
@@ -16,7 +16,7 @@ export function createLedgerSummaryStore(){
    if(p!==project||!r||r.currentContractId!==i.contractId||r.currentCustomerId!==i.customerId)return null;
    const sequence=(sequences.get(u)??0)+1;sequences.set(u,sequence);return {projectId:p,unitId:u,identity:{...i},generation,sequence};
   },
-  commit(t:Token,row:LedgerSummaryRow){
+  commit(t:Token,row:LedgerClientRow){
    if(!result||t.generation!==generation||t.projectId!==project||sequences.get(t.unitId)!==t.sequence||row.projectId!==t.projectId||row.unitId!==t.unitId||row.currentContractId!==t.identity.contractId||row.currentCustomerId!==t.identity.customerId)return false;
    const current=result.rows.find(r=>r.unitId===t.unitId);
    if(!current||current.currentContractId!==t.identity.contractId||current.currentCustomerId!==t.identity.customerId)return false;
