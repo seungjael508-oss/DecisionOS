@@ -1,5 +1,6 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { readAllRows } from "@/lib/supabase/read-all";
+import { compareTimestampThenId, readByUuidRanges } from "@/lib/supabase/read-by-uuid-range";
 import type { Database } from "@/lib/supabase/types";
 import { loadMarketRows } from "@/lib/market/queries";
 import { extractLegacyGrade, confirmedLegacyVisitKey } from "@/lib/move-in/consultation";
@@ -53,6 +54,29 @@ export function worklogSourceFilter(projectId: string) {
   };
 }
 
+type ServerSupabase = Awaited<ReturnType<typeof createServerClient>>;
+
+// 상담 이력: 예전에는 consulted_at 순서 1000행 페이지 4개를 직렬로 읽었다(각 페이지가 프로젝트 전체 행에 RLS 재평가).
+// unit_id 구간 8개 + 세대 미지정 1개를 동시에 읽고, 원래 순서(consulted_at, id)로 다시 정렬한다. 행 집합은 같다.
+async function readWorklogConsultations(supabase: ServerSupabase, projectId: string, endIso: string, isHwayangSharedField: boolean) {
+  // 화양이 아니면 필요 없는 원문 상담내용(content)을 서버로 끌어오지 않도록 select 자체를 분리한다.
+  const select = () => (isHwayangSharedField
+    ? supabase.from("consultation").select("id, unit_id, customer_id, consulted_at, contact_type, channel, purpose, structured_tags, next_action_at, counselor_id, content")
+    : supabase.from("consultation").select("id, unit_id, customer_id, consulted_at, contact_type, channel, purpose, structured_tags, next_action_at"))
+    .eq("project_id", projectId).lt("consulted_at", endIso);
+  const [withUnit, withoutUnit] = await Promise.all([
+    readByUuidRanges<ConsultationRawRow>(({ lower, upper }, from, to) => {
+      const query = select().gte("unit_id", lower);
+      return (upper ? query.lt("unit_id", upper) : query).order("unit_id").order("consulted_at").order("id").range(from, to);
+    }),
+    readAllRows<ConsultationRawRow>((from, to) => select().is("unit_id", null).order("consulted_at").order("id").range(from, to), 1000),
+  ]);
+  if (withUnit.error || withoutUnit.error) return { data: [] as ConsultationRawRow[], error: true };
+  const rows = [...withUnit.data, ...withoutUnit.data];
+  rows.sort((a, b) => compareTimestampThenId({ at: a.consulted_at, id: a.id }, { at: b.consulted_at, id: b.id }));
+  return { data: rows, error: false };
+}
+
 export type WorklogLoadResult =
   | { error: true }
   | { error: false; snapshot: MoveInWorklogSnapshot; refreshedAt: string };
@@ -83,35 +107,24 @@ export async function loadMoveInWorklog(
 
     const isHwayangSharedField = projectId === HWAYANG_SHARED_PROJECT_ID;
 
+    // 851행 테이블은 1000행 1페이지. count=exact는 행마다 RLS 평가를 한 번 더 하므로 쓰지 않는다.
     const [unitsResult, occupancyResult, consultationResult, contractsResult, marketResult, customersResult, fieldMembersResult, fundingHistoryResult] = await Promise.all([
       readAllRows((from, to) => supabase
         .from("project_unit")
-        .select("unit_id, building_no, unit_no, unit_type", { count: "exact" })
-        .eq("project_id", projectId).order("unit_id").range(from, to)),
+        .select("unit_id, building_no, unit_no, unit_type")
+        .eq("project_id", projectId).order("unit_id").range(from, to), 1000),
       readAllRows((from, to) => supabase
         .from("unit_occupancy_status")
         .select(
           "unit_id, contract_id, occupancy_intent, funding_status, move_in_status, legacy_grade, balance_paid_at, actual_move_in_date, planned_move_in_date, next_contact_at",
-          { count: "exact" },
         )
-        .eq("project_id", projectId).order("unit_id").range(from, to)),
-      // 화양이 아니면 필요 없는 원문 상담내용(content)을 서버로 끌어오지 않도록 select 자체를 분리한다.
-      isHwayangSharedField
-        ? readAllRows<ConsultationRawRow>((from, to) => supabase
-            .from("consultation")
-            .select("id, unit_id, customer_id, consulted_at, contact_type, channel, purpose, structured_tags, next_action_at, counselor_id, content", { count: "exact" })
-            .eq("project_id", projectId)
-            .lt("consulted_at", range.endIso).order("consulted_at").order("id").range(from, to), 1000)
-        : readAllRows<ConsultationRawRow>((from, to) => supabase
-            .from("consultation")
-            .select("id, unit_id, customer_id, consulted_at, contact_type, channel, purpose, structured_tags, next_action_at", { count: "exact" })
-            .eq("project_id", projectId)
-            .lt("consulted_at", range.endIso).order("consulted_at").order("id").range(from, to), 1000),
+        .eq("project_id", projectId).order("unit_id").range(from, to), 1000),
+      readWorklogConsultations(supabase, projectId, range.endIso, isHwayangSharedField),
       readAllRows((from, to) => supabase.from("contract")
-        .select("contract_id, unit_id, customer_id, contract_status, contracted_at", { count: "exact" })
-        .eq("project_id", projectId).order("contract_id").range(from, to)),
+        .select("contract_id, unit_id, customer_id, contract_status, contracted_at")
+        .eq("project_id", projectId).order("contract_id").range(from, to), 1000),
       loadMarketRows(projectId, range.endIso).catch(() => ({ error: true as const, rows: [] })),
-      readAllRows((from, to) => supabase.from("customer").select("id, phone_quality", { count: "exact" }).eq("project_id", projectId).order("id").range(from,to)),
+      readAllRows((from, to) => supabase.from("customer").select("id, phone_quality").eq("project_id", projectId).order("id").range(from,to), 1000),
       // 화양이 아니면 RPC가 항상 빈 배열을 반환하므로(private.is_hwayang_field_member 가드),
       // 팀 실적/등급변경/상담 상세 섹션은 화양에서만 계산된다.
       isHwayangSharedField ? supabase.rpc("list_move_in_field_members", { p_project_id: projectId }) : Promise.resolve({ data: [], error: null }),

@@ -35,7 +35,19 @@ export function LedgerDetailShell({projectId,children}:{projectId:string;childre
  const ledgerStore=useLedgerSummaryStore();
  // 이미 받은 851세대 원장으로 이전·다음 순서를 계산한다. 서버 /context는 원장 전체를 DB에서 다시 읽어 5초 이상 걸린다.
  // 순서는 접근 권한이 아니다: 실제 세대 열람은 /unit/{id}가 서버에서 권한·현재 계약자를 매번 검증한다.
+ // 직접 URL 진입 시 원장 목록은 아직 스트리밍 중이라 store가 비어 있다. 그때 /context를 부르면 같은 851세대를
+ // 동시에 한 번 더 읽어 둘 다 느려진다(실측 약 7s). 같은 화면이 받는 원장을 기다리고, 원장이 오류로 바인딩되거나
+ // 10초 안에 오지 않을 때만 서버 /context로 대체한다.
+ function waitForLoadedLedger(signal:AbortSignal):Promise<void>{
+  if(!ledgerStore||ledgerStore.snapshot())return Promise.resolve();
+  return new Promise(resolve=>{
+   const done=()=>{stop();clearTimeout(timer);signal.removeEventListener('abort',done);resolve();};
+   const stop=ledgerStore.subscribe(()=>{if(ledgerStore.snapshot())done();});
+   const timer=setTimeout(done,10_000);signal.addEventListener('abort',done);
+  });
+ }
  async function contextIds(query:string,signal:AbortSignal):Promise<string[]|null>{
+  await waitForLoadedLedger(signal);if(signal.aborted)return null;
   const loaded=orderedIdsFromLoadedLedger(projectId,query,ledgerStore?.snapshot()??null);if(loaded)return loaded;
   const response=await fetch(`${base}/context?returnTo=${encodeURIComponent(query)}`,{signal,cache:'no-store'});
   const data=await response.json();return response.ok&&data.kind==='ok'&&Array.isArray(data.orderedIds)?data.orderedIds:null;
@@ -150,6 +162,7 @@ export function LedgerDetailShell({projectId,children}:{projectId:string;childre
   }}>
    <UnitDetailWorkspace key={selected} controllerRef={guard} returnTo={returnTo} previousHref={adjacent&&!adjacent.previous?null:`${returnTo}#previous`} nextHref={`${returnTo}#next`} onNavigate={navigate} navigationPending={contextBusy}>
     {navigationError?<p role="alert">{navigationError}</p>:null}
+    {contextBusy&&!ordered?<p role="status" className="px-4 pt-2 text-sm text-neutral-600">이전·다음 세대 순서를 준비하고 있습니다…</p>:null}
     {verificationError?<div><p role="alert">{verificationError}</p><button type="button" onClick={()=>recheckIdentity.current()}>현재 계약자 다시 확인</button></div>:null}
     {checking?<p role="status">현재 계약자를 다시 확인하고 있습니다…</p>:null}
     {!result?<div role="status" aria-label="세대 상세 로딩" className="animate-pulse p-6">세대 상세를 불러오고 있습니다…</div>:null}

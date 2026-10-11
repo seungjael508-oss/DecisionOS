@@ -4,7 +4,7 @@ import { attachContractAddress } from '@/lib/move-in/contract-address.server';
 import { requireMoveInAccess } from '@/lib/move-in/access';
 import { createServerClient } from '@/lib/supabase/server';
 import { readAllRows } from '@/lib/supabase/read-all';
-import { readByIds } from '@/lib/supabase/read-by-ids';
+import { readByUuidRanges } from '@/lib/supabase/read-by-uuid-range';
 import { currentIdentityRevision, currentRelationAnomaly, isCurrentUnitVisible, resolveCurrentUnitSnapshot, toLedgerSummaryRow } from '@/lib/move-in/current-unit-snapshot';
 import { approvedUnitSourceTags } from '@/lib/move-in/ledger-source-tags.server';
 import type { AnomalyReason, CurrentUnitRecord, CurrentUnitSnapshot, DealRecord, SpecialRecord, ContactRecord, LedgerSummaryRow, ProjectionResult, QueryCounts } from '@/lib/move-in/ledger-types';
@@ -39,11 +39,20 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
     const supabase = await createServerClient();
     const readCurrent = (recheck: boolean) => readAllRows((from, to) => {
       queryCounts[recheck ? 'recheck' : 'current']++;
-      return supabase.from('project_unit').select(recheck ? RECHECK_SELECT : CURRENT_SELECT, { count: 'exact' })
+      // count 없이 짧은 페이지로 종료한다: 행마다 RLS 함수를 평가하므로 count=exact는 같은 평가를 한 번 더 한다.
+      return supabase.from('project_unit').select(recheck ? RECHECK_SELECT : CURRENT_SELECT)
         .eq('project_id', projectId).eq('contracts.contract_status', 'ACTIVE').order('unit_id').range(from, to).returns<CurrentUnitRecord[]>();
     }, summary ? 1000 : 500);
+    // 상담 이력은 세대 목록과 독립이라 동시에 읽는다(권한 확인 이후). 예전 방식(현재 계약자 쌍 OR 필터 14배치)은
+    // 세대 목록을 받은 뒤에야 시작해 critical path에 약 2.5s를 더했다. 행 범위는 같은 세션 RLS가 그대로 정한다.
+    const contactsRead = summary ? readByUuidRanges<ContactRecord>(({ lower, upper }, from, to) => {
+      queryCounts.contacts++;
+      const query = supabase.from('consultation').select('project_id,unit_id,customer_id,id,consulted_at,next_action_at,structured_tags')
+        .eq('project_id', projectId).gte('unit_id', lower);
+      return (upper ? query.lt('unit_id', upper) : query).order('unit_id').order('consulted_at', { ascending: false }).order('id', { ascending: false }).range(from, to).returns<ContactRecord[]>();
+    }) : Promise.resolve({ data: [] as ContactRecord[], error: false });
     const base = await readCurrent(false);
-    if (base.error) return failure();
+    if (base.error) { await contactsRead; return failure(); }
     const anomalies: Partial<Record<AnomalyReason, number>> = {};
     const flag = (reason: AnomalyReason) => { anomalies[reason] = (anomalies[reason] ?? 0) + 1; };
     const current: CurrentUnitRecord[] = [];
@@ -66,21 +75,18 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
     const currentCustomer = new Map(current.map(u => [u.unit_id, u.contracts.find(c => c.contract_status === 'ACTIVE')!.customer_id]));
     // These identifiers came from the authorized DB response, never URL filters.
     if (current.some(u => !uuid.test(u.unit_id) || !uuid.test(currentCustomer.get(u.unit_id)!))) return failure();
-    // Disjoint UUID ranges avoid repeating every unit ID in the parent IN filter.
-    // The embedded predicate still matches each exact (unit, current customer)
-    // pair. Keep the left embed so no-history units are retained.
-    const contacts = async () => summary ? readByIds(current.map(u => u.unit_id).sort(), (ids, from, to) => {
-      queryCounts.contacts++;
-      return supabase.from('project_unit')
-        .select('project_id,unit_id,contact:consultation!consultation_unit_project_fkey(project_id,unit_id,customer_id,id,consulted_at,next_action_at,structured_tags)', { count: 'exact' })
-        .eq('project_id', projectId).gte('unit_id', ids[0]).lte('unit_id', ids[ids.length - 1]).eq('contact.project_id', projectId)
-        .or(ids.map(id => `and(unit_id.eq.${id},customer_id.eq.${currentCustomer.get(id)})`).join(','), { referencedTable: 'contact' })
-        .order('unit_id').order('consulted_at', { referencedTable: 'contact', ascending: false }).order('id', { referencedTable: 'contact', ascending: false })
-        // limit 없이 현재 계약자 이력 전체: 최신 기록이 부재여도 마지막 실제 접촉일을 정확히 계산
-        .range(from, to).returns<{ project_id: string; unit_id: string; contact: ContactRecord[] }[]>();
-    // 64 pairs fit below an 8KB gateway limit, including the range bounds.
-    // 서버(iad1)↔DB(서울) 왕복이 커서 14개 배치를 4개씩 동시에 읽는다. 요청 수는 동일.
-    }, 64, 4) : { data: [], error: false };
+    // limit 없이 현재 계약자 이력 전체: 최신 기록이 부재여도 마지막 실제 접촉일을 정확히 계산.
+    // (세대, 현재 계약자) 쌍이 정확히 일치하는 기록만 남긴다(이전 계약자 기록 제외 — 기존 OR 필터와 같은 조건).
+    const contacts = async () => {
+      const all = await contactsRead;
+      if (all.error) return { data: [] as { project_id: string; unit_id: string; contact: ContactRecord[] }[], error: true };
+      const byUnit = new Map<string, ContactRecord[]>();
+      for (const row of all.data) {
+        if (row.project_id !== projectId || currentCustomer.get(row.unit_id) !== row.customer_id) continue;
+        const group = byUnit.get(row.unit_id) ?? []; group.push(row); byUnit.set(row.unit_id, group);
+      }
+      return { data: [...byUnit].map(([unit_id, contact]) => ({ project_id: projectId, unit_id, contact })), error: false };
+    };
     // Additive schema capabilities were verified in the disposable gate. This narrow
     // cast affects only the table name; .returns enforces the selected projection type.
     const special = () => readAllRows((from, to) => {

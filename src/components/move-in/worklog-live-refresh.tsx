@@ -4,7 +4,7 @@
 // - Realtime 연결 시: INSERT/UPDATE 이벤트를 300ms 디바운스 후 router.refresh().
 // - Realtime 미연결(끊김/실패) 시: 10초 간격 폴백 폴링.
 // - 탭이 다시 보이면 즉시 한 번 갱신 (백그라운드에 있는 동안 놓친 변경 반영).
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
 
@@ -22,6 +22,13 @@ export function WorklogLiveRefresh({ projectId }: { projectId: string }) {
   // (매 렌더마다 채널을 새로 구독하지 않도록 useEffect 의존성은 projectId만 둔다.)
   const statusRef = useRef<ConnectionStatus>("disconnected");
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // 업무일지 1회 서버 집계가 폴백 주기(10초)보다 길 수 있어, 이전 갱신이 끝나기 전에는 새 갱신을 겹쳐 보내지 않는다.
+  const [refreshing, startRefresh] = useTransition();
+  const refreshingRef = useRef(false);
+
+  useEffect(() => {
+    refreshingRef.current = refreshing;
+  }, [refreshing]);
 
   useEffect(() => {
     statusRef.current = status;
@@ -31,7 +38,8 @@ export function WorklogLiveRefresh({ projectId }: { projectId: string }) {
     const supabase = createBrowserClient();
 
     const refreshNow = () => {
-      router.refresh();
+      if (refreshingRef.current) return;
+      startRefresh(() => router.refresh());
       setLastRefreshedAt(new Date());
     };
 

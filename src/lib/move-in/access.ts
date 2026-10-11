@@ -30,13 +30,21 @@ export const requireMoveInAccess = cache(async function requireMoveInAccess(
     return { ok: false, kind: "unauthenticated" };
   }
 
-  const { data: membership, error: memberError } = await supabase
-    .from("project_member")
-    .select("id, role, active")
-    .eq("project_id", projectId)
-    .eq("user_id", userData.user.id)
-    .eq("active", true)
-    .maybeSingle();
+  // 멤버십·프로젝트 조회는 서로 독립이라 동시에 보낸다. 판정 순서(멤버십 → 프로젝트)는 그대로 유지하고,
+  // 프로젝트 행은 RLS로 보호되며 멤버십 통과 전에는 사용하지 않는다.
+  const [
+    { data: membership, error: memberError },
+    { data: project, error: projectError },
+  ] = await Promise.all([
+    supabase
+      .from("project_member")
+      .select("id, role, active")
+      .eq("project_id", projectId)
+      .eq("user_id", userData.user.id)
+      .eq("active", true)
+      .maybeSingle(),
+    supabase.from("project").select("id, name").eq("id", projectId).maybeSingle(),
+  ]);
 
   if (memberError) {
     return { ok: false, kind: "unavailable" };
@@ -50,12 +58,6 @@ export const requireMoveInAccess = cache(async function requireMoveInAccess(
   ) {
     return { ok: false, kind: "forbidden" };
   }
-
-  const { data: project, error: projectError } = await supabase
-    .from("project")
-    .select("id, name")
-    .eq("id", projectId)
-    .maybeSingle();
 
   if (projectError) {
     return { ok: false, kind: "unavailable" };
