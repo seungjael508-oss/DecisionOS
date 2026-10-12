@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { deriveSpecialManagementReasons, resolveEffectiveMoveInIntent, specialManagementPriority } from '@/lib/move-in/intent';
 import { usesAssignedCustomerScope } from '@/lib/move-in/field-access';
+import { classifyContactOutcome } from '@/lib/move-in/contact-outcome';
 import type { AnomalyReason, AuthorizedAccess, CurrentUnitRecord, CurrentUnitSnapshot, DealRecord, DealSummary, LedgerSummaryRow, ContactRecord, ContactStatus, SourceTag, SpecialRecord } from '@/lib/move-in/ledger-types';
 
 export function currentRelationAnomaly(unit: CurrentUnitRecord, projectId: string): AnomalyReason | null {
@@ -60,21 +61,19 @@ function currentDeal(snapshot: CurrentUnitSnapshot, deal: DealRecord | null): De
     saleListingStatus: deal.sale_listing_status, jeonseListingStatus: deal.jeonse_listing_status, monthlyRentListingStatus: deal.monthly_rent_listing_status,
   };
 }
-const isAbsentAttempt = (c: ContactRecord) => c.structured_tags?.legacy_grade === '부재';
-const latestOf = (rows: readonly ContactRecord[]) => rows.reduce<ContactRecord | null>((a, c) => !a || c.consulted_at > a.consulted_at || (c.consulted_at === a.consulted_at && c.id > a.id) ? c : a, null);
+export const latestOf = (rows: readonly ContactRecord[]) => rows.reduce<ContactRecord | null>((a, c) => !a || c.consulted_at > a.consulted_at || (c.consulted_at === a.consulted_at && c.id > a.id) ? c : a, null);
 /**
  * 현재 ACTIVE 계약자 본인 상담만으로 접촉상태를 계산한다(이전 계약자 기록은 버림).
- * 부재는 시도일만 갱신하고 최종 접촉일에는 넣지 않는다. occupancy.last_contact_at은
- * 구 RPC가 부재 시각으로 덮어쓴 값일 수 있어, 부재 시각과 같으면 실제 접촉으로 보지 않는다.
+ * 현재 상태 = 가장 최근 상담 1건의 최종 결과. 과거에 통화했어도 최신이 부재면 부재다.
+ * 최종접촉 = 마지막 접촉 시도 시각(부재 포함). 수기 입력된 occupancy.last_contact_at이 더 늦으면 그 값.
  */
 export function resolveContactState(snapshot: CurrentUnitSnapshot, contacts: readonly ContactRecord[], occupancyLastContactAt: string | null, legacyGrade: string | null) {
   const own = contacts.filter(c => c.project_id === snapshot.projectId && c.unit_id === snapshot.unitId && c.customer_id === snapshot.currentCustomerId);
-  const latest = latestOf(own), latestReal = latestOf(own.filter(c => !isAbsentAttempt(c)));
-  const absentTimes = new Set(own.filter(isAbsentAttempt).map(c => Date.parse(c.consulted_at)));
-  const occupancyReal = occupancyLastContactAt && !absentTimes.has(Date.parse(occupancyLastContactAt)) ? occupancyLastContactAt : null;
-  const lastContact = [latestReal?.consulted_at ?? null, occupancyReal].filter((v): v is string => !!v).sort((a, b) => Date.parse(a) - Date.parse(b)).at(-1) ?? null;
-  // 이력이 없는 기존 부재 등급 세대는 저장된 값을 근거로 부재로 표시(등급은 바꾸지 않음)
-  const contactStatus: ContactStatus = latest ? (isAbsentAttempt(latest) ? 'ABSENT' : 'CONTACTED') : lastContact ? 'CONTACTED' : legacyGrade === '부재' ? 'ABSENT' : 'NONE';
+  const latest = latestOf(own);
+  const lastContact = [latest?.consulted_at ?? null, occupancyLastContactAt].filter((v): v is string => !!v).sort((a, b) => Date.parse(a) - Date.parse(b)).at(-1) ?? null;
+  // 이력이 없는 기존 부재·상담거절 등급 세대는 저장된 값을 근거로 표시(등급은 바꾸지 않음)
+  const contactStatus: ContactStatus = latest ? classifyContactOutcome(latest.structured_tags?.legacy_grade, latest.content)
+    : lastContact ? 'CONTACTED' : legacyGrade === '부재' ? 'ABSENT' : legacyGrade === '상담거절' ? 'REFUSED' : 'NONE';
   return { latest, lastContact, lastAttempt: latest?.consulted_at ?? null, contactStatus };
 }
 export function toLedgerSummaryRow(unit: CurrentUnitRecord, snapshot: CurrentUnitSnapshot, deal: DealRecord | null, contacts: readonly ContactRecord[]): LedgerSummaryRow {

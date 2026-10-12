@@ -3,7 +3,7 @@ import type { LedgerClientRow, ProjectionResult } from '@/lib/move-in/ledger-typ
 import { useLedgerSummaryResult } from '@/components/move-in/ledger-summary-store';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { LEDGER_AXES, applyLedgerQuery, parseLedgerQuery, patchLedgerQuery, type LedgerStatePatch, type LedgerSortKey, type LedgerView } from '@/lib/move-in/ledger-filters';
-import { QUICK_LEDGER_FILTERS, ledgerOptions } from '@/lib/move-in/ledger-presentation';
+import { QUICK_LEDGER_FILTER_ROWS, ledgerOptions } from '@/lib/move-in/ledger-presentation';
 import { formatDateTime } from '@/lib/move-in/labels';
 import { LedgerTable } from '@/components/move-in/ledger-table';
 import { LedgerFilterMenu } from '@/components/move-in/ledger-filter-menu';
@@ -59,8 +59,8 @@ export function MasterLedgerClient({projectId,result:initialResult,initialQuery,
       <div className="mb-4 flex flex-wrap items-center gap-3"><h1 className="text-2xl font-semibold">통합원장</h1>
         <p className="text-sm text-neutral-600">현재 snapshot · {formatDateTime(result.snapshotAsOf)}</p></div>
       <fieldset disabled={busy} className="mb-4 space-y-3 rounded border border-neutral-300 p-4"><legend className="sr-only">원장 검색과 필터</legend>
-        <div className="flex flex-wrap gap-2" aria-label="빠른필터">{QUICK_LEDGER_FILTERS.map(p=><button type="button" key={p.label} aria-label={`빠른필터 ${p.label}`}
-          onClick={()=>update(p.patch)} className="rounded border px-3 py-1.5 text-sm">{p.label}</button>)}</div>
+        <div className="space-y-2" aria-label="빠른필터">{QUICK_LEDGER_FILTER_ROWS.map((row,i)=><div key={i} className="flex flex-wrap gap-2">{row.map(p=><button type="button" key={p.label} aria-label={`빠른필터 ${p.label}`}
+          onClick={()=>update(p.patch)} className="rounded border px-3 py-1.5 text-sm">{p.label}</button>)}</div>)}</div>
         <div className="flex flex-wrap gap-3">{(['unit','customer','phone'] as const).map((key,i)=><label key={key} className="text-sm">{['호수','계약자','전화번호'][i]} 검색
           <input aria-label={`${['호수','계약자','전화번호'][i]} 검색`} value={state.text[key]??''} onChange={e=>update({text:{[key]:e.target.value}})} className="ml-2 w-36 rounded border px-2 py-1" />
         </label>)}</div>

@@ -24,9 +24,10 @@ export type DealRecord = {
   sale_listing_status: UnitDealTypedFields['saleListingStatus']; jeonse_listing_status: UnitDealTypedFields['jeonseListingStatus']; monthly_rent_listing_status: UnitDealTypedFields['monthlyRentListingStatus'];
   updated_at: string; offices: { brokerage_office_id: string }[];
 };
-export type ContactRecord = { project_id: string; unit_id: string; customer_id: string; id: string; consulted_at: string; next_action_at: string | null; structured_tags?: { legacy_grade?: unknown } | null };
-/** 부재 = 접촉 시도(미응답). 상담거절 등 그 외 기록은 실제 접촉으로 본다. */
-export type ContactStatus = 'CONTACTED' | 'ABSENT' | 'NONE';
+/** content는 세대별 최신 상담에만 서버에서 채운다(접촉상태 판정용, 브라우저로 보내지 않음). */
+export type ContactRecord = { project_id: string; unit_id: string; customer_id: string; id: string; consulted_at: string; next_action_at: string | null; structured_tags?: { legacy_grade?: unknown } | null; content?: string | null };
+/** 최신 상담 기준 접촉상태(contact-outcome 판정). 등급(legacy_grade)과는 별개인 화면 파생값. */
+export type ContactStatus = 'CONTACTED' | 'REFUSED' | 'ABSENT' | 'NONE';
 export type DealSummary = UnitDealTypedFields & { id: string; consentStatus: string; dealStatus: string; enabledTypes: string[]; officeIds: string[]; updatedAt: string };
 export type CurrentUnitSnapshot = {
   projectId: string; unitId: string; currentContractId: string; currentCustomerId: string;

@@ -5,7 +5,7 @@ import { requireMoveInAccess } from '@/lib/move-in/access';
 import { createServerClient } from '@/lib/supabase/server';
 import { readAllRows } from '@/lib/supabase/read-all';
 import { readByUuidRanges } from '@/lib/supabase/read-by-uuid-range';
-import { currentIdentityRevision, currentRelationAnomaly, isCurrentUnitVisible, resolveCurrentUnitSnapshot, toLedgerSummaryRow } from '@/lib/move-in/current-unit-snapshot';
+import { currentIdentityRevision, currentRelationAnomaly, isCurrentUnitVisible, latestOf, resolveCurrentUnitSnapshot, toLedgerSummaryRow } from '@/lib/move-in/current-unit-snapshot';
 import { approvedUnitSourceTags } from '@/lib/move-in/ledger-source-tags.server';
 import type { AnomalyReason, CurrentUnitRecord, CurrentUnitSnapshot, DealRecord, SpecialRecord, ContactRecord, LedgerSummaryRow, ProjectionResult, QueryCounts } from '@/lib/move-in/ledger-types';
 
@@ -85,7 +85,25 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
         if (row.project_id !== projectId || currentCustomer.get(row.unit_id) !== row.customer_id) continue;
         const group = byUnit.get(row.unit_id) ?? []; group.push(row); byUnit.set(row.unit_id, group);
       }
+      const withContent = await attachLatestContent(byUnit);
+      if (!withContent) return { data: [] as { project_id: string; unit_id: string; contact: ContactRecord[] }[], error: true };
       return { data: [...byUnit].map(([unit_id, contact]) => ({ project_id: projectId, unit_id, contact })), error: false };
+    };
+    // 접촉상태 판정은 세대별 최신 상담 내용만 필요하다. 전체 이력 content를 받으면 원장 응답이 커지므로
+    // 최신 상담 id만 따로 조회한다(같은 세션 RLS, 150건씩 병렬 — URL 길이 제한).
+    const attachLatestContent = async (byUnit: Map<string, ContactRecord[]>) => {
+      const latestIds = [...byUnit.values()].map(group => latestOf(group)!.id).filter(id => uuid.test(id));
+      const chunks = Array.from({ length: Math.ceil(latestIds.length / 150) }, (_, i) => latestIds.slice(i * 150, (i + 1) * 150));
+      const results = await Promise.all(chunks.map(ids => {
+        queryCounts.contacts++;
+        return supabase.from('consultation').select('id,content').eq('project_id', projectId).in('id', ids).returns<{ id: string; content: string | null }[]>();
+      }));
+      if (results.some(r => r.error)) return false;
+      const contentById = new Map(results.flatMap(r => r.data ?? []).map(r => [r.id, r.content]));
+      for (const [unitId, group] of byUnit) {
+        byUnit.set(unitId, group.map(c => contentById.has(c.id) ? { ...c, content: contentById.get(c.id) } : c));
+      }
+      return true;
     };
     // Additive schema capabilities were verified in the disposable gate. This narrow
     // cast affects only the table name; .returns enforces the selected projection type.
