@@ -30,7 +30,10 @@ test('화면 표·인쇄 헤더', () => {
   const screen = renderToStaticMarkup(createElement(LedgerTable, { rows: [row], assignees: {} }));
   const print = renderToStaticMarkup(createElement(LedgerPrintTable, { rows: [ledgerCells(row, {})], asOf: 'x' }));
   for (const html of [screen, print]) { expect(html).toContain('최종접촉'); expect(html).not.toContain('다음접촉'); }
-  expect((screen.match(/role="cell"/g) ?? []).length).toBe(EXPECTED.length);
+  // 최근시도는 기본 화면에서만 숨기고 인쇄·엑셀에는 유지
+  expect((screen.match(/role="cell"/g) ?? []).length).toBe(EXPECTED.length - 1);
+  expect(screen).not.toContain('최근시도');
+  expect(print).toContain('최근시도');
 });
 test('엑셀 내보내기 헤더·행', async () => {
   const wb = new ExcelJS.Workbook(); await wb.xlsx.load(Buffer.from(await buildLedgerWorkbook([ledgerCells(row, {})]), 'base64') as never);

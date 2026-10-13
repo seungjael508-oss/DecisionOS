@@ -4,8 +4,11 @@ import { FUNDING_STATUS_LABELS, MOVE_IN_STATUS_LABELS, OPERATIONAL_INTENT_LABELS
 import { SPECIAL_REASON_LABELS } from '@/lib/move-in/intent';
 
 export const LEDGER_COLUMNS = ['동/호수','현재등급','전화번호','납부내역/잔금','계약자','계약자 주소','입주의향','자금/대출','입주진행','매매/임대','접촉상태','최종접촉','최근시도','담당자','특별관리','금전소비대차','입주예약','이사예정일','문제세대','관리사유'] as const;
+// 최종접촉이 마지막 시도 시각이 되면서 최근시도와 대부분 같아 기본 화면에서만 숨김(값·인쇄·엑셀은 유지)
+export const LEDGER_SCREEN_HIDDEN_COLUMNS: ReadonlySet<string> = new Set(['최근시도']);
 export const LEDGER_AXIS_LABELS: Record<LedgerAxis,string> = {building:'동',unit:'호수',customer:'계약자',phone:'전화번호',grade:'현재등급',intent:'입주의향',funding:'자금/대출',moveIn:'입주진행',assignee:'담당자',specialReason:'특별관리',nextContact:'다음접촉',contactStatus:'접촉상태',deal:'매매/임대',payment:'납부상태',loanAgreement:'금전소비대차',moveReservation:'입주예약',problemHousehold:'문제세대'};
-export const CONTACT_STATUS_LABELS: Record<string,string> = {CONTACTED:'접촉',ABSENT:'부재',NONE:'미접촉'};
+// 부재 = 결번·미수신·연락불능 등 부재성 상태 전체(contact-outcome). 횟수별로 나누지 않는다
+export const CONTACT_STATUS_LABELS: Record<string,string> = {CONTACTED:'접촉완료',ABSENT:'부재',REFUSED:'상담거절',NONE:'미접촉'};
 // 부재·상담거절은 접촉 결과로 분리. 기존에 등급값으로 저장된 세대는 원본 확인 전까지 A~D로 바꾸지 않고 확인필요로만 표시
 const CONTACT_RESULT_GRADES = new Set(['부재','상담거절']);
 function gradeLabel(grade: string | null) { return grade && CONTACT_RESULT_GRADES.has(grade) ? `확인필요 (기존 ${grade})` : grade ?? '미등록'; }
@@ -31,8 +34,12 @@ function reservationLabel(value: string | undefined) { return value==='BOOKED'?'
 function preset(label: string, axis: LedgerAxis, value: string): {label:string;patch:LedgerStatePatch} {
   return {label,patch:{axes:{[axis]:{include:[value],exclude:[]}}}};
 }
-export const QUICK_LEDGER_FILTERS = [preset('C','grade','C'),preset('D','grade','D'),preset('대출필요','funding','LOAN_NEEDED'),preset('대출한도부족','funding','LOAN_LIMIT_SHORTAGE'),
-  preset('매매','intent','SALE_TRANSFER'),preset('전세/월세','intent','RENT'),preset('특별관리','specialReason','all'),preset('오늘재콜','nextContact','TODAY'),preset('미확정','intent','UNDECIDED')];
+// 부재는 등급이 아닌 접촉상태 축이라 C·D와 AND로 겹쳐 걸린다(C + 부재 = C등급 중 부재 세대)
+export const QUICK_LEDGER_FILTER_ROWS = [
+  [preset('C','grade','C'),preset('D','grade','D'),preset('부재','contactStatus','ABSENT'),preset('대출필요','funding','LOAN_NEEDED'),preset('대출한도부족','funding','LOAN_LIMIT_SHORTAGE'),
+    preset('매매','intent','SALE_TRANSFER'),preset('전세/월세','intent','RENT')],
+  [preset('특별관리','specialReason','all'),preset('오늘재콜','nextContact','TODAY'),preset('미확정','intent','UNDECIDED')],
+];
 
 export function ledgerOptionLabel(axis: LedgerAxis, value: string, assignees: Record<string,string>): string {
   if(axis==='loanAgreement'||axis==='problemHousehold')return value==='TARGET'?'대상':value==='NOT_TARGET'?'비대상':value==='UNKNOWN'?'원천 확인필요':'빈값';
@@ -54,7 +61,7 @@ export function ledgerOptionLabel(axis: LedgerAxis, value: string, assignees: Re
 export function ledgerOptions(rows: readonly LedgerClientRow[], axis: LedgerAxis, assignees: Record<string,string>) {
   if(axis==='loanAgreement'||axis==='problemHousehold')return ['TARGET','NOT_TARGET','UNKNOWN'].map(value=>({value,label:ledgerOptionLabel(axis,value,assignees)}));
   if(axis==='moveReservation')return ['BOOKED','CANCELLED','NONE','UNKNOWN'].map(value=>({value,label:ledgerOptionLabel(axis,value,assignees)}));
-  if(axis==='contactStatus')return ['CONTACTED','ABSENT','NONE'].map(value=>({value,label:ledgerOptionLabel(axis,value,assignees)}));
+  if(axis==='contactStatus')return ['CONTACTED','ABSENT','REFUSED','NONE'].map(value=>({value,label:ledgerOptionLabel(axis,value,assignees)}));
   const values=new Set<string>([LEDGER_BLANK]);
   if(axis==='nextContact') for(const v of ['TODAY','OVERDUE','FUTURE']) values.add(v);
   else for(const row of rows) {
