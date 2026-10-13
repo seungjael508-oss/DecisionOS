@@ -1,0 +1,17 @@
+# 운영 배포 스냅샷 브랜치 — 비밀값·개인정보·원본 데이터·빌드 산출물 제외
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+.env*
+!.env.example
+*.xlsx
+*.xls
+*.csv
+.vercel/
+# 원본 Excel에서 생성된 세대별 납부·관리 데이터(동호수 결합 금융정보). 해시/파일 UID는 MANIFEST에 기록, Vercel에서 재다운로드
+src/lib/move-in/ledger-management-data.server.ts
+src/lib/move-in/payment-projection-source.server.ts
+# 계약자 명부에서 생성한 주소(개인정보). 원본 SHA는 파일 상단 메타에 기록
+src/lib/move-in/contract-address-data.server.ts

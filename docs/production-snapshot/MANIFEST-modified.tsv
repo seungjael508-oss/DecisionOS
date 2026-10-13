@@ -1,0 +1,6 @@
+# 수정본 = 원본 201개 + 아래 변경. 운영 미배포
+# sha256	status	path
+9bda84fd1f4a0f676bb9b1f59d40c95e1b31847c74c527614f323e213488445a	MODIFIED(orig 10fc72bccc71de22)	src/lib/move-in/ledger-presentation.ts
+c74c5375a8011ddb4c481e7a435054a31e08d55a7ac04436d1fffffd82227de0	ADDED_TEST_ONLY	tests/unit/ledger-columns.test.ts
+cb8ccdf4cf7eabe34e76b14d8aa4df54d2fd885792f8e7c63f4c45b862ff7694	ADDED_TEST_ONLY	vitest.config.ts
+# fingerprint(201 app files, same method as original) = adff4d95ffbd4d596d13cfa3366655d18f63702e5524b11a6f0cce43ee574602

@@ -1,0 +1,115 @@
+import { cache } from "react";
+import { createServerClient } from "@/lib/supabase/server";
+import type { Database } from "@/lib/supabase/types";
+
+export type MoveInRole = Extract<
+  Database["public"]["Enums"]["project_member_role"],
+  "COUNSELOR" | "PROJECT_ADMIN" | "CLIENT_MANAGER"
+>;
+
+export type MoveInAccess =
+  | {
+      ok: true;
+      projectId: string;
+      projectName: string;
+      role: MoveInRole;
+      memberId: string;
+      userId: string;
+    }
+  | { ok: false; kind: "unauthenticated" | "forbidden" | "unavailable" };
+
+// 레이아웃·페이지·조회 함수가 같은 렌더 요청에서 권한 결과를 공유한다.
+// React cache는 요청마다 분리되므로 다른 사용자나 다음 요청으로 권한을 재사용하지 않는다.
+export const requireMoveInAccess = cache(async function requireMoveInAccess(
+  projectId: string,
+): Promise<MoveInAccess> {
+  const supabase = await createServerClient();
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !userData.user) {
+    return { ok: false, kind: "unauthenticated" };
+  }
+
+  // 멤버십·프로젝트 조회는 서로 독립이라 동시에 보낸다. 판정 순서(멤버십 → 프로젝트)는 그대로 유지하고,
+  // 프로젝트 행은 RLS로 보호되며 멤버십 통과 전에는 사용하지 않는다.
+  const [
+    { data: membership, error: memberError },
+    { data: project, error: projectError },
+  ] = await Promise.all([
+    supabase
+      .from("project_member")
+      .select("id, role, active")
+      .eq("project_id", projectId)
+      .eq("user_id", userData.user.id)
+      .eq("active", true)
+      .maybeSingle(),
+    supabase.from("project").select("id, name").eq("id", projectId).maybeSingle(),
+  ]);
+
+  if (memberError) {
+    return { ok: false, kind: "unavailable" };
+  }
+
+  if (
+    !membership ||
+    (membership.role !== "COUNSELOR" &&
+      membership.role !== "PROJECT_ADMIN" &&
+      membership.role !== "CLIENT_MANAGER")
+  ) {
+    return { ok: false, kind: "forbidden" };
+  }
+
+  if (projectError) {
+    return { ok: false, kind: "unavailable" };
+  }
+
+  if (!project) {
+    return { ok: false, kind: "forbidden" };
+  }
+
+  return {
+    ok: true,
+    projectId: project.id,
+    projectName: project.name,
+    role: membership.role,
+    memberId: membership.id,
+    userId: userData.user.id,
+  };
+});
+
+export function accessMessage(kind: Exclude<MoveInAccess, { ok: true }>["kind"]) {
+  if (kind === "unauthenticated") return "로그인이 필요합니다.";
+  if (kind === "forbidden") return "이 프로젝트에 접근할 권한이 없습니다.";
+  return "데이터를 불러오지 못했습니다.";
+}
+
+export function requireProjectAdmin(
+  access: MoveInAccess,
+): access is Extract<MoveInAccess, { ok: true; role: "PROJECT_ADMIN" }> {
+  return access.ok && access.role === "PROJECT_ADMIN";
+}
+
+// 상담사 배정/현장 인력 표시이름 관리. PROJECT_ADMIN과 CLIENT_MANAGER(시행사 관리자) 모두 허용한다.
+// DB에서도 assign_move_in_customers / update_move_in_field_member_display_name RPC가
+// 동일하게 private.require_field_manage_access로 다시 검증하므로, 이 함수는 UI 게이팅용이다.
+export function canManageAssignments(access: MoveInAccess): boolean {
+  return access.ok && (access.role === "PROJECT_ADMIN" || access.role === "CLIENT_MANAGER");
+}
+
+/** Special-case metadata is field-operation data; counselors retain read-only access. */
+export function canManageSpecialCase(access: MoveInAccess): boolean {
+  return access.ok && (access.role === "PROJECT_ADMIN" || access.role === "CLIENT_MANAGER");
+}
+
+// 계약자 정보(이름/전화번호) 수정, 전화번호 정정, 고객/계약 일괄 import는
+// CLIENT_MANAGER에게 절대 열지 않는다. PROJECT_ADMIN 전용으로 고정한다.
+export function requireCustomerMasterAdmin(access: MoveInAccess): boolean {
+  return access.ok && access.role === "PROJECT_ADMIN";
+}
+
+// 계약 생성/해지, 명의변경(holder transfer), 원장(ledger) import도 PROJECT_ADMIN 전용으로 고정한다.
+// 관련 RPC(create_contract/cancel_contract/transfer_contract_holder)는
+// private.require_project_admin을 그대로 쓰므로 DB에서도 CLIENT_MANAGER는 항상 거부된다.
+export function requireContractAdmin(access: MoveInAccess): boolean {
+  return access.ok && access.role === "PROJECT_ADMIN";
+}

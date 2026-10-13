@@ -1,0 +1,9 @@
+import type {CreateMoveInConsultationInput} from './consultation';
+import type {SaveMoveInUnitDealInput} from './deals';
+import type {SaveMoveInSpecialCaseInput} from '@/app/projects/[projectId]/move-in/deals/actions';
+import type {UnitWorkspace,WorkspaceIdentity} from './unit-workspace-types';
+import type {LedgerSummaryRow} from './ledger-types';
+export type WorkspaceSaveIdentity={projectId:string;unitId:string;identity:WorkspaceIdentity;returnTo:string};
+export type WorkspaceChange={kind:'consultation';input:CreateMoveInConsultationInput}|{kind:'deal';input:SaveMoveInUnitDealInput}|{kind:'special';input:SaveMoveInSpecialCaseInput};
+export type WorkspaceSaveRequest=WorkspaceSaveIdentity&{change:WorkspaceChange;afterSave:'stay'|'next'};
+export type WorkspaceSaveResult={ok:true;workspace:UnitWorkspace;row:LedgerSummaryRow;destination?:string}|{ok:false;code:'invalid_input'|'forbidden'|'stale_contract'|'context_failed'|'save_failed'|'refresh_failed';committed:boolean|'unknown';destination?:string};
