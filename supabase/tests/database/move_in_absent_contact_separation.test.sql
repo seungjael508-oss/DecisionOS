@@ -54,20 +54,20 @@ select ok(not exists(select 1 from public.get_move_in_today_queue('20000000-0000
 select is((select last_contact_at from public.get_move_in_today_queue('20000000-0000-4000-8000-000000000001',now())
   where unit_id='8f000000-0000-4000-8000-0000000000b1'),(select real_at from t1),'queue 최종 접촉일 = 실제 접촉일');
 
--- 3) 부재만 있는 세대: 등급 미등록 유지, 시도 30일 경과 → 부재 재접촉 대상
+-- 3) 부재만 있는 세대: 등급 미등록 유지. C·D 집중관리(20261015) 이후 등급 미등록 세대는 오늘 관리대상 아님
 set local role authenticated;
 select lives_ok($$select pg_temp.save('8f000000-0000-4000-8000-0000000000b2','부재')$$,'접촉 이력 없는 세대 부재 저장');
 reset role;
 select is((pg_temp.occ('8f000000-0000-4000-8000-0000000000b2')).legacy_grade,null::text,'부재는 등급값으로 저장되지 않음');
 select is((pg_temp.occ('8f000000-0000-4000-8000-0000000000b2')).last_contact_at,null::timestamptz,'부재만 있으면 최종 접촉일 없음');
 update public.consultation set consulted_at = consulted_at - interval '30 days' where unit_id='8f000000-0000-4000-8000-0000000000b2';
-select ok(exists(select 1 from public.get_move_in_today_queue('20000000-0000-4000-8000-000000000001',now())
-  where unit_id='8f000000-0000-4000-8000-0000000000b2' and reason_codes @> array['ABSENCE_RETRY']),'최신 기록이 부재인 세대가 부재 재접촉에서 누락되지 않음');
+select ok(not exists(select 1 from public.get_move_in_today_queue('20000000-0000-4000-8000-000000000001',now())
+  where unit_id='8f000000-0000-4000-8000-0000000000b2'),'등급 미등록 부재 세대는 C·D 집중관리 대상 아님');
 
--- 4) 기존 부재 등급값 세대(구 데이터)는 그대로 부재 재접촉 대상, 등급 자동 복원 없음
+-- 4) 기존 부재 등급값 세대(구 데이터): 등급 자동 복원 없음, C·D가 아니므로 오늘 관리대상 아님
 update public.unit_occupancy_status set legacy_grade='부재', last_contact_at=now()-interval '30 days' where unit_id='8f000000-0000-4000-8000-0000000000b3';
-select ok(exists(select 1 from public.get_move_in_today_queue('20000000-0000-4000-8000-000000000001',now())
-  where unit_id='8f000000-0000-4000-8000-0000000000b3' and reason_codes @> array['ABSENCE_RETRY']),'기존 부재 등급 세대 부재 재접촉 유지');
+select ok(not exists(select 1 from public.get_move_in_today_queue('20000000-0000-4000-8000-000000000001',now())
+  where unit_id='8f000000-0000-4000-8000-0000000000b3'),'기존 부재 등급 세대는 C·D 집중관리 대상 아님');
 select is((pg_temp.occ('8f000000-0000-4000-8000-0000000000b3')).legacy_grade,'부재','기존 부재 등급값 자동 변경 없음');
 
 -- 5) 상담거절: 기본등급은 유지(접촉 결과로만 기록), 고객 응답이 있었으므로 실제 접촉일은 갱신

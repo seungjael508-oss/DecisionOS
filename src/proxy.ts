@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { isProtectedPath } from "@/lib/auth/paths";
+import { isRecoverySession, recoveryForwardUrl } from "@/lib/auth/recovery-forward";
 
 function copyCookies(from: NextResponse, to: NextResponse) {
   from.cookies.getAll().forEach((cookie) => {
@@ -17,6 +18,14 @@ export async function proxy(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   const pathname = request.nextUrl.pathname;
+
+  const recovery = recoveryForwardUrl(request.nextUrl);
+  if (recovery) {
+    const response = NextResponse.redirect(recovery);
+    response.headers.set("Cache-Control", "private, no-store");
+    response.headers.set("Referrer-Policy", "no-referrer");
+    return response;
+  }
 
   if (!url || !publishableKey) {
     if (isProtectedPath(pathname)) {
@@ -65,7 +74,14 @@ export async function proxy(request: NextRequest) {
     return copyCookies(supabaseResponse, NextResponse.redirect(url));
   }
 
-  if (signedIn && pathname === "/login") {
+  if (signedIn && isRecoverySession(data?.claims) && isProtectedPath(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/reset-password";
+    url.search = "";
+    return copyCookies(supabaseResponse, NextResponse.redirect(url));
+  }
+
+  if (signedIn && pathname === "/login" && !isRecoverySession(data?.claims)) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     url.search = "";

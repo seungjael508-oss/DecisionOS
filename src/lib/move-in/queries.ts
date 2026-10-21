@@ -31,7 +31,10 @@ import {
 } from "@/lib/move-in/deals";
 import { SPECIAL_REASON_LABELS } from "@/lib/move-in/intent";
 import { toSpecialCaseMetadata, type SpecialCaseMetadata, type SpecialCaseRow } from "@/lib/move-in/special-case";
-import { sortUnits, type UnitListRow } from "@/lib/move-in/filters";
+import { matchesTodayQueueFilter, sortUnits, type UnitListRow } from "@/lib/move-in/filters";
+import { isVisitTargetStatus, type VisitTargetStatus } from "@/lib/move-in/absence-visit";
+import { loadDGradeReasons } from "@/lib/move-in/d-grade-reasons.server";
+import type { DGradeReason } from "@/lib/move-in/d-grade-reasons";
 import { createServerClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/types";
 import { buildDashboardActivity, computeMoveInKpis, legacyDashboardSnapshot, type DashboardEvent, type DashboardGrade } from "@/lib/move-in/kpis";
@@ -156,6 +159,8 @@ export type UnitDetail = {
   contractAddress?: string | null;
   phoneQuality: string | null;
   assignedCounselorId: string | null;
+  /** project_member.display_name. 이름 미등록·조회 불가면 null(화면은 '담당상담사') */
+  assignedCounselorName?: string | null;
   occupancy: OccupancyRow | null;
   relatedUnits: RelatedHolderUnit[];
 };
@@ -168,6 +173,8 @@ export type ConsultationHistoryRow = {
   content: string;
   nextActionAt: string | null;
   counselorId: string;
+  /** project_member.display_name. 이름 미등록·조회 불가면 null(화면은 '담당상담사') */
+  counselorName?: string | null;
   previousHolder?: boolean;
   sourceHolder?: string | null;
   legacyImported?: boolean;
@@ -226,6 +233,7 @@ export async function loadMoveInSpecialCaseProjection(
     legacyGrade,
     fundingStatus: occupancy?.funding_status ?? null,
     manuallyFlagged: Boolean((special as SpecialCaseRow | null)?.manually_flagged),
+    visitRequired: Boolean((special as SpecialCaseRow | null)?.visit_required),
   });
   const reasons = intent.specialReasons ?? [];
   return {
@@ -491,13 +499,13 @@ export async function loadUnitDetail(
 
   if (usesAssignedCustomerScope(projectId, access.role) && assignedCounselorId !== access.memberId) return { kind: "missing" };
 
-  const consultationResult = await readAllRows((from, to) => supabase
+  const [consultationResult, counselorNames] = await Promise.all([readAllRows((from, to) => supabase
     .from("consultation")
     .select("id, customer_id, consulted_at, contact_type, purpose, content, next_action_at, counselor_id, channel, structured_tags", { count: "exact" })
     .eq("project_id", projectId)
     .eq("unit_id", unitId)
     .order("consulted_at", { ascending: false })
-    .order("id", { ascending: false }).range(from, to));
+    .order("id", { ascending: false }).range(from, to)), loadCounselorNames(projectId)]);
   if (consultationResult.error) return { kind: "error" };
   const sourceKeyCounts = new Map<string, number>();
   for (const row of consultationResult.data) {
@@ -519,6 +527,7 @@ export async function loadUnitDetail(
       customerPhone,
       phoneQuality,
       assignedCounselorId,
+      assignedCounselorName: assignedCounselorId ? counselorNames.get(assignedCounselorId) ?? null : null,
       occupancy,
       customerId,
       contractId,
@@ -535,6 +544,7 @@ export async function loadUnitDetail(
       content: row.content,
       nextActionAt: row.next_action_at,
       counselorId: row.counselor_id,
+      counselorName: counselorNames.get(row.counselor_id) ?? null,
       legacyImported: row.channel === "LEGACY_IMPORT",
       legacyCounselorName: row.structured_tags && typeof row.structured_tags === "object" && !Array.isArray(row.structured_tags) && typeof row.structured_tags.legacy_counselor_name === "string" ? row.structured_tags.legacy_counselor_name : null,
       legacyGrade: extractLegacyGrade(row.structured_tags),
@@ -703,6 +713,7 @@ export async function loadDealRows(
       legacyGrade: row.latestGrade ?? null,
       fundingStatus: row.fundingStatus,
       manuallyFlagged: special?.manually_flagged ?? false,
+      visitRequired: special?.visit_required ?? false,
     });
     const officeIds = safeDeal ? (officesByDeal.get(safeDeal.id) ?? []) : [];
     const rawConsent = safeDeal?.consent_status;
@@ -915,6 +926,23 @@ export async function loadFieldMemberNames(
   };
 }
 
+/**
+ * 상담사 member_id → project_member.display_name. 프로젝트당 1회 일괄 조회(세대·상담 건별 조회 없음).
+ * 조회 실패·권한 없음·이름 미등록이면 맵에 없음 → 화면은 '담당상담사'로 표시한다(UUID 노출 금지).
+ */
+export async function loadCounselorNames(projectId: string): Promise<Map<string, string>> {
+  try {
+    const result = await loadFieldMemberNames(projectId);
+    if (result.error) return new Map();
+    return new Map(result.members.flatMap((member): [string, string][] => {
+      const name = member.displayName?.trim();
+      return name ? [[member.memberId, name]] : [];
+    }));
+  } catch {
+    return new Map();
+  }
+}
+
 export type MemberProject = {
   id: string;
   name: string;
@@ -1007,6 +1035,10 @@ export type MoveInTodayQueueRow = MoveInTodayQueueSourceRow & {
   buildingNo: string | null;
   unitNo: string | null;
   customerName: string | null;
+  /** 현재 계약과 일치할 때만 채운다(사유 판정용, 화면 표시 안 함) */
+  currentCustomerId?: string | null;
+  /** D등급 관리 사유(서버 판정). D가 아니거나 현재 계약 확인 실패 시 빈 배열 */
+  dGradeReasons?: DGradeReason[];
   operationalIntent: import("@/lib/move-in/labels").OperationalIntent | null;
   operationalIntentAsOf: string | null;
 };
@@ -1038,6 +1070,7 @@ type TodayQueueCurrentUnitProjection = {
   occupancy: (Pick<OccupancyRow, "operational_intent" | "operational_intent_as_of"> & {
     contract: {
       contract_id: string;
+      customer_id: string;
       holder: { name: string; assigned_counselor_id: string | null } | null;
     } | null;
   }) | null;
@@ -1049,7 +1082,7 @@ async function loadCurrentQueueUnitRows(
   access: Awaited<ReturnType<typeof requireMoveInAccess>> & { ok: true },
 ): Promise<
   | { error: true; rows: [] }
-  | { error: false; rows: Array<Pick<UnitListRow, "unitId" | "currentContractId" | "customerName" | "operationalIntent" | "operationalIntentAsOf"> & { buildingNo: string; unitNo: string }> }
+  | { error: false; rows: Array<Pick<UnitListRow, "unitId" | "currentContractId" | "customerName" | "operationalIntent" | "operationalIntentAsOf"> & { buildingNo: string; unitNo: string; currentCustomerId: string | null }> }
 > {
   if (unitIds.length === 0) return { error: false, rows: [] };
 
@@ -1059,7 +1092,7 @@ async function loadCurrentQueueUnitRows(
     occupancy:unit_occupancy_status!unit_occupancy_status_project_id_unit_id_fkey(
       operational_intent,operational_intent_as_of,
       contract:contract!unit_occupancy_status_contract_id_project_id_unit_id_fkey(
-        contract_id,holder:customer!contract_customer_id_project_id_fkey(name,assigned_counselor_id)))
+        contract_id,customer_id,holder:customer!contract_customer_id_project_id_fkey(name,assigned_counselor_id)))
   `).eq("project_id", projectId).in("unit_id", ids).order("unit_id").range(from, to)
     .returns<TodayQueueCurrentUnitProjection[]>());
   if (current.error) return { error: true, rows: [] };
@@ -1074,6 +1107,7 @@ async function loadCurrentQueueUnitRows(
         buildingNo: unit.building_no,
         unitNo: unit.unit_no,
         currentContractId: unit.occupancy?.contract?.contract_id ?? null,
+        currentCustomerId: unit.occupancy?.contract?.customer_id ?? null,
         customerName: unit.occupancy?.contract?.holder?.name ?? null,
         operationalIntent: unit.occupancy?.operational_intent ?? null,
         operationalIntentAsOf: unit.occupancy?.operational_intent_as_of ?? null,
@@ -1084,7 +1118,7 @@ async function loadCurrentQueueUnitRows(
 /** Pure server-side pair: a stale contract never receives a current holder's intent. */
 export function joinMoveInTodayQueueRows(
   queueRows: MoveInTodayQueueSourceRow[],
-  currentRows: Array<Pick<UnitListRow, "unitId" | "currentContractId" | "customerName" | "operationalIntent" | "operationalIntentAsOf"> & { buildingNo?: string | null; unitNo?: string | null }>,
+  currentRows: Array<Pick<UnitListRow, "unitId" | "currentContractId" | "customerName" | "operationalIntent" | "operationalIntentAsOf"> & { buildingNo?: string | null; unitNo?: string | null; currentCustomerId?: string | null }>,
 ): MoveInTodayQueueRow[] {
   const currentByUnitAndContract = new Map(
     currentRows
@@ -1098,6 +1132,7 @@ export function joinMoveInTodayQueueRows(
       buildingNo: current?.buildingNo ?? null,
       unitNo: current?.unitNo ?? null,
       customerName: current?.customerName ?? null,
+      currentCustomerId: current?.currentCustomerId ?? null,
       operationalIntent: current?.operationalIntent ?? null,
       operationalIntentAsOf: current?.operationalIntentAsOf ?? null,
     };
@@ -1110,11 +1145,7 @@ export function filterTodayQueueRows<T extends Pick<MoveInTodayQueueRow, "reason
   filter: import("@/lib/move-in/filters").TodayFilter,
 ): T[] {
   if (filter === "all") return rows;
-  return rows.filter((row) => {
-    if (filter === "next_contact") return row.reasonCodes.includes("FOLLOW_UP_DUE");
-    if (filter === "funding") return row.reasonCodes.includes("C_GRADE_FUNDING");
-    return row.moveInStatus === "DELAYED";
-  });
+  return rows.filter((row) => matchesTodayQueueFilter(row, filter));
 }
 
 /**
@@ -1122,7 +1153,7 @@ export function filterTodayQueueRows<T extends Pick<MoveInTodayQueueRow, "reason
  * queue contract remains the currently authorized active contract for its unit.
  */
 export async function loadMoveInTodayQueueRows(projectId: string, now = new Date()): Promise<
-  { error: true; rows: MoveInTodayQueueRow[] } | { error: false; rows: MoveInTodayQueueRow[] }
+  { error: true; rows: MoveInTodayQueueRow[] } | { error: false; rows: MoveInTodayQueueRow[]; dGradeReasonUnavailable?: DGradeReason[] }
 > {
   const access = await requireMoveInAccess(projectId);
   if (!access.ok) return { error: true, rows: [] };
@@ -1151,5 +1182,93 @@ export async function loadMoveInTodayQueueRows(projectId: string, now = new Date
   }));
   const currentResult = await loadCurrentQueueUnitRows(projectId, currentQueueUnitIds(source), access);
   if (currentResult.error) return { error: true, rows: [] };
-  return { error: false, rows: joinMoveInTodayQueueRows(source, currentResult.rows) };
+  const joined = joinMoveInTodayQueueRows(source, currentResult.rows);
+  // D등급 관리 사유: 현재 계약이 확인된 D 세대만(같은 세션 RLS). 근거 조회 실패 사유는 붙이지 않는다.
+  const dUnits = joined.filter((row) => row.legacyGrade === "D" && row.currentCustomerId && row.buildingNo && row.unitNo);
+  const dReasons = await loadDGradeReasons(projectId, dUnits.map((row) => ({
+    unitId: row.unitId, contractId: row.contractId, customerId: row.currentCustomerId!, buildingNo: row.buildingNo!, unitNo: row.unitNo!,
+    currentGrade: row.legacyGrade, funding: row.fundingStatus, moveIn: row.moveInStatus,
+  })));
+  return {
+    error: false,
+    rows: joined.map((row) => ({ ...row, dGradeReasons: dReasons.byUnit.get(row.unitId) ?? [] })),
+    dGradeReasonUnavailable: dReasons.unavailable,
+  };
+}
+
+export type MoveInVisitTargetView = {
+  visitTargetId: string;
+  unitId: string;
+  contractId: string;
+  status: VisitTargetStatus;
+  absenceStreakAtOpen: number;
+  gradeBefore: string | null;
+  visitCount: number;
+  lastVisitedAt: string | null;
+  createdAt: string;
+  buildingNo: string | null;
+  unitNo: string | null;
+  customerName: string | null;
+};
+
+type VisitTargetTableRow = {
+  visit_target_id: string;
+  unit_id: string;
+  contract_id: string;
+  status: string;
+  absence_streak_at_open: number;
+  grade_before: string | null;
+  visit_count: number;
+  last_visited_at: string | null;
+  created_at: string;
+};
+
+/** 진행 중(방문 필요·재방문 필요) 방문대상. RLS가 현재 계약 행만 노출하고, 여기서 현재 계약과 다시 대조한다. */
+export async function loadOpenMoveInVisitTargets(projectId: string): Promise<
+  { error: true; rows: MoveInVisitTargetView[] } | { error: false; rows: MoveInVisitTargetView[] }
+> {
+  const access = await requireMoveInAccess(projectId);
+  if (!access.ok) return { error: true, rows: [] };
+  const supabase = await createServerClient();
+  const client = supabase as unknown as {
+    from: (table: "move_in_visit_target") => {
+      select: (columns: string) => {
+        eq: (column: "project_id", value: string) => {
+          in: (column: "status", values: string[]) => {
+            order: (column: "created_at") => Promise<{ data: VisitTargetTableRow[] | null; error: unknown }>;
+          };
+        };
+      };
+    };
+  };
+  const result = await client.from("move_in_visit_target")
+    .select("visit_target_id,unit_id,contract_id,status,absence_streak_at_open,grade_before,visit_count,last_visited_at,created_at")
+    .eq("project_id", projectId)
+    .in("status", ["VISIT_NEEDED", "REVISIT_NEEDED"])
+    .order("created_at");
+  if (result.error || !result.data) return { error: true, rows: [] };
+  const current = await loadCurrentQueueUnitRows(projectId, [...new Set(result.data.map((row) => row.unit_id))], access);
+  if (current.error) return { error: true, rows: [] };
+  const currentByKey = new Map(current.rows.filter((row) => row.currentContractId).map((row) => [`${row.unitId}:${row.currentContractId}`, row]));
+  return {
+    error: false,
+    rows: result.data.flatMap((row) => {
+      const unit = currentByKey.get(`${row.unit_id}:${row.contract_id}`);
+      if (!unit || !isVisitTargetStatus(row.status)) return [];
+      return [{
+        visitTargetId: row.visit_target_id,
+        unitId: row.unit_id,
+        contractId: row.contract_id,
+        status: row.status,
+        absenceStreakAtOpen: row.absence_streak_at_open,
+        gradeBefore: row.grade_before,
+        visitCount: row.visit_count,
+        lastVisitedAt: row.last_visited_at,
+        createdAt: row.created_at,
+        buildingNo: unit.buildingNo,
+        unitNo: unit.unitNo,
+        customerName: unit.customerName,
+      }];
+    }),
+  };
 }

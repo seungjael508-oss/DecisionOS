@@ -1,5 +1,7 @@
 'use client';
 import {useEffect,useLayoutEffect,useRef,useState} from 'react';
+import {D_GRADE_REASON_LABELS} from '@/lib/move-in/d-grade-reasons';
+import {canSelectDGrade} from '@/lib/move-in/consultation';
 import {UnitSaveProvider,useUnitSave} from './unit-save-context';
 import {ConsultationCreateForm} from './consultation-create-form';
 import {ConsultationHistory} from './consultation-history';
@@ -8,6 +10,7 @@ import {OccupancyStatusCards} from './occupancy-status-cards';
 import {PaymentSummaryCard} from './payment-summary-card';
 import {SpecialCaseEditor} from './special-case-editor';
 import {DealEditor} from './deal-editor';
+import {TradeFundingEditor} from './trade-funding-editor';
 import {useUnitDetailWorkspace} from './unit-detail-workspace';
 import {formatDateTime,formatUnitLabel,OCCUPANCY_INTENT_LABELS,OPERATIONAL_INTENT_LABELS} from '@/lib/move-in/labels';
 import {SPECIAL_REASON_LABELS} from '@/lib/move-in/intent';
@@ -47,7 +50,7 @@ function UnitDetailPanelContent({workspace,returnTo,onInvalidated,onRelatedSelec
  const intentLabel=snapshot.effectiveIntent==='RENT'?(snapshot.rentalType?OCCUPANCY_INTENT_LABELS[snapshot.rentalType]:'임대(유형 확인 필요)'):OPERATIONAL_INTENT_LABELS[snapshot.effectiveIntent];
  return <div className="p-4" onChangeCapture={()=>{if(!saving)guard?.setDirty(true);}}>
   <h1 className="text-2xl font-semibold">{formatUnitLabel(detail.buildingNo,detail.unitNo)} · {detail.unitType?.trim()||'타입 미등록'} · {detail.customerName??'계약자 미등록'} · {snapshot.currentGrade?`${snapshot.currentGrade}등급`:'등급 미등록'}</h1>
-  <dl className="mt-4 grid grid-cols-[7rem_1fr] gap-2 text-sm"><dt>전화번호</dt><dd><CustomerPhone raw={detail.customerPhone} status={detail.phoneQuality}/></dd><dt>계약자 주소</dt><dd>{detail.contractAddress||'미등록'}</dd><dt>현재등급</dt><dd>{snapshot.currentGrade??'미등록'}</dd><dt>최근접촉</dt><dd>{formatDateTime(detail.occupancy?.last_contact_at??null)}</dd><dt>다음접촉</dt><dd>{formatDateTime(detail.occupancy?.next_contact_at??null)}</dd></dl>
+  <dl className="mt-4 grid grid-cols-[7rem_1fr] gap-2 text-sm"><dt>전화번호</dt><dd><CustomerPhone raw={detail.customerPhone} status={detail.phoneQuality}/></dd><dt>계약자 주소</dt><dd>{detail.contractAddress||'미등록'}</dd><dt>현재등급</dt><dd>{snapshot.currentGrade??'미등록'}</dd>{snapshot.currentGrade==='D'?<><dt>D 관리사유</dt><dd>{workspace.dGradeReasons?.length?workspace.dGradeReasons.map(r=>D_GRADE_REASON_LABELS[r]).join(' · '):'사유 미확인'}{workspace.dGradeReasonUnavailable?.length?<span className="block text-xs text-red-700">{workspace.dGradeReasonUnavailable.map(r=>D_GRADE_REASON_LABELS[r]).join(' · ')} 근거 조회 실패</span>:null}</dd></>:null}<dt>최근접촉</dt><dd>{formatDateTime(detail.occupancy?.last_contact_at??null)}</dd><dt>다음접촉</dt><dd>{formatDateTime(detail.occupancy?.next_contact_at??null)}</dd></dl>
   <div aria-label="관리 태그" className="mt-3 flex flex-wrap gap-2">
    {snapshot.effectiveIntent==='MOVE_IN'?<span className="border px-2">입주</span>:null}
    {snapshot.effectiveIntent==='SALE_TRANSFER'?<span className="border px-2">전매</span>:null}
@@ -57,13 +60,14 @@ function UnitDetailPanelContent({workspace,returnTo,onInvalidated,onRelatedSelec
   <OccupancyStatusCards occupancy={detail.occupancy} intentLabel={intentLabel}/>
   {!capabilities.saveEnabled?<p className="mt-4 text-sm text-neutral-700" role="note">현재 이 상세에서는 조회와 입력 확인만 가능합니다. 원장 내 저장은 아직 지원하지 않습니다.</p>:null}
   <fieldset disabled={!capabilities.fieldWrite||saving?.busy||saving?.blocked}>
-   <ConsultationCreateForm projectId={workspace.projectId} unitId={detail.unitId} customerId={workspace.identity.customerId} returnTo={returnTo} currentFundingStatus={snapshot.funding} currentOperationalIntent={snapshot.operationalIntent} currentOccupancyIntent={snapshot.occupancyIntent} saveDisabled={!capabilities.saveEnabled||saving?.busy||saving?.blocked}/>
+   <ConsultationCreateForm projectId={workspace.projectId} unitId={detail.unitId} customerId={workspace.identity.customerId} returnTo={returnTo} currentFundingStatus={snapshot.funding} currentOperationalIntent={snapshot.operationalIntent} currentOccupancyIntent={snapshot.occupancyIntent} canChangeToDGrade={canSelectDGrade(capabilities.role,snapshot.currentGrade)} saveDisabled={!capabilities.saveEnabled||saving?.busy||saving?.blocked}/>
   </fieldset>
   <details className="mt-6" onToggle={e=>{if(e.currentTarget.open&&offices===null)void load('brokers');}}><summary className="cursor-pointer font-semibold">매매/임대</summary>
    {offices===null?<p role="status">중개업소 정보를 불러오고 있습니다…</p>:<fieldset disabled={!capabilities.fieldWrite||saving?.busy||saving?.blocked}><DealEditor projectId={workspace.projectId} unitId={detail.unitId} contractId={workspace.identity.contractId} customerId={workspace.identity.customerId} deal={deal} offices={offices} saveDisabled={!capabilities.saveEnabled||saving?.busy||saving?.blocked}/></fieldset>}
   </details>
+  <fieldset disabled={!capabilities.fieldWrite||saving?.busy||saving?.blocked}><TradeFundingEditor projectId={workspace.projectId} unitId={detail.unitId} contractId={workspace.identity.contractId} customerId={workspace.identity.customerId} currentGrade={snapshot.currentGrade} type={snapshot.tradeFundingType} status={snapshot.tradeFundingStatus} updatedAt={detail.occupancy?.trade_funding_updated_at??null} saveDisabled={!capabilities.saveEnabled||saving?.busy||saving?.blocked}/></fieldset>
   <SpecialCaseEditor projectId={workspace.projectId} unitId={detail.unitId} contractId={workspace.identity.contractId} currentCustomerId={workspace.identity.customerId} returnTo={returnTo} role={capabilities.role} reasons={snapshot.specialReasons.map(r=>reasons[r]??r)} specialCase={workspace.special} saveDisabled={!capabilities.saveEnabled||saving?.busy||saving?.blocked}/>
-  <PaymentSummaryCard occupancy={null} projection={workspace.payment??null}/>
+  <PaymentSummaryCard occupancy={null} projection={workspace.payment??null} account={workspace.balanceAccount}/>
   <section className="mt-8" aria-label="상담/콜 이력"><h2 className="mb-3 text-lg font-semibold">상담/콜 이력</h2><ConsultationHistory rows={history.rows} currentMemberId={capabilities.memberId}/>
    {history.nextOffset!==null?<button type="button" disabled={pending.includes('history')} onClick={()=>void load('history')} className="mt-3 border px-3 py-1">이력 더 보기</button>:null}</section>
   <details className="mt-6" onToggle={e=>{if(e.currentTarget.open&&related===null)void load('related');}}><summary className="cursor-pointer">동일 계약자의 다른 보유세대</summary>

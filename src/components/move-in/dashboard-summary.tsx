@@ -62,8 +62,8 @@ export function DashboardSummary({data,projectName,projectId}:{data:DashboardDat
       <Numbers items={[["잔금완납",occupancy.balancePaid],["입주완료",occupancy.movedIn],["입주예정",occupancy.planned],["자금문제",occupancy.fundingIssue],["매도/임대",occupancy.sellOrRent],["입주의향 미설정",occupancy.undecided],["입주진행 미설정",occupancy.notContacted]]}/>
     </details>
     <nav className="mt-8 flex gap-5" aria-label="현장 업무">
-      <Link className="underline" href={`/projects/${projectId}/move-in/today`}>오늘 관리대상</Link>
-      <Link className="underline" href={`/projects/${projectId}/move-in/worklog`}>업무일지</Link>
+      <Link prefetch={false} className="underline" href={`/projects/${projectId}/move-in/today`}>오늘 관리대상</Link>
+      <Link prefetch={false} className="underline" href={`/projects/${projectId}/move-in/worklog`}>업무일지</Link>
     </nav>
   </main>;
 }

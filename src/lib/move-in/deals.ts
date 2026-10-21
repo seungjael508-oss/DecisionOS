@@ -214,6 +214,7 @@ export function enrichDealIntent(input: {
   legacyGrade: string | null;
   fundingStatus: FundingStatus | string | null;
   manuallyFlagged?: boolean | null;
+  visitRequired?: boolean | null;
 }): Pick<DealListRow, "effectiveIntent" | "rentalType" | "legacyConsidering" | "specialReasons" | "specialPriority"> {
   const effective = resolveEffectiveMoveInIntent(input.operationalIntent, input.occupancyIntent);
   const specialReasons = deriveSpecialManagementReasons({
@@ -221,6 +222,7 @@ export function enrichDealIntent(input: {
     legacyGrade: input.legacyGrade,
     fundingStatus: input.fundingStatus,
     manuallyFlagged: input.manuallyFlagged,
+    visitRequired: input.visitRequired,
   });
   return {
     effectiveIntent: effective.value,

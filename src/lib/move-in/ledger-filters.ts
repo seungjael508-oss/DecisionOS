@@ -1,9 +1,11 @@
 import type { LedgerManagement } from '@/lib/move-in/ledger-management-source';
-import { gradeSortRank } from "@/lib/move-in/filters";
+import { gradeSortRank, matchesTodayQueueFilter, parseTodayQueueFilter } from "@/lib/move-in/filters";
 import { digitsOnly, parseDongHoQuery } from "@/lib/move-in/calls";
 import { matchesSpecialManagementFilter, type SpecialManagementFilter } from "@/lib/move-in/intent";
+import { isLedgerChapter, matchesLedgerChapter, type LedgerChapter } from "@/lib/move-in/ledger-chapters";
+import { tradeFundingFilterValues, type TradeFundingStatus, type TradeFundingType } from "@/lib/move-in/trade-funding";
 
-export const LEDGER_AXES = ["building", "unit", "customer", "phone", "grade", "intent", "funding", "moveIn", "assignee", "specialReason", "nextContact", "contactStatus", "deal", "payment", "loanAgreement", "moveReservation", "problemHousehold"] as const;
+export const LEDGER_AXES = ["building", "unit", "customer", "phone", "grade", "dGradeReason", "intent", "funding", "moveIn", "assignee", "specialReason", "nextContact", "contactStatus", "deal", "tradeFunding", "payment", "loanAgreement", "moveReservation", "problemHousehold", "online"] as const;
 export type LedgerAxis = typeof LEDGER_AXES[number];
 export type AxisSelection = { include: string[]; exclude: string[] };
 export const LEDGER_VIEWS = ["all", "today", "sale", "rental", "special"] as const;
@@ -30,8 +32,16 @@ export type LedgerFilterRow = {
   assigneeId: string | null; effectiveIntent: string | null; rentalType: string | null;
   funding: string | null; moveIn: string | null; nextContact: string | null;
   contactStatus?: string | null;
+  /** D등급 관리 사유(서버 판정). D가 아닌 세대는 비어 있다 */
+  dGradeReasons?: readonly string[];
+  /** 현재 계약자 연속 전화 부재 횟수 */
+  absenceStreak?: number | null;
   specialReasons: readonly string[]; specialPriority: number | null;
   dealTypes: readonly string[]; payment: string | null; balance: number | null;
+  /** C·D 거래 자금조달 유형·확인 상태(A11). 없으면 분류 없음 */
+  tradeFundingType?: TradeFundingType | null; tradeFundingStatus?: TradeFundingStatus | null;
+  /** 온라인 매물 등록·중복·미등록(서버 판정) */
+  onlineListing?: string | null;
   views: readonly ("sale" | "rental" | "special")[];
   operationalIntent?: string | null; occupancyIntent?: string | null;
   queue?: { order: number; reasonCodes: readonly string[]; priority?: string } | null;
@@ -43,13 +53,13 @@ type LegacyFilters = {
   enabledTypes: string[]; officeIds: string[]; todayFilter: string; priority: string[];
 };
 export type LedgerQueryState = {
-  view: LedgerView; axes: Partial<Record<LedgerAxis, AxisSelection>>;
+  view: LedgerView; chapter: LedgerChapter; axes: Partial<Record<LedgerAxis, AxisSelection>>;
   text: { unit?: string; customer?: string; phone?: string };
   nextContactRange?: { from: string; to: string };
   sort: Sort; page: number; pageSize: 50 | 100; selectedUnitId: string | null;
   legacy: LegacyFilters; issues: string[];
 };
-export type LedgerStatePatch = Partial<Pick<LedgerQueryState, "view" | "sort" | "page" | "pageSize" | "selectedUnitId" | "text">> & {
+export type LedgerStatePatch = Partial<Pick<LedgerQueryState, "view" | "chapter" | "sort" | "page" | "pageSize" | "selectedUnitId" | "text">> & {
   axes?: Partial<Record<LedgerAxis, AxisSelection>>;
   nextContactRange?: LedgerQueryState["nextContactRange"] | null;
   reset?: boolean;
@@ -73,6 +83,9 @@ export function parseLedgerQuery(params: URLSearchParams): LedgerQueryState {
   const rawView = params.get("view") || "all";
   const view = LEDGER_VIEWS.includes(rawView as LedgerView) ? rawView as LedgerView : "all";
   if (view !== rawView) issues.push("view");
+  const rawChapter = params.get("chapter") || "all";
+  const chapter: LedgerChapter = isLedgerChapter(rawChapter) ? rawChapter : "all";
+  if (chapter !== rawChapter) issues.push("chapter");
   const axes: LedgerQueryState["axes"] = {};
   for (const axis of LEDGER_AXES) {
     const key = keyFor(axis);
@@ -95,10 +108,10 @@ export function parseLedgerQuery(params: URLSearchParams): LedgerQueryState {
     if (values(params, unsupported).some(v => v !== "false" && v !== "0")) issues.push(unsupported);
   }
   const todayFilter = params.get("filter") || "all";
-  if (view === "today" && !["all", "next_contact", "delayed", "funding"].includes(todayFilter)) issues.push("filter");
+  if (view === "today" && !["all", "next_contact", "delayed", "funding", "absence", "visit"].includes(todayFilter)) issues.push("filter");
   if (params.get("phoneSearch") && !digitsOnly(params.get("phoneSearch")!)) issues.push("phoneSearch");
   return {
-    view, axes,
+    view, chapter, axes,
     text: { unit: params.get("unitSearch") || undefined, customer: params.get("customerSearch") || undefined, phone: params.get("phoneSearch") || undefined },
     nextContactRange: from || to ? { from, to } : undefined,
     sort: { key, direction: rawDirection === "desc" ? "desc" : "asc" },
@@ -119,9 +132,13 @@ const normalized = (value: string | null | undefined) => value?.trim() || LEDGER
 function axisValues(row: LedgerFilterRow, axis: LedgerAxis, now: Date): readonly string[] {
   if (axis === "loanAgreement" || axis === "moveReservation" || axis === "problemHousehold") return [row.management?.[axis] ?? "UNKNOWN"];
   if (axis === "contactStatus") return [row.contactStatus ?? "NONE"];
+  // D등급 AND 사유(축 안은 OR). D가 아니면 값이 없어 어떤 사유 선택에도 걸리지 않는다. 빈값 = D이지만 사유 미확인
+  if (axis === "dGradeReason") return row.currentGrade !== "D" ? [] : row.dGradeReasons?.length ? row.dGradeReasons : [LEDGER_BLANK];
   if (axis === "intent") return [normalized(row.effectiveIntent), ...(row.effectiveIntent === "RENT" && row.rentalType ? [row.rentalType] : [])];
   if (axis === "specialReason") return row.specialReasons.length ? row.specialReasons : [LEDGER_BLANK];
   if (axis === "deal") return row.dealTypes.length ? row.dealTypes : [LEDGER_BLANK];
+  // 자금유형(+후보). 분류가 없으면 거래 의향 세대만 '미확인', 그 밖은 빈값. 매매/임대 축과 AND
+  if (axis === "tradeFunding") { const v = tradeFundingFilterValues(row); return v.length ? v : [LEDGER_BLANK]; }
   if (axis === "nextContact") {
     if (!row.nextContact) return [LEDGER_BLANK];
     const ms = Date.parse(row.nextContact);
@@ -130,8 +147,8 @@ function axisValues(row: LedgerFilterRow, axis: LedgerAxis, now: Date): readonly
     const today = new Date(now.getTime() + KST_MS).toISOString().slice(0, 10);
     return [date, date === today ? "TODAY" : date < today ? "OVERDUE" : "FUTURE"];
   }
-  const scalar = { building: row.buildingNo, unit: row.unitNo, customer: row.customerName, phone: row.phone, grade: row.currentGrade, funding: row.funding, moveIn: row.moveIn, assignee: row.assigneeId, payment: row.payment };
-  return [normalized(scalar[axis])];
+  const scalar = { building: row.buildingNo, unit: row.unitNo, customer: row.customerName, phone: row.phone, grade: row.currentGrade, funding: row.funding, moveIn: row.moveIn, assignee: row.assigneeId, payment: row.payment, online: row.onlineListing ?? null };
+  return [normalized(scalar[axis as keyof typeof scalar])];
 }
 function phoneValue(v: string) { return v === LEDGER_BLANK ? v : digitsOnly(v) || v; }
 function matchesSelection(rowValues: readonly string[], selection: AxisSelection, axis: LedgerAxis) {
@@ -163,11 +180,8 @@ function matchesView(row: LedgerFilterRow, state: LedgerQueryState) {
   if (state.view === "all") return true;
   if (state.view !== "today") return row.views.includes(state.view);
   if (!row.queue) return false;
-  const filter = state.legacy.todayFilter;
-  if (filter === "next_contact") return row.queue.reasonCodes.includes("FOLLOW_UP_DUE");
-  if (filter === "funding") return row.queue.reasonCodes.includes("C_GRADE_FUNDING");
-  if (filter === "delayed") return row.moveIn === "DELAYED";
-  return true;
+  // next_contact(FOLLOW_UP_DUE)는 오늘 관리대상 사유에서 제외되어 기존 링크는 전체로 처리
+  return matchesTodayQueueFilter({ reasonCodes: row.queue.reasonCodes, moveInStatus: row.moveIn }, parseTodayQueueFilter(state.legacy.todayFilter));
 }
 function naturalUnit(a: LedgerFilterRow, b: LedgerFilterRow) {
   return a.buildingNo.localeCompare(b.buildingNo, "ko", { numeric: true }) || a.unitNo.localeCompare(b.unitNo, "ko", { numeric: true });
@@ -187,6 +201,7 @@ export function applyLedgerQuery<T extends LedgerFilterRow>(rows: readonly T[], 
   if (state.issues.length || !Number.isFinite(now.getTime())) return { filteredSorted: [], pageRows: [], total: 0 };
   const filteredSorted = rows.filter(row => {
     if (!matchesView(row, state) || !matchesLegacy(row, state.legacy)) return false;
+    if (!matchesLedgerChapter(row, state.chapter)) return false;
     for (const axis of LEDGER_AXES) {
       const selection = state.axes[axis];
       if (selection && !matchesSelection(axisValues(row, axis, now), selection, axis)) return false;
@@ -217,7 +232,7 @@ export function applyLedgerQuery<T extends LedgerFilterRow>(rows: readonly T[], 
 
 function resultIdentity(state: LedgerQueryState): string {
   // Canonicalize OR sets so a no-op patch does not lose the cursor or page.
-  return JSON.stringify({ view: state.view, axes: Object.fromEntries(LEDGER_AXES.map(axis => [axis, {
+  return JSON.stringify({ view: state.view, chapter: state.chapter, axes: Object.fromEntries(LEDGER_AXES.map(axis => [axis, {
     include: [...(state.axes[axis]?.include ?? [])].sort(), exclude: [...(state.axes[axis]?.exclude ?? [])].sort(),
   }])), text: state.text, range: state.nextContactRange, sort: state.sort, legacy: state.legacy, issues: state.issues });
 }
@@ -226,7 +241,7 @@ export function patchLedgerQuery(original: URLSearchParams, patch: LedgerStatePa
   const setMany = (key: string, vals: readonly string[]) => { params.delete(key); for (const value of vals) params.append(key, value); };
   if (patch.reset) {
     const keys = [...LEDGER_AXES.flatMap(axis => [keyFor(axis), `${keyFor(axis)}Exclude`, ...(ALIASES[axis] ?? [])]),
-      "view", "tab", "filter", "unitSearch", "customerSearch", "phoneSearch", "nextContactFrom", "nextContactTo", "sort", "direction", "page", "pageSize", "cursor", "selectedUnit", "q", "consentStatus", "dealStatus", "brokerageOfficeId", "saleEnabled", "jeonseEnabled", "monthlyRentEnabled", "priority", "problemOnly", "problemCategory", "specialTag"];
+      "view", "chapter", "tab", "filter", "unitSearch", "customerSearch", "phoneSearch", "nextContactFrom", "nextContactTo", "sort", "direction", "page", "pageSize", "cursor", "selectedUnit", "q", "consentStatus", "dealStatus", "brokerageOfficeId", "saleEnabled", "jeonseEnabled", "monthlyRentEnabled", "priority", "problemOnly", "problemCategory", "specialTag"];
     for (const key of keys) params.delete(key);
   }
   for (const axis of LEDGER_AXES) {
@@ -237,6 +252,7 @@ export function patchLedgerQuery(original: URLSearchParams, patch: LedgerStatePa
     setMany(keyFor(axis), selection.include); setMany(`${keyFor(axis)}Exclude`, selection.exclude);
   }
   if (patch.view !== undefined) { params.set("view", patch.view); params.delete("tab"); params.delete("filter"); }
+  if (patch.chapter !== undefined) { if (patch.chapter === "all") params.delete("chapter"); else params.set("chapter", patch.chapter); }
   if (patch.sort) { params.set("sort", patch.sort.key); params.set("direction", patch.sort.direction); }
   for (const key of ["unit", "customer", "phone"] as const) {
     if (patch.text && key in patch.text) {

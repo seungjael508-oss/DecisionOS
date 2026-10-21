@@ -8,7 +8,7 @@ import { buildLedgerWorkbook } from '@/lib/move-in/ledger-export';
 import { LedgerPrintTable } from '@/components/move-in/ledger-print-table';
 import { LedgerTable } from '@/components/move-in/ledger-table';
 
-const EXPECTED = ['동/호수','현재등급','전화번호','납부내역/잔금','계약자','계약자 주소','입주의향','자금/대출','입주진행','매매/임대','접촉상태','최종접촉','최근시도','담당자','특별관리','금전소비대차','입주예약','이사예정일','문제세대','관리사유'];
+const EXPECTED = ['동/호수','현재등급','전화번호','납부상태','계약자','계약자 주소','아파트 분양금액','발코니 확장금액','추가옵션금액','분양대금 실납입액','아파트 분양 잔금','발코니 납부액','발코니 미납액','옵션 납부액','옵션 미납액','전체 미납액','연체 여부','은행명','가상계좌번호','계좌 용도','입주의향','자금/대출','입주진행','매매/임대','접촉상태','최종접촉','최근시도','담당자','특별관리','금전소비대차','입주예약','이사예정일','문제세대','관리사유'];
 const row = { unitId:'u1', buildingNo:'101', unitNo:'1001', currentGrade:'C', phone:'010-0000-0000', customerName:'테스트', effectiveIntent:'UNDECIDED', rentalType:null,
   funding:'LOAN_NEEDED', moveIn:'NOT_STARTED', dealTypes:[], contactStatus:'CONTACTED', lastAttempt:'2026-10-01T01:00:00Z', lastContact:'2026-10-01T01:00:00Z', nextContact:'2026-12-31T01:00:00Z', assigneeId:null, specialReasons:[],
   management:{ loanAgreement:'TARGET', moveReservation:'BOOKED', movingDate:'2026-11-01', problemHousehold:'UNKNOWN', managementReasons:[] } } as never;
@@ -40,5 +40,5 @@ test('엑셀 내보내기 헤더·행', async () => {
   const sheet = wb.getWorksheet('통합원장')!;
   expect((sheet.getRow(1).values as unknown[]).slice(1)).toEqual(EXPECTED);
   expect((sheet.getRow(2).values as unknown[]).length - 1).toBe(EXPECTED.length);
-  expect(sheet.autoFilter).toBe('A1:T2');  // T = 20번째 열
+  expect(sheet.autoFilter).toBe('A1:AH2');  // AH = 34번째 열
 });

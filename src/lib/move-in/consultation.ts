@@ -63,13 +63,23 @@ export function consultationKindLabel(
   return purpose || contactType || "상담";
 }
 
+/**
+ * 상담 등록에서 D 선택 가능 여부(표시 제한일 뿐, 상담 저장 RPC가 역할을 다시 검증한다).
+ * 현장 관리자·상담사는 직접 변경 가능, 그 외 역할은 기존처럼 이미 D인 세대의 D 재확인만.
+ */
+export function canSelectDGrade(role: string, currentGrade: string | null | undefined): boolean {
+  return role === "PROJECT_ADMIN" || role === "COUNSELOR" || currentGrade === "D";
+}
+
+/** name = project_member.display_name(서버에서 일괄 조회). 없거나 조회 불가면 '담당상담사' — member ID는 표시하지 않는다. */
 export function counselorDisplayName(
   memberId: string | null,
   currentMemberId: string,
+  name?: string | null,
 ): string {
   if (!memberId) return "—";
   if (memberId === currentMemberId) return "나";
-  return "담당상담사";
+  return name?.trim() || "담당상담사";
 }
 
 export type CreateMoveInConsultationInput = {
@@ -147,4 +157,11 @@ export function confirmedLegacyVisitKey(projectId: string, tags: Json | null): s
       tags.legacy_sheet_index !== 4 || typeof row !== "number" || !Number.isInteger(row) || row < 2 || row > 30) return null;
   const key = `hwayang-260915:F003:4:${row}`;
   return tags.legacy_source_key === key ? key : null;
+}
+
+// 장기 부재 집계용 접촉 유형. 상담이력 표시와 같게 Stay J 레거시 이관 상담은 전화, 확인된 방문 시트 행은 방문으로 본다.
+// DB private.move_in_absence_contact_type(20261019100000)과 같은 조건(같은 키 중복 여부는 보지 않는다).
+export function absenceContactType(projectId: string, contactType: string | null, channel: string | null | undefined, tags: Json | null | undefined): string | null {
+  if (projectId !== "1283e198-5043-4027-96d6-edcc7a6686c6" || channel !== "LEGACY_IMPORT" || contactType !== "CONSULTATION") return contactType;
+  return confirmedLegacyVisitKey(projectId, tags ?? null) ? "VISIT" : "CALL";
 }

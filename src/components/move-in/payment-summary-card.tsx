@@ -2,10 +2,17 @@ import { formatDateTime } from "@/lib/move-in/labels";
 import type { OccupancyRecord } from "@/lib/move-in/queries";
 import { Fragment } from 'react';
 import type { RegisteredPaymentProjection } from '@/lib/move-in/payment-projection.server';
+import type { BalanceAccountView } from '@/lib/move-in/ledger-types';
 
 /** Read-only selected-unit DTO. The complete payment artifact stays server-only. */
-export function PaymentSummaryCard({ occupancy, projection }: { occupancy: OccupancyRecord | null; projection?: RegisteredPaymentProjection | null }) {
-  if (projection) return <RegisteredPaymentCard projection={projection} />;
+/** 잔금 가상계좌(아파트 분양 잔금 전용). 값은 서버가 권한을 확인한 결과만 받는다. */
+function BalanceAccountLine({ account }: { account?: BalanceAccountView }) {
+  const text = !account || account.kind === "unknown" ? "미확인" : account.kind === "restricted" ? "열람 권한 없음" : `${account.bank} ${account.number}`;
+  return <p className="mt-3 text-sm" aria-label="잔금 가상계좌"><span className="font-medium">잔금 가상계좌</span> {text} <span className="text-neutral-600">(아파트 분양 잔금 전용 · 발코니·옵션 납부계좌 아님)</span></p>;
+}
+
+export function PaymentSummaryCard({ occupancy, projection, account }: { occupancy: OccupancyRecord | null; projection?: RegisteredPaymentProjection | null; account?: BalanceAccountView }) {
+  if (projection) return <><RegisteredPaymentCard projection={projection} /><BalanceAccountLine account={account} /></>;
   const balancePaid = occupancy?.move_in_status === "BALANCE_PAID";
   const balancePaidAt = balancePaid ? occupancy?.balance_paid_at ?? null : null;
   return (

@@ -15,3 +15,10 @@ src/lib/move-in/ledger-management-data.server.ts
 src/lib/move-in/payment-projection-source.server.ts
 # 계약자 명부에서 생성한 주소(개인정보). 원본 SHA는 파일 상단 메타에 기록
 src/lib/move-in/contract-address-data.server.ts
+.vercel
+# 가상계좌·발코니·옵션 납부현황에서 생성한 세대별 금액·계좌(서버 전용). 원본 SHA는 MANIFEST에 기록
+src/lib/move-in/ledger-finance-data.server.ts
+# 발코니·옵션 계약자 대조 SQL(계약자명 해시 포함). 생성기: verification/gen-addon-holder-crosscheck.mjs
+docs/production-snapshot/cutover/08-addon-holder-crosscheck.sql
+# Stay J C·D 거래 자금유형 초기 후보(운영 추출 원본). 배포·커밋 금지
+stayj_cd_trade_initial_candidates.json

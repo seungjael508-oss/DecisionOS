@@ -68,6 +68,7 @@ export function ConsultationCreateForm({
   currentOperationalIntent,
   currentOccupancyIntent,
   saveDisabled = false,
+  canChangeToDGrade = false,
 }: {
   projectId: string;
   unitId: string;
@@ -78,6 +79,8 @@ export function ConsultationCreateForm({
   currentOperationalIntent?: OperationalIntent | null;
   currentOccupancyIntent?: OccupancyIntent | null;
   saveDisabled?: boolean;
+  /** canSelectDGrade(PROJECT_ADMIN·COUNSELOR, 또는 현재 등급이 이미 D). 표시 제한일 뿐이며 상담 저장 RPC가 다시 검증한다. */
+  canChangeToDGrade?: boolean;
 }) {
   const router = useRouter();
   const saving=useUnitSave(),submitting=useRef(false);
@@ -199,8 +202,8 @@ export function ConsultationCreateForm({
         <select name="legacy_grade" defaultValue="" className="border border-neutral-400 px-2 py-1">
           <option value="">선택 안 함</option>
           {LEGACY_GRADE_VALUES.map((value) => (
-            <option key={value} value={value}>
-              {value}
+            <option key={value} value={value} disabled={value === "D" && !canChangeToDGrade}>
+              {value === "D" && !canChangeToDGrade ? "D (관리자 승인 필요)" : value}
             </option>
           ))}
         </select>

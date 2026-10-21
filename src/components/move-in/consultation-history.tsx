@@ -26,7 +26,7 @@ export function ConsultationHistory({
           <li key={row.id} className="border-b border-neutral-200 pb-4">
             <p className="font-medium">{formatDateTime(row.consultedAt)}</p>
             <p className="mt-1 text-sm text-neutral-700">
-              {row.legacyImported ? `${row.legacyCounselorName || "원본 상담사 미상"} · 이관 기록` : (row.counselorId === currentMemberId ? "나" : `${counselorDisplayName(row.counselorId, currentMemberId)} (${row.counselorId})`)} · {kind} ·{" "}
+              {row.legacyImported ? `${row.legacyCounselorName || "원본 상담사 미상"} · 이관 기록` : counselorDisplayName(row.counselorId, currentMemberId, row.counselorName)} · {kind} ·{" "}
               {grade}
             </p>
             {row.previousHolder ? <p className="mt-1 text-sm text-neutral-700">이전 계약자 상담</p> : null}

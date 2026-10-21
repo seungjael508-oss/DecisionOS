@@ -2,6 +2,10 @@ import { createHash } from 'node:crypto';
 import { deriveSpecialManagementReasons, resolveEffectiveMoveInIntent, specialManagementPriority } from '@/lib/move-in/intent';
 import { usesAssignedCustomerScope } from '@/lib/move-in/field-access';
 import { classifyContactOutcome } from '@/lib/move-in/contact-outcome';
+import { currentAbsenceStreak } from '@/lib/move-in/d-grade-reasons';
+import { absenceContactType } from '@/lib/move-in/consultation';
+import { isTradeFundingStatus, isTradeFundingType } from '@/lib/move-in/trade-funding';
+import type { Json } from '@/lib/supabase/types';
 import type { AnomalyReason, AuthorizedAccess, CurrentUnitRecord, CurrentUnitSnapshot, DealRecord, DealSummary, LedgerSummaryRow, ContactRecord, ContactStatus, SourceTag, SpecialRecord } from '@/lib/move-in/ledger-types';
 
 export function currentRelationAnomaly(unit: CurrentUnitRecord, projectId: string): AnomalyReason | null {
@@ -34,7 +38,7 @@ export function resolveCurrentUnitSnapshot(input: {
   const special = input.special?.project_id === access.projectId && input.special.unit_id === unit.unit_id && input.special.contract_id === c.contract_id &&
     (access.role !== 'COUNSELOR' || c.holder!.assigned_counselor_id === access.memberId) ? input.special : null;
   const intent = resolveEffectiveMoveInIntent(o.operational_intent, o.occupancy_intent);
-  const reasons = deriveSpecialManagementReasons({ effectiveIntent: intent, legacyGrade: o.legacy_grade, fundingStatus: o.funding_status, manuallyFlagged: special?.manually_flagged });
+  const reasons = deriveSpecialManagementReasons({ effectiveIntent: intent, legacyGrade: o.legacy_grade, fundingStatus: o.funding_status, manuallyFlagged: special?.manually_flagged, visitRequired: special?.visit_required });
   const sourceTags = [...new Set(input.sourceTags)];
   const sourceReasons = sourceTags.filter(t => t !== 'ONLINE');
   const rank = Math.min(specialManagementPriority(reasons), sourceReasons.length ? 4 : Infinity);
@@ -44,6 +48,9 @@ export function resolveCurrentUnitSnapshot(input: {
     operationalIntent: o.operational_intent, occupancyIntent: o.occupancy_intent,
     effectiveIntent: intent.value, rentalType: intent.rentalType, legacyConsidering: intent.legacyConsidering,
     balancePaidAt: o.balance_paid_at, plannedMoveInDate: o.planned_move_in_date, actualMoveInDate: o.actual_move_in_date,
+    // 알 수 없는 값은 분류 없음(유형이 없으면 상태도 없음)
+    tradeFundingType: isTradeFundingType(o.trade_funding_type) ? o.trade_funding_type : null,
+    tradeFundingStatus: isTradeFundingType(o.trade_funding_type) && isTradeFundingStatus(o.trade_funding_status) ? o.trade_funding_status : null,
     specialReasons: [...reasons, ...sourceReasons], specialPriority: Number.isFinite(rank) ? rank : null, sourceTags,
     sourceUpdatedAt: [c.updated_at, o.updated_at, special?.updated_at].filter((v): v is string => !!v).sort().at(-1)!,
   };
@@ -74,7 +81,9 @@ export function resolveContactState(snapshot: CurrentUnitSnapshot, contacts: rea
   // 이력이 없는 기존 부재·상담거절 등급 세대는 저장된 값을 근거로 표시(등급은 바꾸지 않음)
   const contactStatus: ContactStatus = latest ? classifyContactOutcome(latest.structured_tags?.legacy_grade, latest.content)
     : lastContact ? 'CONTACTED' : legacyGrade === '부재' ? 'ABSENT' : legacyGrade === '상담거절' ? 'REFUSED' : 'NONE';
-  return { latest, lastContact, lastAttempt: latest?.consulted_at ?? null, contactStatus };
+  const absenceStreak = currentAbsenceStreak(own.map(c => ({ id: c.id, consultedAt: c.consulted_at, contactType: absenceContactType(snapshot.projectId, c.contact_type ?? null, c.channel, c.structured_tags as Json | null | undefined),
+    legacyGrade: typeof c.structured_tags?.legacy_grade === 'string' ? c.structured_tags.legacy_grade : null })));
+  return { latest, lastContact, lastAttempt: latest?.consulted_at ?? null, contactStatus, absenceStreak };
 }
 export function toLedgerSummaryRow(unit: CurrentUnitRecord, snapshot: CurrentUnitSnapshot, deal: DealRecord | null, contacts: readonly ContactRecord[]): LedgerSummaryRow {
   const holder = unit.contracts.find(c => c.contract_id === snapshot.currentContractId)!.holder!;
@@ -90,5 +99,7 @@ export function toLedgerSummaryRow(unit: CurrentUnitRecord, snapshot: CurrentUni
     dealTypes, dealSummary, deal: dealSummary && { consentStatus: dealSummary.consentStatus, dealStatus: dealSummary.dealStatus, enabledTypes: dealSummary.enabledTypes, officeIds: dealSummary.officeIds },
     views: [...(snapshot.effectiveIntent === 'SALE_TRANSFER' ? ['sale' as const] : []), ...(snapshot.effectiveIntent === 'RENT' ? ['rental' as const] : []), ...(snapshot.specialReasons.length ? ['special' as const] : [])],
     paymentAvailability: 'unregistered', payment: 'UNREGISTERED', balance: null,
+    dGradeReasons: [],
+    absenceStreak: contact.absenceStreak,
   };
 }
