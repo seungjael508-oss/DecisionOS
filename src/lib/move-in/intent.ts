@@ -115,6 +115,7 @@ export const SPECIAL_REASON_VALUES = [
   "FUNDING_SHORTAGE",
   "EXISTING_HOME_UNSOLD",
   "MANUAL",
+  "VISIT_REQUIRED",
   "UNDECIDED",
 ] as const;
 export type SpecialManagementReason = (typeof SPECIAL_REASON_VALUES)[number];
@@ -127,6 +128,7 @@ export const SPECIAL_REASON_LABELS: Record<SpecialManagementReason, string> = {
   FUNDING_SHORTAGE: "자금부족",
   EXISTING_HOME_UNSOLD: "기존주택 미처분",
   MANUAL: "수동지정",
+  VISIT_REQUIRED: "방문 필요",
   UNDECIDED: "미확정",
 };
 
@@ -135,6 +137,8 @@ export function deriveSpecialManagementReasons(input: {
   legacyGrade?: LegacyGrade | string | null;
   fundingStatus?: FundingStatus | string | null;
   manuallyFlagged?: boolean | null;
+  /** move_in_special_case.visit_required(현재 ACTIVE 계약 기록만 넘긴다). 등급과 무관 */
+  visitRequired?: boolean | null;
 }): SpecialManagementReason[] {
   const effective = typeof input.effectiveIntent === "string" ? input.effectiveIntent : input.effectiveIntent.value;
   const reasons: SpecialManagementReason[] = [];
@@ -145,6 +149,7 @@ export function deriveSpecialManagementReasons(input: {
   if (input.fundingStatus === "FUNDING_SHORTAGE") reasons.push("FUNDING_SHORTAGE");
   if (input.fundingStatus === "EXISTING_HOME_UNSOLD") reasons.push("EXISTING_HOME_UNSOLD");
   if (input.manuallyFlagged) reasons.push("MANUAL");
+  if (input.visitRequired) reasons.push("VISIT_REQUIRED");
   if (effective === "UNDECIDED") reasons.push("UNDECIDED");
   return reasons;
 }
@@ -158,12 +163,13 @@ export function specialManagementPriority(reasons: readonly SpecialManagementRea
     FUNDING_SHORTAGE: 2,
     EXISTING_HOME_UNSOLD: 3,
     MANUAL: 4,
+    VISIT_REQUIRED: 4,
     UNDECIDED: 5,
   };
   return reasons.length ? Math.min(...reasons.map((reason) => ranks[reason])) : Number.POSITIVE_INFINITY;
 }
 
-export type SpecialManagementFilter = "all" | "termination_abandonment" | "grade_d" | "funding_risk" | "undecided" | "manual";
+export type SpecialManagementFilter = "all" | "termination_abandonment" | "grade_d" | "funding_risk" | "undecided" | "manual" | "visit_required";
 
 export function matchesSpecialManagementFilter(reasons: readonly SpecialManagementReason[], filter: SpecialManagementFilter) {
   if (filter === "all") return reasons.length > 0;
@@ -171,5 +177,6 @@ export function matchesSpecialManagementFilter(reasons: readonly SpecialManageme
   if (filter === "grade_d") return reasons.includes("GRADE_D");
   if (filter === "funding_risk") return reasons.includes("LOAN_LIMIT_SHORTAGE") || reasons.includes("FUNDING_SHORTAGE") || reasons.includes("EXISTING_HOME_UNSOLD");
   if (filter === "undecided") return reasons.includes("UNDECIDED");
+  if (filter === "visit_required") return reasons.includes("VISIT_REQUIRED");
   return reasons.includes("MANUAL");
 }

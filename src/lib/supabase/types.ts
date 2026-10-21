@@ -1538,6 +1538,10 @@ export type Database = {
           planned_move_in_date: string | null
           project_id: string
           unit_id: string
+          trade_funding_status: string | null
+          trade_funding_type: string | null
+          trade_funding_updated_at: string | null
+          trade_funding_updated_by: string | null
           updated_at: string
           updated_by: string | null
         }
@@ -1559,6 +1563,10 @@ export type Database = {
           planned_move_in_date?: string | null
           project_id: string
           unit_id: string
+          trade_funding_status?: string | null
+          trade_funding_type?: string | null
+          trade_funding_updated_at?: string | null
+          trade_funding_updated_by?: string | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -1580,6 +1588,10 @@ export type Database = {
           planned_move_in_date?: string | null
           project_id?: string
           unit_id?: string
+          trade_funding_status?: string | null
+          trade_funding_type?: string | null
+          trade_funding_updated_at?: string | null
+          trade_funding_updated_by?: string | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -1817,6 +1829,18 @@ export type Database = {
           p_project_id: string
         }
         Returns: string
+      }
+      set_move_in_trade_funding: {
+        Args: {
+          p_customer_id: string
+          p_expected_contract_id: string
+          p_project_id: string
+          p_reason?: string | null
+          p_trade_funding_status?: string | null
+          p_trade_funding_type: string | null
+          p_unit_id: string
+        }
+        Returns: Json
       }
       update_unit_occupancy_status: {
         Args: {

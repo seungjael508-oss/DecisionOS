@@ -1,16 +1,18 @@
 import 'server-only';
 import { attachLedgerManagement } from '@/lib/move-in/ledger-management.server';
 import { attachContractAddress } from '@/lib/move-in/contract-address.server';
+import { attachLedgerFinance } from '@/lib/move-in/ledger-finance.server';
 import { requireMoveInAccess } from '@/lib/move-in/access';
 import { createServerClient } from '@/lib/supabase/server';
 import { readAllRows } from '@/lib/supabase/read-all';
 import { readByUuidRanges } from '@/lib/supabase/read-by-uuid-range';
 import { currentIdentityRevision, currentRelationAnomaly, isCurrentUnitVisible, latestOf, resolveCurrentUnitSnapshot, toLedgerSummaryRow } from '@/lib/move-in/current-unit-snapshot';
-import { approvedUnitSourceTags } from '@/lib/move-in/ledger-source-tags.server';
+import { approvedUnitSourceTags, attachOnlineListing } from '@/lib/move-in/ledger-source-tags.server';
+import { loadDGradeReasons } from '@/lib/move-in/d-grade-reasons.server';
 import type { AnomalyReason, CurrentUnitRecord, CurrentUnitSnapshot, DealRecord, SpecialRecord, ContactRecord, LedgerSummaryRow, ProjectionResult, QueryCounts } from '@/lib/move-in/ledger-types';
 
 const CURRENT_SELECT = `project_id,unit_id,building_no,unit_no,unit_type,
-  occupancy:unit_occupancy_status!unit_occupancy_status_project_id_unit_id_fkey(project_id,unit_id,contract_id,legacy_grade,funding_status,move_in_status,operational_intent,occupancy_intent,balance_paid_at,planned_move_in_date,actual_move_in_date,last_contact_at,next_contact_at,updated_at),
+  occupancy:unit_occupancy_status!unit_occupancy_status_project_id_unit_id_fkey(project_id,unit_id,contract_id,legacy_grade,funding_status,move_in_status,operational_intent,occupancy_intent,balance_paid_at,planned_move_in_date,actual_move_in_date,last_contact_at,next_contact_at,updated_at,trade_funding_type,trade_funding_status),
   contracts:contract!contract_project_id_unit_id_fkey(project_id,unit_id,contract_id,customer_id,contract_status,updated_at,
     holder:customer!contract_customer_id_project_id_fkey(project_id,id,name,phone,phone_quality,assigned_counselor_id))`;
 const RECHECK_SELECT = `project_id,unit_id,
@@ -29,26 +31,31 @@ function groupByUnit<T extends { unit_id: string }>(rows: T[]): Map<string, T[]>
 }
 
 /** Server session + RLS are always re-used; callers cannot supply an elevated access/client. */
-export async function readAuthorizedCurrentProjection(projectId: string, now: Date, summary: boolean): Promise<ProjectionResult<LedgerSummaryRow | CurrentUnitSnapshot>> {
+/** unitIds를 주면 그 세대만 읽는다(오늘 관리대상 등). 150개를 넘으면 전체를 읽고 결과만 거른다(URL 길이). 행 구조·판정은 같다. */
+export async function readAuthorizedCurrentProjection(projectId: string, now: Date, summary: boolean, unitIds?: readonly string[]): Promise<ProjectionResult<LedgerSummaryRow | CurrentUnitSnapshot>> {
   const queryCounts: QueryCounts = { current: 0, contacts: 0, deals: 0, special: 0, recheck: 0 };
   const empty = { rows: [], anomalyCount: 0, anomalies: {}, snapshotAsOf: now.toISOString(), queryCounts };
   const failure = () => ({ ...empty, error: true });
   try {
     const access = await requireMoveInAccess(projectId);
     if (!access.ok || access.projectId !== projectId) return failure();
+    if (unitIds && unitIds.some(id => !uuid.test(id))) return failure();
+    if (unitIds && unitIds.length === 0) return { ...empty, error: false };
+    const only = unitIds && unitIds.length <= 150 ? [...unitIds] : null;
+    const inUnits = <Q extends { in: (column: string, values: readonly string[]) => Q }>(query: Q): Q => only ? query.in('unit_id', only) : query;
     const supabase = await createServerClient();
     const readCurrent = (recheck: boolean) => readAllRows((from, to) => {
       queryCounts[recheck ? 'recheck' : 'current']++;
       // count 없이 짧은 페이지로 종료한다: 행마다 RLS 함수를 평가하므로 count=exact는 같은 평가를 한 번 더 한다.
-      return supabase.from('project_unit').select(recheck ? RECHECK_SELECT : CURRENT_SELECT)
-        .eq('project_id', projectId).eq('contracts.contract_status', 'ACTIVE').order('unit_id').range(from, to).returns<CurrentUnitRecord[]>();
+      return inUnits(supabase.from('project_unit').select(recheck ? RECHECK_SELECT : CURRENT_SELECT)
+        .eq('project_id', projectId)).eq('contracts.contract_status', 'ACTIVE').order('unit_id').range(from, to).returns<CurrentUnitRecord[]>();
     }, summary ? 1000 : 500);
     // 상담 이력은 세대 목록과 독립이라 동시에 읽는다(권한 확인 이후). 예전 방식(현재 계약자 쌍 OR 필터 14배치)은
     // 세대 목록을 받은 뒤에야 시작해 critical path에 약 2.5s를 더했다. 행 범위는 같은 세션 RLS가 그대로 정한다.
     const contactsRead = summary ? readByUuidRanges<ContactRecord>(({ lower, upper }, from, to) => {
       queryCounts.contacts++;
-      const query = supabase.from('consultation').select('project_id,unit_id,customer_id,id,consulted_at,next_action_at,structured_tags')
-        .eq('project_id', projectId).gte('unit_id', lower);
+      const query = inUnits(supabase.from('consultation').select('project_id,unit_id,customer_id,id,consulted_at,next_action_at,structured_tags,contact_type,channel')
+        .eq('project_id', projectId)).gte('unit_id', lower);
       return (upper ? query.lt('unit_id', upper) : query).order('unit_id').order('consulted_at', { ascending: false }).order('id', { ascending: false }).range(from, to).returns<ContactRecord[]>();
     }) : Promise.resolve({ data: [] as ContactRecord[], error: false });
     const base = await readCurrent(false);
@@ -62,6 +69,7 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
       if (group.length !== 1) { flag('duplicate_unit'); continue; }
       const reason = currentRelationAnomaly(u, projectId);
       if (reason) { flag(reason); continue; }
+      if (unitIds && !unitIds.includes(u.unit_id)) continue;
       if (isCurrentUnitVisible(u, access)) current.push(u);
     }
     const finish = (rows: (LedgerSummaryRow | CurrentUnitSnapshot)[]) => ({
@@ -109,15 +117,20 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
     // cast affects only the table name; .returns enforces the selected projection type.
     const special = () => readAllRows((from, to) => {
       queryCounts.special++;
-      return supabase.from('move_in_special_case' as 'unit_deal').select('project_id,unit_id,contract_id,manually_flagged,updated_at', { count: 'exact' })
-        .eq('project_id', projectId).order('unit_id').order('contract_id').range(from, to).returns<SpecialRecord[]>();
+      return inUnits(supabase.from('move_in_special_case' as 'unit_deal').select('project_id,unit_id,contract_id,manually_flagged,visit_required,updated_at', { count: 'exact' })
+        .eq('project_id', projectId)).order('unit_id').order('contract_id').range(from, to).returns<SpecialRecord[]>();
     }, summary ? 1000 : 500);
     const deals = async () => summary ? readAllRows((from, to) => {
       queryCounts.deals++;
-      return supabase.from('unit_deal').select(DEAL_SELECT, { count: 'exact' }).eq('project_id', projectId).order('unit_id').range(from, to).returns<DealRecord[]>();
+      return inUnits(supabase.from('unit_deal').select(DEAL_SELECT, { count: 'exact' }).eq('project_id', projectId)).order('unit_id').range(from, to).returns<DealRecord[]>();
     }, 1000) : { data: [], error: false };
-    const [s, d, c] = await Promise.all([special(), deals(), contacts()]);
+    // 계약 변경 이력(현재 계약 외 계약) 판정용. 실패해도 원장은 열고, 이력 미확인 세대는 발코니·옵션을 연결하지 않는다
+    const contractIds = async () => summary ? readAllRows((from, to) =>
+      inUnits(supabase.from('contract').select('unit_id,contract_id').eq('project_id', projectId)).order('unit_id').order('contract_id').range(from, to)
+        .returns<{ unit_id: string; contract_id: string }[]>(), 1000) : { data: [], error: false };
+    const [s, d, c, k] = await Promise.all([special(), deals(), contacts(), contractIds()]);
     if (s.error || d.error || c.error) return failure();
+    const contractsByUnit = k.error ? null : groupByUnit(k.data);
     const recheck = await readCurrent(true);
     if (recheck.error) return failure();
     const finalByUnit = groupByUnit(recheck.data), specialByUnit = groupByUnit(s.data), dealByUnit = groupByUnit(d.data);
@@ -133,9 +146,20 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
         sourceTags: approvedUnitSourceTags(projectId, unit.building_no, unit.unit_no) });
       if (result.kind === 'anomaly') { flag(result.reason); continue; }
       const ds = dealByUnit.get(unit.unit_id) ?? [];
-      rows.push(summary ? attachContractAddress(attachLedgerManagement(toLedgerSummaryRow(unit, result.snapshot, ds.length === 1 ? ds[0] : null, contactByUnit.get(unit.unit_id) ?? []))) : result.snapshot);
+      // 현재 계약이 목록에 없으면 이력을 판정할 수 없으므로 미확인(undefined)으로 둔다
+      const unitContracts = contractsByUnit?.get(unit.unit_id) ?? [];
+      const contractHistory = contractsByUnit && unitContracts.some(k => k.contract_id === result.snapshot.currentContractId)
+        ? unitContracts.some(k => k.contract_id !== result.snapshot.currentContractId) : undefined;
+      rows.push(summary ? attachOnlineListing(attachLedgerFinance(attachContractAddress(attachLedgerManagement({ ...toLedgerSummaryRow(unit, result.snapshot, ds.length === 1 ? ds[0] : null, contactByUnit.get(unit.unit_id) ?? []), contractHistory })), access, now)) : result.snapshot);
     }
-    return finish(rows);
+    if (!summary) return finish(rows);
+    // D등급 세대만 관리 사유 근거를 읽는다(같은 세션 RLS). 실패한 근거의 사유는 붙이지 않고 unavailable로 알린다.
+    const summaryRows = rows as LedgerSummaryRow[];
+    const dReasons = await loadDGradeReasons(projectId, summaryRows.filter(r => r.currentGrade === 'D').map(r => ({
+      unitId: r.unitId, contractId: r.currentContractId, customerId: r.currentCustomerId, buildingNo: r.buildingNo, unitNo: r.unitNo,
+      currentGrade: r.currentGrade, funding: r.funding, moveIn: r.moveIn })));
+    for (const row of summaryRows) row.dGradeReasons = dReasons.byUnit.get(row.unitId) ?? [];
+    return { ...finish(rows), dGradeReasonUnavailable: dReasons.unavailable };
   } catch { return failure(); }
 }
 

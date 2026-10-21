@@ -248,7 +248,26 @@ export const TODAY_REASON_LABELS: Record<TodayReason, string> = {
   EXISTING_HOME_UNSOLD: "기존주택 미처분",
 };
 
-export type TodayFilter = "all" | "next_contact" | "delayed" | "funding";
+export type TodayFilter = "all" | "next_contact" | "delayed" | "funding" | "absence" | "visit";
+
+export const TODAY_VISIT_REASON_CODES = ["VISIT_NEEDED", "REVISIT_NEEDED", "VISIT_DONE"] as const;
+
+/** 오늘 관리대상 URL 필터. next_contact(FOLLOW_UP_DUE)는 선정 사유에서 제외되어 기존 링크는 전체로 처리 */
+export function parseTodayQueueFilter(value: string | null | undefined): TodayFilter {
+  return value === "delayed" || value === "funding" || value === "absence" || value === "visit" ? value : "all";
+}
+
+/** Queue 함수가 만든 사유 코드로만 좁힌다(순서는 Queue 결과 그대로). */
+export function matchesTodayQueueFilter(
+  row: { reasonCodes: readonly string[]; moveInStatus?: string | null },
+  filter: TodayFilter,
+): boolean {
+  if (filter === "funding") return row.reasonCodes.includes("C_GRADE_FUNDING");
+  if (filter === "delayed") return row.moveInStatus === "DELAYED";
+  if (filter === "absence") return row.reasonCodes.includes("ABSENCE_STREAK");
+  if (filter === "visit") return TODAY_VISIT_REASON_CODES.some((code) => row.reasonCodes.includes(code));
+  return true;
+}
 
 export function filterTodayRows(
   rows: UnitListRow[],

@@ -1,8 +1,11 @@
+import { matchesDGradeReasonFilter, parseDGradeReasonParam, type DGradeReason } from "@/lib/move-in/d-grade-reasons";
 import {
   DEFAULT_UNIT_LIST_FILTERS,
   filterTodayRows,
   filterUnits,
+  matchesTodayQueueFilter,
   parseOperationalIntentFilter,
+  parseTodayQueueFilter,
   sortUnitRows,
   type SortDirection,
   type TodayFilter,
@@ -32,6 +35,8 @@ export type MoveInReturnContext =
       kind: "today";
       returnTo: string;
       filter: TodayFilter;
+      /** D등급 관리 사유 필터(D AND 사유 OR). 없으면 빈 배열 */
+      dReasons?: DGradeReason[];
     };
 
 /** Validates a list URL without normalizing path traversal or losing safe query bytes. */
@@ -129,9 +134,7 @@ function parseSort(params: URLSearchParams): {
 }
 
 function parseTodayFilter(value: string | null): TodayFilter {
-  return value === "next_contact" || value === "delayed" || value === "funding"
-    ? value
-    : "all";
+  return parseTodayQueueFilter(value);
 }
 
 /**
@@ -151,6 +154,7 @@ export function getMoveInReturnContext(
       kind: "today",
       returnTo,
       filter: parseTodayFilter(url.searchParams.get("filter")),
+      dReasons: parseDGradeReasonParam(url.searchParams.getAll("dReason")),
     };
   }
 
@@ -177,6 +181,16 @@ export function withMoveInReturnNotice(
 ) {
   const url = new URL(returnTo, "https://decisionos.invalid");
   url.searchParams.set("moveInNotice", notice);
+  return `${url.pathname}${url.search}`;
+}
+
+/** 상담은 저장됐지만 오늘 업무 완료 처리가 실패한 세대를 오늘 관리대상에 표시하고 재시도할 수 있게 한다. */
+export function withTodayTaskPendingNotice(returnTo: string, unitId: string, nextAt: string | null) {
+  const url = new URL(returnTo, "https://decisionos.invalid");
+  url.searchParams.set("moveInNotice", "taskPending");
+  url.searchParams.set("taskUnit", unitId);
+  if (nextAt) url.searchParams.set("taskNext", nextAt);
+  else url.searchParams.delete("taskNext");
   return `${url.pathname}${url.search}`;
 }
 
@@ -223,17 +237,13 @@ export function resolveNextMoveInUnitId(
 
 
 export function resolveTodayQueueAdjacentUnitIds(
-  rows: Array<{ unitId: string; reasonCodes: readonly string[]; moveInStatus?: string | null }>,
+  rows: Array<{ unitId: string; reasonCodes: readonly string[]; moveInStatus?: string | null; legacyGrade?: string | null; dGradeReasons?: readonly string[] }>,
   currentUnitId: string,
   context: MoveInReturnContext,
 ): MoveInAdjacentUnitIds {
   if (context.kind !== "today") return { previousUnitId: null, nextUnitId: null };
-  const scoped = rows.filter((row) => {
-    if (context.filter === "all") return true;
-    if (context.filter === "next_contact") return row.reasonCodes.includes("FOLLOW_UP_DUE");
-    if (context.filter === "funding") return row.reasonCodes.includes("C_GRADE_FUNDING");
-    return row.moveInStatus === "DELAYED";
-  });
+  const scoped = rows.filter((row) => matchesTodayQueueFilter(row, context.filter)
+    && matchesDGradeReasonFilter({ currentGrade: row.legacyGrade ?? null, dGradeReasons: row.dGradeReasons }, context.dReasons ?? []));
   const index = scoped.findIndex((row) => row.unitId === currentUnitId);
   if (index < 0) return { previousUnitId: null, nextUnitId: null };
   return {

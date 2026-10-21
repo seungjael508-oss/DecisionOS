@@ -1,0 +1,16 @@
+# Exclude internal documentation and tests
+docs/
+tests/
+
+# Exclude source data files
+*.xlsx
+*.xls
+*.csv
+stayj_cd_trade_initial_candidates.json
+
+# Exclude local environment files
+.env*
+!.env.example
+
+# Exclude TypeScript build cache
+*.tsbuildinfo

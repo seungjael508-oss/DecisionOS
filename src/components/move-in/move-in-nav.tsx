@@ -48,6 +48,7 @@ export function MoveInNav({
           const active = pendingHref ? item.href === pendingHref : isActiveItem(pathname, item);
           return (
             <Link
+              prefetch={false}
               key={item.href}
               href={item.href}
               onClick={(event) => {

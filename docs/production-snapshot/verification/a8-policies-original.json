@@ -1,0 +1,65 @@
+[
+ {
+  "t": "consultation",
+  "p": "consultation_select",
+  "cmd": "SELECT",
+  "roles": "{authenticated}",
+  "permissive": "PERMISSIVE",
+  "h": "97f1afebb2e0fbc890d2368599ed7e32",
+  "q": "(private.has_project_role(project_id, ARRAY['PROJECT_ADMIN'::project_member_role]) OR (EXISTS ( SELECT 1\n   FROM customer c\n  WHERE ((c.id = consultation.customer_id) AND (c.project_id = consultation.project_id) AND (c.assigned_counselor_id = private.current_project_member_id(consultation.project_id, ARRAY['COUNSELOR'::project_member_role]))))))"
+ },
+ {
+  "t": "consultation",
+  "p": "consultation_hwayang_field_select",
+  "cmd": "SELECT",
+  "roles": "{authenticated}",
+  "permissive": "PERMISSIVE",
+  "h": "f90a996e56a603f143c7bc1cd7dcb0fc",
+  "q": "private.is_hwayang_field_member(project_id)"
+ },
+ {
+  "t": "customer",
+  "p": "customer_select",
+  "cmd": "SELECT",
+  "roles": "{authenticated}",
+  "permissive": "PERMISSIVE",
+  "h": "eee1cd16ef996d69c6dd16d355bc8fed",
+  "q": "((assigned_counselor_id = private.current_project_member_id(project_id, ARRAY['COUNSELOR'::project_member_role])) OR private.has_project_role(project_id, ARRAY['PROJECT_ADMIN'::project_member_role]))"
+ },
+ {
+  "t": "customer",
+  "p": "customer_hwayang_field_select",
+  "cmd": "SELECT",
+  "roles": "{authenticated}",
+  "permissive": "PERMISSIVE",
+  "h": "f90a996e56a603f143c7bc1cd7dcb0fc",
+  "q": "private.is_hwayang_field_member(project_id)"
+ },
+ {
+  "t": "project_unit",
+  "p": "project_unit_select",
+  "cmd": "SELECT",
+  "roles": "{authenticated}",
+  "permissive": "PERMISSIVE",
+  "h": "746b577660adce06f39bb2e6cdcb1231",
+  "q": "private.has_project_role(project_id, ARRAY['COUNSELOR'::project_member_role, 'PROJECT_ADMIN'::project_member_role, 'CLIENT_MANAGER'::project_member_role])"
+ },
+ {
+  "t": "contract",
+  "p": "contract_select",
+  "cmd": "SELECT",
+  "roles": "{authenticated}",
+  "permissive": "PERMISSIVE",
+  "h": "746b577660adce06f39bb2e6cdcb1231",
+  "q": "private.has_project_role(project_id, ARRAY['COUNSELOR'::project_member_role, 'PROJECT_ADMIN'::project_member_role, 'CLIENT_MANAGER'::project_member_role])"
+ },
+ {
+  "t": "unit_occupancy_status",
+  "p": "unit_occupancy_status_select",
+  "cmd": "SELECT",
+  "roles": "{authenticated}",
+  "permissive": "PERMISSIVE",
+  "h": "746b577660adce06f39bb2e6cdcb1231",
+  "q": "private.has_project_role(project_id, ARRAY['COUNSELOR'::project_member_role, 'PROJECT_ADMIN'::project_member_role, 'CLIENT_MANAGER'::project_member_role])"
+ }
+]
