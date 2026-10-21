@@ -170,10 +170,10 @@ export function UnitDetailWorkspace({
           <button {...navButtonProps("close", returnTo, saving, "border border-neutral-500 px-3 py-1")} onClick={() => navigateFromButton("close", returnTo)}>
             {navLabel("close", "닫기")}
           </button>
-          <button {...navButtonProps("cancel", returnTo, saving, "border border-neutral-500 px-3 py-1")} onClick={() => navigateFromButton("cancel", returnTo)}>
+          <button {...navButtonProps("cancel", returnTo, saving, "border border-neutral-500 px-3 py-1 max-[1099px]:hidden")} onClick={() => navigateFromButton("cancel", returnTo)}>
             {navLabel("cancel", "취소")}
           </button>
-          <button {...navButtonProps("list", returnTo, saving, "border border-neutral-500 px-3 py-1")} onClick={() => navigateFromButton("list", returnTo)}>
+          <button {...navButtonProps("list", returnTo, saving, "border border-neutral-500 px-3 py-1 max-[1099px]:hidden")} onClick={() => navigateFromButton("list", returnTo)}>
             {navLabel("list", "목록으로")}
           </button>
         </nav>

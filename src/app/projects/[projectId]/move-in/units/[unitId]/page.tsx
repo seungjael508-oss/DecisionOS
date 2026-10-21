@@ -9,6 +9,7 @@ import { paymentForCurrentContract } from '@/lib/move-in/payment-projection.serv
 import { balanceAccountFor } from '@/lib/move-in/ledger-finance.server';
 import { verifyUnitWorkspaceIdentity } from '@/lib/move-in/unit-workspace.server';
 import { UnitDetailWorkspace } from "@/components/move-in/unit-detail-workspace";
+import { MobileDetailTabs, MobileUnitHeader } from "@/components/move-in/mobile-detail-tabs";
 import { DealEditor } from "@/components/move-in/deal-editor";
 import { TradeFundingEditor } from "@/components/move-in/trade-funding-editor";
 import { isTradeFundingStatus, isTradeFundingType } from "@/lib/move-in/trade-funding";
@@ -130,12 +131,17 @@ export default async function MoveInUnitDetailPage({
       nextHref={nextHref}
       lastNextHref={lastNextHref}
     >
-    {/* 모바일 원스크롤: 핵심 정보 → 상담 입력(order-1) → 이력(order-2). 하단 고정 저장 바만큼 아래 여백 */}
-    <main className="p-8 max-[1099px]:flex max-[1099px]:flex-col max-[1099px]:p-4 max-[1099px]:pb-36">
-      <h1 className="text-4xl font-semibold max-[1099px]:text-2xl">
+    {/* 모바일: 요약 헤더 + 기본/계약·상담/방문·납부/미납 탭(data-tab). 오늘 관리대상에서 오면 상담 탭부터. 하단 고정 바만큼 아래 여백 */}
+    <main className="p-8 max-[1099px]:p-4 max-[1099px]:pb-36">
+      <MobileDetailTabs defaultTab={returnContext.kind === "today" ? "consult" : "info"} header={<MobileUnitHeader
+        unitLabel={formatUnitLabel(detail.buildingNo, detail.unitNo)} unitType={detail.unitType ?? "타입 미등록"} customerName={detail.customerName ?? "계약자 미등록"}
+        phone={detail.customerId ? <CustomerPhone raw={detail.customerPhone} status={detail.phoneQuality} /> : "—"} grade={latestGrade}
+        dReasonText={latestGrade === "D" ? (dReasons?.byUnit.get(unitId)?.length ? dReasons.byUnit.get(unitId)!.map((r) => D_GRADE_REASON_LABELS[r]).join(" · ") : "사유 미확인") : null}
+        nextContact={formatDateTime(detail.occupancy ? detail.occupancy.next_contact_at : consultations[0]?.nextActionAt ?? null)} />}>
+      <h1 className="text-4xl font-semibold max-[1099px]:hidden">
         {formatUnitLabel(detail.buildingNo, detail.unitNo)} · {detail.unitType ?? "타입 미등록"} · {detail.customerName ?? "계약자 미등록"} · {latestGrade ? `${latestGrade}등급` : "등급 미등록"}
       </h1>
-      <dl className="mt-4 grid max-w-xl grid-cols-[7rem_1fr] gap-y-1 text-lg">
+      <dl data-tab="info" className="mt-4 grid max-w-xl grid-cols-[7rem_1fr] gap-y-1 text-lg max-[1099px]:text-sm">
         <dt className="text-neutral-600">전화번호</dt>
         <dd>{detail.customerId ? <CustomerPhone raw={detail.customerPhone} status={detail.phoneQuality} /> : "—"}</dd>
         <dt className="text-neutral-600">담당상담사</dt>
@@ -157,20 +163,20 @@ export default async function MoveInUnitDetailPage({
         <dd>{consultations.length}회</dd>
       </dl>
 
-      <OccupancyStatusCards occupancy={detail.occupancy} />
+      <div data-tab="info"><OccupancyStatusCards occupancy={detail.occupancy} /></div>
 
       {detail.occupancy ? (
-        <OccupancyEditor
+        <div data-tab="info"><OccupancyEditor
           projectId={projectId}
           unitId={unitId}
           occupancy={detail.occupancy}
-        />
+        /></div>
       ) : (
-        <p className="mt-4 text-neutral-700">등록된 입주 상태가 없습니다.</p>
+        <p data-tab="info" className="mt-4 text-neutral-700">등록된 입주 상태가 없습니다.</p>
       )}
 
       {specialCaseResult.error || !specialCaseResult.projection || !detail.contractId ? null : (
-        <SpecialCaseEditor
+        <div data-tab="info"><SpecialCaseEditor
           projectId={projectId}
           unitId={unitId}
           contractId={specialCaseResult.projection.currentContractId}
@@ -179,13 +185,13 @@ export default async function MoveInUnitDetailPage({
           role={access.role}
           reasons={specialCaseResult.projection.reasons}
           specialCase={specialCaseResult.projection.specialCase}
-        />
+        /></div>
       )}
 
-      <PaymentSummaryCard occupancy={detail.occupancy} projection={payment} account={payment && detail.contractId
+      <div data-tab="pay"><PaymentSummaryCard occupancy={detail.occupancy} projection={payment} account={payment && detail.contractId
         ? balanceAccountFor({ access, projectId, unitId, contractId: detail.contractId, buildingNo: detail.buildingNo, unitNo: detail.unitNo, assigneeId: detail.assignedCounselorId })
-        : { kind: "unknown" }} />
-      <section className="mt-10 max-[1099px]:order-2">
+        : { kind: "unknown" }} /></div>
+      <section data-tab="consult" className="mt-10 max-[1099px]:order-2">
         <h2 className="mb-3 text-lg font-semibold">상담/콜 이력</h2>
         <ConsultationHistory
           rows={consultations}
@@ -194,7 +200,7 @@ export default async function MoveInUnitDetailPage({
       </section>
 
       {detail.customerId ? (
-        <div className="max-[1099px]:order-1"><ConsultationCreateForm
+        <div data-tab="consult" className="max-[1099px]:order-1"><ConsultationCreateForm
           projectId={projectId}
           unitId={unitId}
           customerId={detail.customerId}
@@ -209,7 +215,7 @@ export default async function MoveInUnitDetailPage({
       ) : null}
 
       {detail.customerId && detail.contractId ? (
-        <TradeFundingEditor
+        <div data-tab="info"><TradeFundingEditor
           projectId={projectId}
           unitId={unitId}
           customerId={detail.customerId}
@@ -218,22 +224,22 @@ export default async function MoveInUnitDetailPage({
           type={isTradeFundingType(detail.occupancy?.trade_funding_type) ? detail.occupancy.trade_funding_type : null}
           status={isTradeFundingType(detail.occupancy?.trade_funding_type) && isTradeFundingStatus(detail.occupancy?.trade_funding_status) ? detail.occupancy.trade_funding_status : null}
           updatedAt={detail.occupancy?.trade_funding_updated_at ?? null}
-        />
+        /></div>
       ) : null}
 
       {detail.customerId && detail.contractId ? (
-        dealResult.error || officesResult.error ? <QueryError /> : <DealEditor
+        dealResult.error || officesResult.error ? <QueryError /> : <div data-tab="info"><DealEditor
           projectId={projectId}
           unitId={unitId}
           contractId={detail.contractId}
           customerId={detail.customerId}
           deal={dealResult.deal}
           offices={officesResult.offices}
-        />
+        /></div>
       ) : null}
 
       {detail.customerId && detail.relatedUnits.length > 0 ? (
-        <section className="mt-10 max-[1099px]:order-3">
+        <section data-tab="info" className="mt-10 max-[1099px]:order-3">
           <h2 className="mb-3 text-lg font-semibold">동일 계약자의 다른 보유세대</h2>
           <p className="mb-3 text-sm text-neutral-600">
             {detail.customerName ?? "계약자"} 보유 {detail.relatedUnits.length + 1}세대
@@ -261,7 +267,7 @@ export default async function MoveInUnitDetailPage({
         </section>
       ) : null}
 
-
+      </MobileDetailTabs>
     </main>
     </UnitDetailWorkspace>
   );
