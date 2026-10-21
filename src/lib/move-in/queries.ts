@@ -41,6 +41,7 @@ import { buildDashboardActivity, computeMoveInKpis, legacyDashboardSnapshot, typ
 import { todayYmd, worklogDayRange } from "@/lib/worklog/day-range";
 import { computeFundingKpiSnapshot } from "@/lib/move-in/funding-kpis";
 import { computeGradePromotionKpi } from "@/lib/move-in/grade-promotion";
+import { startPerfLog } from "@/lib/perf-log";
 
 /** Server-only summary projection: never reads names, phones or consultation content. */
 export async function loadDashboard(projectId: string, now = new Date()) {
@@ -1155,8 +1156,10 @@ export function filterTodayQueueRows<T extends Pick<MoveInTodayQueueRow, "reason
 export async function loadMoveInTodayQueueRows(projectId: string, now = new Date()): Promise<
   { error: true; rows: MoveInTodayQueueRow[] } | { error: false; rows: MoveInTodayQueueRow[]; dGradeReasonUnavailable?: DGradeReason[] }
 > {
+  const perf = startPerfLog("move-in/today-queue");
   const access = await requireMoveInAccess(projectId);
   if (!access.ok) return { error: true, rows: [] };
+  perf.step("access");
   const supabase = await createServerClient();
   const queueClient = supabase as unknown as {
     rpc: (name: "get_move_in_today_queue", args: { p_project_id: string; p_now: string }) => Promise<{
@@ -1166,6 +1169,7 @@ export async function loadMoveInTodayQueueRows(projectId: string, now = new Date
   };
   const queueResult = await queueClient.rpc("get_move_in_today_queue", { p_project_id: projectId, p_now: now.toISOString() });
   if (queueResult.error || !queueResult.data) return { error: true, rows: [] };
+  perf.step("queueRpc");
   const source = queueResult.data.map((row): MoveInTodayQueueSourceRow => ({
     unitId: row.unit_id,
     contractId: row.contract_id,
@@ -1182,6 +1186,7 @@ export async function loadMoveInTodayQueueRows(projectId: string, now = new Date
   }));
   const currentResult = await loadCurrentQueueUnitRows(projectId, currentQueueUnitIds(source), access);
   if (currentResult.error) return { error: true, rows: [] };
+  perf.step("currentUnits");
   const joined = joinMoveInTodayQueueRows(source, currentResult.rows);
   // D등급 관리 사유: 현재 계약이 확인된 D 세대만(같은 세션 RLS). 근거 조회 실패 사유는 붙이지 않는다.
   const dUnits = joined.filter((row) => row.legacyGrade === "D" && row.currentCustomerId && row.buildingNo && row.unitNo);
@@ -1189,6 +1194,8 @@ export async function loadMoveInTodayQueueRows(projectId: string, now = new Date
     unitId: row.unitId, contractId: row.contractId, customerId: row.currentCustomerId!, buildingNo: row.buildingNo!, unitNo: row.unitNo!,
     currentGrade: row.legacyGrade, funding: row.fundingStatus, moveIn: row.moveInStatus,
   })));
+  perf.step("dGradeReasons");
+  perf.end({ rows: joined.length });
   return {
     error: false,
     rows: joined.map((row) => ({ ...row, dGradeReasons: dReasons.byUnit.get(row.unitId) ?? [] })),

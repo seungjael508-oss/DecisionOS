@@ -9,6 +9,7 @@ import { readByUuidRanges } from '@/lib/supabase/read-by-uuid-range';
 import { currentIdentityRevision, currentRelationAnomaly, isCurrentUnitVisible, latestOf, resolveCurrentUnitSnapshot, toLedgerSummaryRow } from '@/lib/move-in/current-unit-snapshot';
 import { approvedUnitSourceTags, attachOnlineListing } from '@/lib/move-in/ledger-source-tags.server';
 import { loadDGradeReasons } from '@/lib/move-in/d-grade-reasons.server';
+import { startPerfLog } from '@/lib/perf-log';
 import type { AnomalyReason, CurrentUnitRecord, CurrentUnitSnapshot, DealRecord, SpecialRecord, ContactRecord, LedgerSummaryRow, ProjectionResult, QueryCounts } from '@/lib/move-in/ledger-types';
 
 const CURRENT_SELECT = `project_id,unit_id,building_no,unit_no,unit_type,
@@ -36,9 +37,11 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
   const queryCounts: QueryCounts = { current: 0, contacts: 0, deals: 0, special: 0, recheck: 0 };
   const empty = { rows: [], anomalyCount: 0, anomalies: {}, snapshotAsOf: now.toISOString(), queryCounts };
   const failure = () => ({ ...empty, error: true });
+  const perf = startPerfLog(`move-in/projection(${unitIds ? 'units' : summary ? 'ledger' : 'snapshot'})`);
   try {
     const access = await requireMoveInAccess(projectId);
     if (!access.ok || access.projectId !== projectId) return failure();
+    perf.step('access');
     if (unitIds && unitIds.some(id => !uuid.test(id))) return failure();
     if (unitIds && unitIds.length === 0) return { ...empty, error: false };
     const only = unitIds && unitIds.length <= 150 ? [...unitIds] : null;
@@ -60,6 +63,7 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
     }) : Promise.resolve({ data: [] as ContactRecord[], error: false });
     const base = await readCurrent(false);
     if (base.error) { await contactsRead; return failure(); }
+    perf.step('units');
     const anomalies: Partial<Record<AnomalyReason, number>> = {};
     const flag = (reason: AnomalyReason) => { anomalies[reason] = (anomalies[reason] ?? 0) + 1; };
     const current: CurrentUnitRecord[] = [];
@@ -130,9 +134,11 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
         .returns<{ unit_id: string; contract_id: string }[]>(), 1000) : { data: [], error: false };
     const [s, d, c, k] = await Promise.all([special(), deals(), contacts(), contractIds()]);
     if (s.error || d.error || c.error) return failure();
+    perf.step('related');
     const contractsByUnit = k.error ? null : groupByUnit(k.data);
     const recheck = await readCurrent(true);
     if (recheck.error) return failure();
+    perf.step('recheck');
     const finalByUnit = groupByUnit(recheck.data), specialByUnit = groupByUnit(s.data), dealByUnit = groupByUnit(d.data);
     const contactByUnit = new Map(c.data.filter(r => r.project_id === projectId).map(r => [r.unit_id, r.contact ?? []]));
     const rows: (CurrentUnitSnapshot | LedgerSummaryRow)[] = [];
@@ -152,13 +158,16 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
         ? unitContracts.some(k => k.contract_id !== result.snapshot.currentContractId) : undefined;
       rows.push(summary ? attachOnlineListing(attachLedgerFinance(attachContractAddress(attachLedgerManagement({ ...toLedgerSummaryRow(unit, result.snapshot, ds.length === 1 ? ds[0] : null, contactByUnit.get(unit.unit_id) ?? []), contractHistory })), access, now)) : result.snapshot);
     }
-    if (!summary) return finish(rows);
+    perf.step('build');
+    if (!summary) { perf.end({ rows: rows.length }); return finish(rows); }
     // D등급 세대만 관리 사유 근거를 읽는다(같은 세션 RLS). 실패한 근거의 사유는 붙이지 않고 unavailable로 알린다.
     const summaryRows = rows as LedgerSummaryRow[];
     const dReasons = await loadDGradeReasons(projectId, summaryRows.filter(r => r.currentGrade === 'D').map(r => ({
       unitId: r.unitId, contractId: r.currentContractId, customerId: r.currentCustomerId, buildingNo: r.buildingNo, unitNo: r.unitNo,
       currentGrade: r.currentGrade, funding: r.funding, moveIn: r.moveIn })));
     for (const row of summaryRows) row.dGradeReasons = dReasons.byUnit.get(row.unitId) ?? [];
+    perf.step('dGradeReasons');
+    perf.end({ rows: rows.length });
     return { ...finish(rows), dGradeReasonUnavailable: dReasons.unavailable };
   } catch { return failure(); }
 }

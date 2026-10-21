@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import type { MouseEvent, ReactNode } from "react";
 import type { TodayFilter } from "@/lib/move-in/filters";
 import { D_GRADE_REASONS, D_GRADE_REASON_LABELS, parseDGradeReasonParam, type DGradeReason } from "@/lib/move-in/d-grade-reasons";
 import { parseLedgerQuery, patchLedgerQuery, type LedgerAxis } from "@/lib/move-in/ledger-filters";
@@ -18,6 +19,19 @@ const OPTIONS: { value: TodayFilter; label: string }[] = [
 
 const activeClass = "border border-neutral-900 bg-neutral-900 px-2 py-1 text-white";
 const idleClass = "border border-neutral-400 px-2 py-1";
+
+/**
+ * 화면 전용 필터(오늘 필터·업무 유형·D등급 사유): 서버 재조회 없이 주소만 바꾼다. 목록은 TodayQueueView가 주소를 읽어 다시 거른다.
+ * 새 탭·수정키 클릭은 일반 링크로 둔다.
+ */
+function ViewFilterLink({ href, className, children, ...aria }: { href: string; className: string; children: ReactNode; "aria-current"?: "page"; "aria-pressed"?: boolean }) {
+  const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    window.history.pushState(null, "", href);
+  };
+  return <a href={href} onClick={onClick} className={className} {...aria}>{children}</a>;
+}
 
 /** 오늘 관리 공통 관리 필터(특별관리·매매/임대·문제세대). 선택지는 서버가 원장과 같은 함수로 만든다. */
 export type TodayAxisOptions = { axis: LedgerAxis; label: string; options: { value: string; label: string }[] }[];
@@ -59,20 +73,20 @@ export function TodayFilters({ projectId, axisOptions = [] }: { projectId: strin
         {OPTIONS.map((option) => {
           const active = current === option.value || (option.value === "all" && !searchParams.get("filter"));
           return (
-            <Link prefetch={false} key={option.value} href={withFilter(option.value)} aria-current={active ? "page" : undefined}
+            <ViewFilterLink key={option.value} href={withFilter(option.value)} aria-current={active ? "page" : undefined}
               className={active ? activeClass : idleClass}>
               {option.label}
-            </Link>
+            </ViewFilterLink>
           );
         })}
       </nav>
       <nav className="flex flex-wrap items-center gap-2" aria-label="업무 유형 필터">
         <span className="text-sm text-neutral-700">업무 유형</span>
-        <Link prefetch={false} href={withTask(null)} aria-current={task ? undefined : "page"} className={task ? idleClass : activeClass}>전체</Link>
+        <ViewFilterLink href={withTask(null)} aria-current={task ? undefined : "page"} className={task ? idleClass : activeClass}>전체</ViewFilterLink>
         {TODAY_TASK_TYPES.map((value) => (
-          <Link prefetch={false} key={value} href={withTask(task === value ? null : value)} aria-pressed={task === value} className={task === value ? activeClass : idleClass}>
+          <ViewFilterLink key={value} href={withTask(task === value ? null : value)} aria-pressed={task === value} className={task === value ? activeClass : idleClass}>
             {TODAY_TASK_TYPE_LABELS[value]}
-          </Link>
+          </ViewFilterLink>
         ))}
       </nav>
       <nav className="flex flex-wrap items-center gap-2" aria-label="빠른필터">
@@ -105,15 +119,15 @@ export function TodayFilters({ projectId, axisOptions = [] }: { projectId: strin
       ))}
       <nav className="flex flex-wrap items-center gap-2" aria-label="D등급 관리사유 필터">
         <span className="text-sm text-neutral-700">D등급 관리사유</span>
-        <Link prefetch={false} href={withReasons([])} aria-current={dReasons.length ? undefined : "page"} className={dReasons.length ? idleClass : activeClass}>
+        <ViewFilterLink href={withReasons([])} aria-current={dReasons.length ? undefined : "page"} className={dReasons.length ? idleClass : activeClass}>
           선택 안 함
-        </Link>
+        </ViewFilterLink>
         {D_GRADE_REASONS.map((reason) => {
           const active = dReasons.includes(reason);
           return (
-            <Link prefetch={false} key={reason} href={withReasons(toggle(reason))} aria-pressed={active} className={active ? activeClass : idleClass}>
+            <ViewFilterLink key={reason} href={withReasons(toggle(reason))} aria-pressed={active} className={active ? activeClass : idleClass}>
               {D_GRADE_REASON_LABELS[reason]}
-            </Link>
+            </ViewFilterLink>
           );
         })}
         {dReasons.length ? <span className="text-xs text-neutral-600">D등급 중 선택 사유 하나 이상(복수 선택은 OR)</span> : null}
