@@ -13,14 +13,15 @@ begin;
 do $preflight$
 begin
   -- 수정 대상 함수 원문이 기대한 정의(운영 원문 + A8)와 같아야 한다(다르면 아무것도 바꾸지 않고 중단)
-  if (select md5(prosrc) from pg_proc where oid = 'private.current_project_member_id(uuid,public.project_member_role[])'::regprocedure)
+  -- SQL Editor 붙여 넣기로 CRLF가 남은 원문(운영 A8: CR 14개)도 같은 정의로 본다(13-precheck와 같은 비교)
+  if (select md5(replace(prosrc, chr(13), '')) from pg_proc where oid = 'private.current_project_member_id(uuid,public.project_member_role[])'::regprocedure)
      is distinct from 'c13d451391341afbc7857362c647c12a' then
     raise exception 'private.current_project_member_id is not the expected definition; abort';
   end if;
   if to_regprocedure('private.current_project_memberships()') is null then
     raise exception 'private.current_project_memberships is missing (A8 20261019120000 not applied); abort';
   end if;
-  if (select md5(prosrc) from pg_proc where oid = 'private.current_project_memberships()'::regprocedure)
+  if (select md5(replace(prosrc, chr(13), '')) from pg_proc where oid = 'private.current_project_memberships()'::regprocedure)
      is distinct from 'a365bc18d38dc104b039355fa0aa3133' then
     raise exception 'private.current_project_memberships is not the expected definition; abort';
   end if;

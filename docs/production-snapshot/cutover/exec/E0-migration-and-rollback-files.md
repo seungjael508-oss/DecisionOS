@@ -87,13 +87,16 @@
 
 | 순서 | 파일 | SHA-256 |
 |---|---|---|
-| A13 | supabase/migrations/20261020120000_recovery_session_membership_block.sql | 2be3f3ac4c0ffa5de372e136e76a28c39941d085360c752126afabe26664026f |
+| A13 | supabase/migrations/20261020120000_recovery_session_membership_block.sql | 8e365d2ab0097cd8105b9b4f0665908f3bc24cbd9971e5a43caf6c934c12ddae |
 | R13 | supabase/rollback/20261020120000_recovery_session_membership_block.rollback.sql | 98b3029f64f4f09c0e7023674cf889a5ec33718f6220c75d98617281e6e5fc4d |
 
 - 근거: 재설정 링크로 만든 세션(JWT amr=recovery)이 일반 로그인과 같은 DB 권한(고객·전화번호 조회, 상담 저장). 앱의 /reset-password 강제 이동은 Data API 직접 호출을 막지 못함(verification/iso-recovery-session-access.mjs로 재현).
 - 바뀌는 것: private.current_project_member_id·private.current_project_memberships 두 함수에 "amr에 recovery 없음" 조건 1줄씩. 시그니처·SECURITY DEFINER·STABLE·search_path·소유자·ACL·정책·데이터는 그대로.
 - 선행: A8(소속 목록 함수). 파일 이름 시각은 A12(20261021100000)보다 앞서지만 A12와 같은 객체를 바꾸지 않아 순서 무관(check-rollback-chain.mjs로 확인). A12 적용 여부와 별개로 적용할 수 있다.
 - 사전 점검: 두 함수 원문 md5가 운영 원문(c13d4513…)·A8 정의(a365bc18…)가 아니면, 또는 A8 미적용이면 변경 없이 중단. 중복 적용도 중단.
+  - 2026-10-21 수정: 운영 A8 소속 목록 함수 원문에 SQL Editor 붙여 넣기로 CR 14개가 남아 있어(CR 제거 md5 = a365bc18…) 원문 md5 비교로 중단됨(변경 없음).
+    사전 점검을 13-precheck와 같은 CR 제거 비교로 바꿈(함수 본문 변경 없음). 수정 전 SHA 2be3f3ac…는 폐기 — 실행 금지.
+    격리 검증: CRLF A8 재현 상태에서 수정 전 동일 오류 중단·수정 후 적용·13-postcheck 8행 PASS·R13·알 수 없는 정의 중단(13건), check-rollback-chain 11건, iso-recovery-membership-block 69건 PASS.
 - 적용 전 확인(읽기 전용): cutover/13-precheck-a13.sql(SHA-256 f9e3dda59928e9356cce5f5400531552b0db7dbc12df84d6c0c0badb9c779cd0) OVERALL = READY일 때만 적용. ALREADY = 이미 적용, STOP = 적용하지 않고 회신. 격리 DB에서 A8 미적용·A8 적용·A13 적용·알 수 없는 정의 4상태 판정 확인.
 - 대상 확인: SQL Editor를 연 대시보드 URL의 프로젝트 ref가 승인된 대상과 같은지 실행 전에 확인한다. 2026-10-20 Vercel 변수 확인 결과 NEXT_PUBLIC_SUPABASE_URL은 Production에만 있고, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY는 Production·Preview 공용(= 운영 프로젝트 키)이다. 별도 Preview DB를 쓰려면 Preview 전용 URL·키를 따로 지정해야 한다.
 - 적용 후 확인: cutover/13-postcheck-a13.sql 판정 8행 PASS(SHA-256 d90fcacae68fffeffb52cb01cdeb3a1951062b27c09ed369fc5fab420ccaefa9). 실제 차단은 재설정 메일 E2E로 확인.
