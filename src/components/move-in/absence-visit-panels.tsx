@@ -38,7 +38,6 @@ function VisitResultForm({ projectId, target }: { projectId: string; target: Mov
       projectId,
       visitTargetId: target.visitTargetId,
       contractId: target.contractId,
-      unitId: target.unitId,
       result,
       content: String(form.get("content") ?? ""),
       occupancyIntent: result === "VISITED" ? String(form.get("occupancy_intent") ?? "") || null : null,
