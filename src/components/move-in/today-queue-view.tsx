@@ -64,14 +64,22 @@ export function TodayQueueView({ projectId, rows, doneRows, doneError, visitTarg
 
       <ul className="flex flex-col gap-3 md:hidden">
         {visible.map((row) => (
-          <li key={row.key} className="border border-neutral-300 p-4">
-            <Link prefetch={false} className="text-lg font-semibold underline" href={unitHref(row.unitId)}>{row.unitLabel}</Link>
-            <p>계약자 {row.customerName ?? "—"} · {row.phone}</p>
-            <p>등급 {row.grade} · 의향 {row.intent}</p>
-            <p>관리사유 {row.reasonText}</p>
-            <p>오늘 할 일 {row.todoText}</p>
-            <p>마지막 상담 {row.lastContact} · 다음 관리일 {row.nextContact}</p>
-            <p>담당자 {row.assignee} · 미처리</p>
+          // 카드 전체가 세대 상세 링크(현장 터치 영역 확보)
+          <li key={row.key} className={row.rowClassName}>
+            <Link prefetch={false} href={unitHref(row.unitId)} className="flex gap-3 border border-neutral-300 p-4 active:bg-neutral-100">
+              <span className={`w-1 shrink-0 self-stretch ${row.barClassName}`} aria-hidden="true"/>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-baseline justify-between gap-2">
+                  <span className="text-lg font-semibold underline">{row.unitLabel}</span>
+                  <span className="shrink-0 text-sm">등급 {row.grade}</span>
+                </span>
+                <span className="block">{row.customerName ?? "—"} · {row.phone}</span>
+                <span className="mt-1 block text-sm font-medium">오늘 할 일 {row.todoText}</span>
+                <span className="block text-sm text-neutral-700">관리사유 {row.reasonText}</span>
+                <span className="block text-sm text-neutral-700">의향 {row.intent} · 다음 관리일 {row.nextContact}</span>
+                <span className="block text-sm text-neutral-700">마지막 상담 {row.lastContact} · 담당 {row.assignee} · 미처리</span>
+              </span>
+            </Link>
           </li>
         ))}
       </ul>

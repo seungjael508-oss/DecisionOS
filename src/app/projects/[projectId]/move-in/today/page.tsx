@@ -120,7 +120,7 @@ export default async function MoveInTodayPage({ params, searchParams }: {
   });
   perf.end({ rows: rows.length });
 
-  return <main className="p-8">
+  return <main className="p-4 md:p-8">
     <h1 className="mb-6 text-2xl font-semibold">오늘 관리대상</h1>
     <Suspense><TodayFilters projectId={projectId} axisOptions={axisOptions} /></Suspense>
     {ledgerState.issues.length ? <p role="status" className="mb-3 text-sm text-red-700">필터 주소를 해석하지 못해 원장 필터 결과가 비어 있습니다. 필터를 다시 선택해 주세요.</p> : null}

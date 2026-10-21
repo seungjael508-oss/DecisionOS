@@ -28,7 +28,7 @@ import {
   mapExplicitIntent,
   type ExplicitIntentSelection,
 } from "@/lib/move-in/intent";
-import { getSafeMoveInReturnTo } from "@/lib/move-in/return-to";
+import { getMoveInReturnContext, getSafeMoveInReturnTo } from "@/lib/move-in/return-to";
 
 function dateToTimestamptz(value: string) {
   if (!value) return "";
@@ -86,6 +86,8 @@ export function ConsultationCreateForm({
   const saving=useUnitSave(),submitting=useRef(false);
   const workspace = useUnitDetailWorkspace();
   const safeReturnTo = getSafeMoveInReturnTo(projectId, returnTo);
+  // 오늘 관리대상에서 연 상담만 저장 성공 후 오늘 업무를 완료 처리한다(createMoveInConsultation과 같은 판정)
+  const fromToday = getMoveInReturnContext(projectId, returnTo).kind === "today";
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [moveInStatus, setMoveInStatus] = useState("");
@@ -336,12 +338,15 @@ export function ConsultationCreateForm({
       </fieldset>
       </details>
       {error ? <p className="text-sm text-red-700">{error}</p> : null}
-      <div className="flex flex-wrap gap-2">
+      {/* 모바일(1100px 미만): 저장 버튼 줄을 화면 하단에 고정해 스크롤 위치와 관계없이 누를 수 있게 한다.
+          취소는 상단 연속 처리 줄(닫기·취소)에 있으므로 하단 바에서는 뺀다. */}
+      <div className="flex flex-wrap gap-2 max-[1099px]:fixed max-[1099px]:inset-x-0 max-[1099px]:bottom-0 max-[1099px]:z-30 max-[1099px]:grid max-[1099px]:grid-cols-2 max-[1099px]:border-t max-[1099px]:border-neutral-300 max-[1099px]:bg-white max-[1099px]:p-2 max-[1099px]:pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        {fromToday ? <p className="w-full text-xs text-neutral-600 max-[1099px]:col-span-2">저장하면 오늘 업무가 완료 처리됩니다.</p> : null}
         <button
           type="submit"
           data-after-save="list"
           disabled={pending || saveDisabled}
-          className="border border-neutral-800 px-3 py-1"
+          className="border border-neutral-800 px-3 py-1 max-[1099px]:min-h-12 max-[1099px]:font-semibold"
         >
           {pending ? "저장 중…" : "저장 후 목록으로"}
         </button>
@@ -349,7 +354,7 @@ export function ConsultationCreateForm({
           type="submit"
           data-after-save="next"
           disabled={pending || saveDisabled}
-          className="border border-neutral-800 px-3 py-1"
+          className="border border-neutral-800 px-3 py-1 max-[1099px]:min-h-12 max-[1099px]:bg-neutral-900 max-[1099px]:font-semibold max-[1099px]:text-white max-[1099px]:disabled:opacity-50"
         >
           저장 후 다음 세대
         </button>
@@ -360,7 +365,7 @@ export function ConsultationCreateForm({
             if (workspace) workspace.requestNavigation(safeReturnTo);
             else router.replace(safeReturnTo);
           }}
-          className="border border-neutral-500 px-3 py-1"
+          className="border border-neutral-500 px-3 py-1 max-[1099px]:hidden"
         >
           취소하고 목록으로
         </button>

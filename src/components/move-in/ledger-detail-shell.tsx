@@ -129,9 +129,9 @@ export function LedgerDetailShell({projectId,children}:{projectId:string;childre
  useEffect(()=>{
   if(!restoreAnchor.current)return;
   const unit=selected||new URL(href,location.origin).searchParams.get('unitAnchor');
-  const anchor=unit?document.getElementById(`ledger-unit-${unit}`):null;
+  const anchor=unit?document.getElementById(`${mobile?'ledger-card':'ledger-unit'}-${unit}`):null;
   if(anchor){anchor.scrollIntoView({block:'nearest'});restoreAnchor.current=false;}
- },[href,selected,result]);
+ },[href,selected,result,mobile]);
  useEffect(()=>{
   if(!mobile||!selected||!panelRef.current)return;
   const changed:{element:HTMLElement;inert:boolean}[]=[];
@@ -145,7 +145,7 @@ export function LedgerDetailShell({projectId,children}:{projectId:string;childre
   window.addEventListener('beforeunload',before);return()=>window.removeEventListener('beforeunload',before);
  },[]);
  return <div className="ledger-detail-shell" data-detail-open={selected?'true':undefined} onClickCapture={event=>{
-   const target=event.target as HTMLElement,row=target.closest<HTMLElement>('tr[data-unit-id]');
+   const target=event.target as HTMLElement,row=target.closest<HTMLElement>('[data-unit-id]');
    if(!row||!listRef.current?.contains(row))return;
    event.preventDefault();returnFocus.current=row.querySelector<HTMLElement>('[data-ledger-select]')??row;
    request(selectHref(row.dataset.unitId!));

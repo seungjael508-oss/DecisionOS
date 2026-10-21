@@ -130,8 +130,9 @@ export default async function MoveInUnitDetailPage({
       nextHref={nextHref}
       lastNextHref={lastNextHref}
     >
-    <main className="p-8">
-      <h1 className="text-4xl font-semibold">
+    {/* 모바일 원스크롤: 핵심 정보 → 상담 입력(order-1) → 이력(order-2). 하단 고정 저장 바만큼 아래 여백 */}
+    <main className="p-8 max-[1099px]:flex max-[1099px]:flex-col max-[1099px]:p-4 max-[1099px]:pb-36">
+      <h1 className="text-4xl font-semibold max-[1099px]:text-2xl">
         {formatUnitLabel(detail.buildingNo, detail.unitNo)} · {detail.unitType ?? "타입 미등록"} · {detail.customerName ?? "계약자 미등록"} · {latestGrade ? `${latestGrade}등급` : "등급 미등록"}
       </h1>
       <dl className="mt-4 grid max-w-xl grid-cols-[7rem_1fr] gap-y-1 text-lg">
@@ -184,7 +185,7 @@ export default async function MoveInUnitDetailPage({
       <PaymentSummaryCard occupancy={detail.occupancy} projection={payment} account={payment && detail.contractId
         ? balanceAccountFor({ access, projectId, unitId, contractId: detail.contractId, buildingNo: detail.buildingNo, unitNo: detail.unitNo, assigneeId: detail.assignedCounselorId })
         : { kind: "unknown" }} />
-      <section className="mt-10">
+      <section className="mt-10 max-[1099px]:order-2">
         <h2 className="mb-3 text-lg font-semibold">상담/콜 이력</h2>
         <ConsultationHistory
           rows={consultations}
@@ -193,7 +194,7 @@ export default async function MoveInUnitDetailPage({
       </section>
 
       {detail.customerId ? (
-        <ConsultationCreateForm
+        <div className="max-[1099px]:order-1"><ConsultationCreateForm
           projectId={projectId}
           unitId={unitId}
           customerId={detail.customerId}
@@ -204,7 +205,7 @@ export default async function MoveInUnitDetailPage({
           currentOperationalIntent={detail.occupancy?.operational_intent ?? null}
           currentOccupancyIntent={detail.occupancy?.occupancy_intent ?? null}
           canChangeToDGrade={canSelectDGrade(access.role, latestGrade)}
-        />
+        /></div>
       ) : null}
 
       {detail.customerId && detail.contractId ? (
@@ -232,7 +233,7 @@ export default async function MoveInUnitDetailPage({
       ) : null}
 
       {detail.customerId && detail.relatedUnits.length > 0 ? (
-        <section className="mt-10">
+        <section className="mt-10 max-[1099px]:order-3">
           <h2 className="mb-3 text-lg font-semibold">동일 계약자의 다른 보유세대</h2>
           <p className="mb-3 text-sm text-neutral-600">
             {detail.customerName ?? "계약자"} 보유 {detail.relatedUnits.length + 1}세대

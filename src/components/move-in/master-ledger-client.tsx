@@ -2,16 +2,23 @@
 import type { LedgerClientRow, ProjectionResult } from '@/lib/move-in/ledger-types';
 import { useLedgerSummaryResult } from '@/components/move-in/ledger-summary-store';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { LEDGER_AXES, applyLedgerQuery, parseLedgerQuery, patchLedgerQuery, type LedgerStatePatch, type LedgerSortKey, type LedgerView } from '@/lib/move-in/ledger-filters';
-import { ledgerOptions } from '@/lib/move-in/ledger-presentation';
+import { LEDGER_AXES, LEDGER_BLANK, applyLedgerQuery, parseLedgerQuery, patchLedgerQuery, type LedgerAxis, type LedgerStatePatch, type LedgerSortKey, type LedgerView } from '@/lib/move-in/ledger-filters';
+import { ledgerOptionLabel, ledgerOptions } from '@/lib/move-in/ledger-presentation';
 import { formatDateTime } from '@/lib/move-in/labels';
 import { D_GRADE_REASONS, D_GRADE_REASON_LABELS, summarizeDGradeReasons } from '@/lib/move-in/d-grade-reasons';
 import { LEDGER_CHAPTERS, LEDGER_CHAPTER_LABELS, countLedgerChapters, matchesLedgerChapter } from '@/lib/move-in/ledger-chapters';
 import { LedgerTable } from '@/components/move-in/ledger-table';
+import { LedgerCardList } from '@/components/move-in/ledger-card-list';
 import { LedgerFilterMenu } from '@/components/move-in/ledger-filter-menu';
 import { LedgerPrintTable } from '@/components/move-in/ledger-print-table';
 import { exportLedgerXlsx, prepareLedgerPrint } from '@/app/projects/[projectId]/move-in/ledger/actions';
 
+// 모바일 빠른 칩: 원장 축 선택값을 그대로 토글한다(필터 메뉴와 같은 상태·같은 판정)
+const QUICK_CHIP_AXES: {axis:LedgerAxis;label:string;values:string[]}[]=[
+  {axis:'dGradeReason',label:'D등급 사유',values:[...D_GRADE_REASONS,LEDGER_BLANK]},
+  {axis:'moveReservation',label:'입주예약',values:['BOOKED','CANCELLED','NONE']},
+];
+const chipClass=(active:boolean)=>`flex min-h-11 shrink-0 items-center rounded-full border px-4 text-sm whitespace-nowrap ${active?'border-neutral-900 bg-neutral-900 text-white':'border-neutral-400 bg-white'}`;
 const sorts: {value:LedgerSortKey;label:string}[]=[{value:'unit',label:'동/호수'},{value:'grade',label:'현재등급'},{value:'phone',label:'전화번호'},{value:'name',label:'계약자'},
   {value:'funding',label:'자금/대출'},{value:'moveIn',label:'입주진행'},{value:'nextContact',label:'다음접촉'},{value:'priority',label:'특별관리 위험순'},{value:'balance',label:'잔금 (미등록)'},{value:'queue',label:'기존 Queue 순서'}];
 export function MasterLedgerClient({projectId,result:initialResult,initialQuery,assignees}: {projectId:string; result:ProjectionResult<LedgerClientRow>;initialQuery:string;assignees:Record<string,string>}) {
@@ -75,6 +82,15 @@ export function MasterLedgerClient({projectId,result:initialResult,initialQuery,
             <span className="text-xl font-semibold" aria-label={`${LEDGER_CHAPTER_LABELS[chapter]} 대상 세대 수`}>{chapterCounts[chapter]}세대</span>
           </button>;})}</div>
       </nav>
+      <div className="mb-4 space-y-2 min-[1100px]:hidden" aria-label="모바일 빠른 필터">{QUICK_CHIP_AXES.map(({axis,label,values})=>{
+        const selection=state.axes[axis]??{include:[],exclude:[]};
+        return <div key={axis} role="group" aria-label={`${label} 빠른 필터`} className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+          <button type="button" disabled={busy} aria-pressed={!selection.include.length} onClick={()=>update({axes:{[axis]:{include:[],exclude:selection.exclude}}})} className={chipClass(!selection.include.length)}>{label} 전체</button>
+          {values.map(value=>{const active=selection.include.includes(value);
+            return <button type="button" key={value} disabled={busy} aria-pressed={active}
+              onClick={()=>update({axes:{[axis]:{include:active?selection.include.filter(v=>v!==value):[...selection.include,value],exclude:selection.exclude.filter(v=>v!==value)}}})}
+              className={chipClass(active)}>{ledgerOptionLabel(axis,value,assignees)}</button>;})}
+        </div>;})}</div>
       <fieldset disabled={busy} className="mb-4 space-y-3 rounded border border-neutral-300 p-4"><legend className="sr-only">원장 검색과 필터</legend>
         {/* 빠른필터 10개는 오늘 관리로 이전(원장은 일반 상세 필터·공통 분류만 유지) */}
         <div className="flex flex-wrap gap-3">{(['unit','customer','phone'] as const).map((key,i)=><label key={key} className="text-sm">{['호수','계약자','전화번호'][i]} 검색
@@ -100,15 +116,17 @@ export function MasterLedgerClient({projectId,result:initialResult,initialQuery,
       {result.anomalyCount>0?<p>현재 계약 확인필요 {result.anomalyCount}세대 제외</p>:null}
       <div className="mb-3 flex flex-wrap items-center gap-3"><p role="status">결과 {selected.total} / 전체 {result.rows.length}세대</p>
         <label className="text-sm">페이지 크기<select aria-label="페이지 크기" value={state.pageSize} onChange={e=>update({pageSize:Number(e.target.value) as 50|100})} className="ml-2 border p-1"><option value="50">50</option><option value="100">100</option></select></label>
-        <button type="button" disabled={page<=1} onClick={()=>update({page:page-1})} className="border px-2 py-1 disabled:opacity-40">이전 페이지</button><span>{page} / {pages}</span>
-        <button type="button" disabled={page>=pages} onClick={()=>update({page:page+1})} className="border px-2 py-1 disabled:opacity-40">다음 페이지</button>
+        <button type="button" disabled={page<=1} onClick={()=>update({page:page-1})} className="border px-2 py-1 disabled:opacity-40 max-[1099px]:min-h-11">이전 페이지</button><span>{page} / {pages}</span>
+        <button type="button" disabled={page>=pages} onClick={()=>update({page:page+1})} className="border px-2 py-1 disabled:opacity-40 max-[1099px]:min-h-11">다음 페이지</button>
         <button type="button" disabled={busy || !!state.issues.length} onClick={()=>void output('print')} className="border px-3 py-1">인쇄</button>
         <button type="button" disabled={busy || !!state.issues.length} onClick={()=>void output('xlsx')} className="border px-3 py-1">XLSX 내보내기</button>
         {busy?<span>출력 권한과 데이터를 확인하고 있습니다…</span>:null}
       </div>
       <p className="mb-3 text-xs text-neutral-600">인쇄·내보내기는 현재 페이지가 아닌 필터 결과 전체입니다. 출력 시점의 권한과 현재 데이터를 다시 확인합니다.</p>
       {error?<p role="alert" className="mb-3 text-red-700">{error}</p>:null}
-      <LedgerTable rows={selected.pageRows} assignees={assignees} />
+      {/* 1100px 미만은 카드, 이상은 기존 표(세대 상세 패널도 같은 기준으로 전체화면 전환) */}
+      <div className="min-[1100px]:hidden"><LedgerCardList rows={selected.pageRows} assignees={assignees} /></div>
+      <div className="hidden min-[1100px]:block"><LedgerTable rows={selected.pageRows} assignees={assignees} /></div>
     </div>
     {printData?<LedgerPrintTable rows={printData.rows} asOf={formatDateTime(printData.asOf)} />:null}
   </>;

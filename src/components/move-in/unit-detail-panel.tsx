@@ -48,7 +48,8 @@ function UnitDetailPanelContent({workspace,returnTo,onInvalidated,onRelatedSelec
   finally{requests.current.delete(control);if(!control.signal.aborted){activeSections.current.delete(section);setPending([...activeSections.current]);}}
  }
  const intentLabel=snapshot.effectiveIntent==='RENT'?(snapshot.rentalType?OCCUPANCY_INTENT_LABELS[snapshot.rentalType]:'임대(유형 확인 필요)'):OPERATIONAL_INTENT_LABELS[snapshot.effectiveIntent];
- return <div className="p-4" onChangeCapture={()=>{if(!saving)guard?.setDirty(true);}}>
+ // 모바일 원스크롤: 헤더·핵심 정보(매매/임대·자금·특별관리·납부) 다음에 상담 입력(order-1)과 이력을 둔다. 하단 고정 저장 바만큼 아래 여백
+ return <div className="p-4 max-[1099px]:flex max-[1099px]:flex-col max-[1099px]:pb-36" onChangeCapture={()=>{if(!saving)guard?.setDirty(true);}}>
   <h1 className="text-2xl font-semibold">{formatUnitLabel(detail.buildingNo,detail.unitNo)} · {detail.unitType?.trim()||'타입 미등록'} · {detail.customerName??'계약자 미등록'} · {snapshot.currentGrade?`${snapshot.currentGrade}등급`:'등급 미등록'}</h1>
   <dl className="mt-4 grid grid-cols-[7rem_1fr] gap-2 text-sm"><dt>전화번호</dt><dd><CustomerPhone raw={detail.customerPhone} status={detail.phoneQuality}/></dd><dt>계약자 주소</dt><dd>{detail.contractAddress||'미등록'}</dd><dt>현재등급</dt><dd>{snapshot.currentGrade??'미등록'}</dd>{snapshot.currentGrade==='D'?<><dt>D 관리사유</dt><dd>{workspace.dGradeReasons?.length?workspace.dGradeReasons.map(r=>D_GRADE_REASON_LABELS[r]).join(' · '):'사유 미확인'}{workspace.dGradeReasonUnavailable?.length?<span className="block text-xs text-red-700">{workspace.dGradeReasonUnavailable.map(r=>D_GRADE_REASON_LABELS[r]).join(' · ')} 근거 조회 실패</span>:null}</dd></>:null}<dt>최근접촉</dt><dd>{formatDateTime(detail.occupancy?.last_contact_at??null)}</dd><dt>다음접촉</dt><dd>{formatDateTime(detail.occupancy?.next_contact_at??null)}</dd></dl>
   <div aria-label="관리 태그" className="mt-3 flex flex-wrap gap-2">
@@ -59,7 +60,7 @@ function UnitDetailPanelContent({workspace,returnTo,onInvalidated,onRelatedSelec
   </div>
   <OccupancyStatusCards occupancy={detail.occupancy} intentLabel={intentLabel}/>
   {!capabilities.saveEnabled?<p className="mt-4 text-sm text-neutral-700" role="note">현재 이 상세에서는 조회와 입력 확인만 가능합니다. 원장 내 저장은 아직 지원하지 않습니다.</p>:null}
-  <fieldset disabled={!capabilities.fieldWrite||saving?.busy||saving?.blocked}>
+  <fieldset className="max-[1099px]:order-1" disabled={!capabilities.fieldWrite||saving?.busy||saving?.blocked}>
    <ConsultationCreateForm projectId={workspace.projectId} unitId={detail.unitId} customerId={workspace.identity.customerId} returnTo={returnTo} currentFundingStatus={snapshot.funding} currentOperationalIntent={snapshot.operationalIntent} currentOccupancyIntent={snapshot.occupancyIntent} canChangeToDGrade={canSelectDGrade(capabilities.role,snapshot.currentGrade)} saveDisabled={!capabilities.saveEnabled||saving?.busy||saving?.blocked}/>
   </fieldset>
   <details className="mt-6" onToggle={e=>{if(e.currentTarget.open&&offices===null)void load('brokers');}}><summary className="cursor-pointer font-semibold">매매/임대</summary>
@@ -68,11 +69,11 @@ function UnitDetailPanelContent({workspace,returnTo,onInvalidated,onRelatedSelec
   <fieldset disabled={!capabilities.fieldWrite||saving?.busy||saving?.blocked}><TradeFundingEditor projectId={workspace.projectId} unitId={detail.unitId} contractId={workspace.identity.contractId} customerId={workspace.identity.customerId} currentGrade={snapshot.currentGrade} type={snapshot.tradeFundingType} status={snapshot.tradeFundingStatus} updatedAt={detail.occupancy?.trade_funding_updated_at??null} saveDisabled={!capabilities.saveEnabled||saving?.busy||saving?.blocked}/></fieldset>
   <SpecialCaseEditor projectId={workspace.projectId} unitId={detail.unitId} contractId={workspace.identity.contractId} currentCustomerId={workspace.identity.customerId} returnTo={returnTo} role={capabilities.role} reasons={snapshot.specialReasons.map(r=>reasons[r]??r)} specialCase={workspace.special} saveDisabled={!capabilities.saveEnabled||saving?.busy||saving?.blocked}/>
   <PaymentSummaryCard occupancy={null} projection={workspace.payment??null} account={workspace.balanceAccount}/>
-  <section className="mt-8" aria-label="상담/콜 이력"><h2 className="mb-3 text-lg font-semibold">상담/콜 이력</h2><ConsultationHistory rows={history.rows} currentMemberId={capabilities.memberId}/>
+  <section className="mt-8 max-[1099px]:order-2" aria-label="상담/콜 이력"><h2 className="mb-3 text-lg font-semibold">상담/콜 이력</h2><ConsultationHistory rows={history.rows} currentMemberId={capabilities.memberId}/>
    {history.nextOffset!==null?<button type="button" disabled={pending.includes('history')} onClick={()=>void load('history')} className="mt-3 border px-3 py-1">이력 더 보기</button>:null}</section>
-  <details className="mt-6" onToggle={e=>{if(e.currentTarget.open&&related===null)void load('related');}}><summary className="cursor-pointer">동일 계약자의 다른 보유세대</summary>
+  <details className="mt-6 max-[1099px]:order-3" onToggle={e=>{if(e.currentTarget.open&&related===null)void load('related');}}><summary className="cursor-pointer">동일 계약자의 다른 보유세대</summary>
    {related===null?<p>불러오는 중…</p>:related.length?related.map(u=><button type="button" key={u.unitId} onClick={()=>onRelatedSelect(u.unitId)} className="m-2 border p-2">{formatUnitLabel(u.buildingNo,u.unitNo)}</button>):<p>다른 보유세대가 없습니다.</p>}</details>
-  {error?<p role="alert">{error}</p>:null}
-  {retrySection?<button type="button" onClick={()=>void load(retrySection)}>추가 정보 다시 시도</button>:null}
+  {error?<p role="alert" className="max-[1099px]:order-4">{error}</p>:null}
+  {retrySection?<button type="button" className="max-[1099px]:order-4" onClick={()=>void load(retrySection)}>추가 정보 다시 시도</button>:null}
  </div>;
 }

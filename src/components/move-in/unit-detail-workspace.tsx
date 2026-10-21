@@ -159,7 +159,8 @@ export function UnitDetailWorkspace({
   return (
     <UnitDetailWorkspaceContext.Provider value={context}>
       <div>
-        <nav aria-label="세대 연속 처리" className="flex flex-wrap gap-2 border-b border-neutral-300 p-4">
+        {/* 모바일: 스크롤해도 이전·다음·닫기를 바로 누를 수 있게 상단 고정, 버튼 44px */}
+        <nav aria-label="세대 연속 처리" className="flex flex-wrap gap-2 border-b border-neutral-300 p-4 max-[1099px]:sticky max-[1099px]:top-0 max-[1099px]:z-20 max-[1099px]:bg-white max-[1099px]:p-2 max-[1099px]:*:min-h-11">
           <button {...navButtonProps("previous", previousHref, navigationPending || saving, "border border-neutral-600 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50")} onClick={() => previousHref && navigateFromButton("previous", previousHref)}>
             {navLabel("previous", "이전 세대")}
           </button>

@@ -17,8 +17,11 @@ const OPTIONS: { value: TodayFilter; label: string }[] = [
   { value: "funding", label: "자금 위험" },
 ];
 
-const activeClass = "border border-neutral-900 bg-neutral-900 px-2 py-1 text-white";
-const idleClass = "border border-neutral-400 px-2 py-1";
+// 모바일: 칩 최소 터치 영역 44px, 줄은 줄바꿈 대신 가로 스와이프
+const chip = "inline-flex shrink-0 items-center whitespace-nowrap px-2 py-1 max-md:min-h-11 max-md:px-3";
+const activeClass = `${chip} border border-neutral-900 bg-neutral-900 text-white`;
+const idleClass = `${chip} border border-neutral-400`;
+const rowClass = "flex flex-wrap items-center gap-2 max-md:-mx-4 max-md:flex-nowrap max-md:overflow-x-auto max-md:px-4 max-md:pb-1";
 
 /**
  * 화면 전용 필터(오늘 필터·업무 유형·D등급 사유): 서버 재조회 없이 주소만 바꾼다. 목록은 TodayQueueView가 주소를 읽어 다시 거른다.
@@ -69,7 +72,7 @@ export function TodayFilters({ projectId, axisOptions = [] }: { projectId: strin
 
   return (
     <div className="mb-4 flex flex-col gap-2">
-      <nav className="flex flex-wrap gap-2" aria-label="오늘 관리대상 필터">
+      <nav className={rowClass} aria-label="오늘 관리대상 필터">
         {OPTIONS.map((option) => {
           const active = current === option.value || (option.value === "all" && !searchParams.get("filter"));
           return (
@@ -80,8 +83,8 @@ export function TodayFilters({ projectId, axisOptions = [] }: { projectId: strin
           );
         })}
       </nav>
-      <nav className="flex flex-wrap items-center gap-2" aria-label="업무 유형 필터">
-        <span className="text-sm text-neutral-700">업무 유형</span>
+      <nav className={rowClass} aria-label="업무 유형 필터">
+        <span className="shrink-0 text-sm whitespace-nowrap text-neutral-700">업무 유형</span>
         <ViewFilterLink href={withTask(null)} aria-current={task ? undefined : "page"} className={task ? idleClass : activeClass}>전체</ViewFilterLink>
         {TODAY_TASK_TYPES.map((value) => (
           <ViewFilterLink key={value} href={withTask(task === value ? null : value)} aria-pressed={task === value} className={task === value ? activeClass : idleClass}>
@@ -89,8 +92,8 @@ export function TodayFilters({ projectId, axisOptions = [] }: { projectId: strin
           </ViewFilterLink>
         ))}
       </nav>
-      <nav className="flex flex-wrap items-center gap-2" aria-label="빠른필터">
-        <span className="text-sm text-neutral-700">빠른필터</span>
+      <nav className={rowClass} aria-label="빠른필터">
+        <span className="shrink-0 text-sm whitespace-nowrap text-neutral-700">빠른필터</span>
         {QUICK_LEDGER_FILTER_ROWS.flat().map((preset) => {
           const [axis, selection] = Object.entries(preset.patch.axes ?? {})[0] as [LedgerAxis, { include: string[] }];
           const value = selection.include[0];
@@ -104,8 +107,8 @@ export function TodayFilters({ projectId, axisOptions = [] }: { projectId: strin
         })}
       </nav>
       {axisOptions.map(({ axis, label, options }) => (
-        <nav key={axis} className="flex flex-wrap items-center gap-2" aria-label={`${label} 필터`}>
-          <span className="text-sm text-neutral-700">{label}</span>
+        <nav key={axis} className={rowClass} aria-label={`${label} 필터`}>
+          <span className="shrink-0 text-sm whitespace-nowrap text-neutral-700">{label}</span>
           {options.map((option) => {
             const active = selected(axis).includes(option.value);
             const next = active ? selected(axis).filter((v) => v !== option.value) : [...selected(axis), option.value];
@@ -117,8 +120,8 @@ export function TodayFilters({ projectId, axisOptions = [] }: { projectId: strin
           })}
         </nav>
       ))}
-      <nav className="flex flex-wrap items-center gap-2" aria-label="D등급 관리사유 필터">
-        <span className="text-sm text-neutral-700">D등급 관리사유</span>
+      <nav className={rowClass} aria-label="D등급 관리사유 필터">
+        <span className="shrink-0 text-sm whitespace-nowrap text-neutral-700">D등급 관리사유</span>
         <ViewFilterLink href={withReasons([])} aria-current={dReasons.length ? undefined : "page"} className={dReasons.length ? idleClass : activeClass}>
           선택 안 함
         </ViewFilterLink>
