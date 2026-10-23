@@ -39,6 +39,15 @@ function accountCells(finance: LedgerFinance | undefined): [string, string, stri
   if (!finance || finance.accountRestricted) return ['권한 없음', '권한 없음', '—'];
   return finance.account ? [finance.account.bank, finance.account.number, '아파트 분양 잔금 전용'] : ['미확인', '미확인', '—'];
 }
+/** 잔금완납 강조 기준. 평면도 '잔금완납' 태그(floorplan.ts)와 같다: 입주진행 잔금완납 또는 잔금 완납일 있음 */
+export function isBalancePaid(row: Pick<LedgerClientRow,'moveIn'|'balancePaidAt'>) { return row.moveIn === 'BALANCE_PAID' || Boolean(row.balancePaidAt); }
+/** 이사예약 표시 기준: 예약현황 원천에서 예약완료(취소·실패 제외) */
+export function isMoveReserved(row: Pick<LedgerClientRow,'management'>) { return row.management?.moveReservation === 'BOOKED'; }
+/** 잔금완납 세대에 금액 자료상 미납이 남았을 때만 '잔여 N원'. 없거나 미확인이면 null */
+export function balancePaidRemainder(row: Pick<LedgerClientRow,'finance'>) {
+  const unpaid = row.finance?.totalUnpaid;
+  return typeof unpaid === 'number' && unpaid > 0 ? `잔여 ${won(unpaid)}` : null;
+}
 /** 이름은 project_member.display_name(일괄 조회). 없거나 조회 불가면 '담당상담사' — member ID는 표시하지 않는다 */
 export function assigneeLabel(id: string | null, names: Record<string,string>) { return id ? names[id] || '담당상담사' : '미배정'; }
 

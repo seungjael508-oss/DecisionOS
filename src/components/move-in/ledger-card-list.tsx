@@ -1,5 +1,6 @@
 import type { LedgerClientRow } from '@/lib/move-in/ledger-types';
-import { LEDGER_COLUMNS, ledgerCells, ledgerOptionLabel } from '@/lib/move-in/ledger-presentation';
+import { LEDGER_COLUMNS, balancePaidRemainder, isBalancePaid, isMoveReserved, ledgerCells, ledgerOptionLabel } from '@/lib/move-in/ledger-presentation';
+import { BalancePaidBadge, MoveReservationBadge } from './ledger-badges';
 
 const at = (label: (typeof LEDGER_COLUMNS)[number]) => LEDGER_COLUMNS.indexOf(label);
 
@@ -10,12 +11,16 @@ const at = (label: (typeof LEDGER_COLUMNS)[number]) => LEDGER_COLUMNS.indexOf(la
 export function LedgerCardList({rows,assignees}: {rows:readonly LedgerClientRow[];assignees:Record<string,string>}) {
   if(!rows.length)return <p className="p-6">조건에 맞는 세대가 없습니다.</p>;
   return <ul aria-label="통합원장 카드 목록" className="flex flex-col gap-3">{rows.map(row=>{
-    const cells=ledgerCells(row,assignees),special=cells[at('특별관리')],reservation=cells[at('입주예약')];
-    return <li key={row.unitId} id={`ledger-card-${row.unitId}`} data-unit-id={row.unitId}>
-      <button type="button" data-ledger-select={row.unitId} aria-label={`${cells[at('동/호수')]} 상세 열기`}
-        className="block w-full rounded border border-neutral-300 bg-white p-4 text-left active:bg-neutral-100">
+    const cells=ledgerCells(row,assignees),special=cells[at('특별관리')],reservation=cells[at('입주예약')],paid=isBalancePaid(row),reserved=isMoveReserved(row);
+    return <li key={row.unitId} id={`ledger-card-${row.unitId}`} data-unit-id={row.unitId} data-balance-paid={paid?'true':undefined} data-move-reserved={reserved?'true':undefined}>
+      <button type="button" data-ledger-select={row.unitId} aria-label={`${cells[at('동/호수')]}${paid?' 잔금완납':''} 상세 열기`}
+        className={`block w-full rounded border p-4 text-left ${paid?'border-green-300 border-l-[3px] border-l-green-500 bg-green-50 active:bg-green-100':'border-neutral-300 bg-white active:bg-neutral-100'}`}>
         <span className="flex items-baseline justify-between gap-2">
-          <span className="text-lg font-semibold">{cells[at('동/호수')]}</span>
+          <span className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
+            <span className="text-lg font-semibold">{cells[at('동/호수')]}</span>
+            {paid?<BalancePaidBadge remainder={balancePaidRemainder(row)}/>:null}
+            {reserved?<MoveReservationBadge date={row.management?.movingDate??null}/>:null}
+          </span>
           <span className="shrink-0 rounded border border-neutral-500 px-2 text-sm">{cells[at('현재등급')]}</span>
         </span>
         <span className="mt-1 block">{cells[at('계약자')]} · {cells[at('전화번호')]}</span>
