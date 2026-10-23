@@ -8,6 +8,8 @@ import {ConsultationHistory} from './consultation-history';
 import {CustomerPhone} from './customer-phone';
 import {OccupancyStatusCards} from './occupancy-status-cards';
 import {PaymentSummaryCard} from './payment-summary-card';
+import {BalancePaidEditor} from './balance-paid-editor';
+import {balancePaidRemainder} from '@/lib/move-in/ledger-presentation';
 import {SpecialCaseEditor} from './special-case-editor';
 import {DealEditor} from './deal-editor';
 import {TradeFundingEditor} from './trade-funding-editor';
@@ -72,6 +74,7 @@ function UnitDetailPanelContent({workspace,returnTo,onInvalidated,onRelatedSelec
   <fieldset data-tab="info" disabled={!capabilities.fieldWrite||saving?.busy||saving?.blocked}><TradeFundingEditor projectId={workspace.projectId} unitId={detail.unitId} contractId={workspace.identity.contractId} customerId={workspace.identity.customerId} currentGrade={snapshot.currentGrade} type={snapshot.tradeFundingType} status={snapshot.tradeFundingStatus} updatedAt={detail.occupancy?.trade_funding_updated_at??null} saveDisabled={!capabilities.saveEnabled||saving?.busy||saving?.blocked}/></fieldset>
   <div data-tab="info"><SpecialCaseEditor projectId={workspace.projectId} unitId={detail.unitId} contractId={workspace.identity.contractId} currentCustomerId={workspace.identity.customerId} returnTo={returnTo} role={capabilities.role} reasons={snapshot.specialReasons.map(r=>reasons[r]??r)} specialCase={workspace.special} saveDisabled={!capabilities.saveEnabled||saving?.busy||saving?.blocked}/></div>
   <div data-tab="pay"><PaymentSummaryCard occupancy={null} projection={workspace.payment??null} account={workspace.balanceAccount}/></div>
+  {capabilities.role==='PROJECT_ADMIN'?<div data-tab="pay"><BalancePaidEditor projectId={workspace.projectId} unitId={detail.unitId} customerId={workspace.identity.customerId} contractId={workspace.identity.contractId} moveIn={snapshot.moveIn} balancePaidAt={snapshot.balancePaidAt} remainder={workspace.summary?balancePaidRemainder(workspace.summary):null} saveDisabled={!capabilities.saveEnabled||saving?.busy||saving?.blocked}/></div>:null}
   <section data-tab="consult" className="mt-8 max-[1099px]:order-2" aria-label="상담/콜 이력"><h2 className="mb-3 text-lg font-semibold">상담/콜 이력</h2><ConsultationHistory rows={history.rows} currentMemberId={capabilities.memberId}/>
    {history.nextOffset!==null?<button type="button" disabled={pending.includes('history')} onClick={()=>void load('history')} className="mt-3 border px-3 py-1">이력 더 보기</button>:null}</section>
   <details data-tab="info" className="mt-6 max-[1099px]:order-3" onToggle={e=>{if(e.currentTarget.open&&related===null)void load('related');}}><summary className="cursor-pointer">동일 계약자의 다른 보유세대</summary>
