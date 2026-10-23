@@ -17,9 +17,9 @@ export function LedgerCardList({rows,assignees}: {rows:readonly LedgerClientRow[
         className={`block w-full rounded border p-4 text-left ${paid?'border-green-300 border-l-[3px] border-l-green-500 bg-green-50 active:bg-green-100':'border-neutral-300 bg-white active:bg-neutral-100'}`}>
         <span className="flex items-baseline justify-between gap-2">
           <span className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
-            <span className="text-lg font-semibold">{cells[at('동/호수')]}</span>
             {paid?<BalancePaidBadge remainder={balancePaidRemainder(row)}/>:null}
             {reserved?<MoveReservationBadge date={row.management?.movingDate??null}/>:null}
+            <span className="text-lg font-semibold">{cells[at('동/호수')]}</span>
           </span>
           <span className="shrink-0 rounded border border-neutral-500 px-2 text-sm">{cells[at('현재등급')]}</span>
         </span>

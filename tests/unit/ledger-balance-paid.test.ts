@@ -38,3 +38,12 @@ test('이사예약: 예약완료 세대만 파란 배지와 예약일, 잔금완
     expect(markup).toContain('잔금완납');
   }
 });
+test('금액 자료상 완납도 잔금완납 강조, 배지는 동/호수 앞', () => {
+  expect(isBalancePaid({ moveIn:'PLANNED', balancePaidAt:null, finance: finance(0) } as never)).toBe(true);
+  expect(isBalancePaid({ moveIn:'PLANNED', balancePaidAt:null, finance: { ...finance(100), status:'PARTIAL' } } as never)).toBe(false);
+  const row = { ...base, unitId:'f1', finance: finance(0) } as never;
+  for (const markup of [renderToStaticMarkup(createElement(LedgerCardList, { rows:[row], assignees:{} })), renderToStaticMarkup(createElement(LedgerTable, { rows:[row], assignees:{} }))]) {
+    expect(markup).toContain('data-balance-paid="true"');
+    expect(markup.indexOf('잔금완납</span>')).toBeLessThan(markup.indexOf('>101동 2401호<'));
+  }
+});
