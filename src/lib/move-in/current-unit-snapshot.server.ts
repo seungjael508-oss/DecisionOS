@@ -13,7 +13,7 @@ import { startPerfLog } from '@/lib/perf-log';
 import type { AnomalyReason, CurrentUnitRecord, CurrentUnitSnapshot, DealRecord, SpecialRecord, ContactRecord, LedgerSummaryRow, ProjectionResult, QueryCounts } from '@/lib/move-in/ledger-types';
 
 const CURRENT_SELECT = `project_id,unit_id,building_no,unit_no,unit_type,
-  occupancy:unit_occupancy_status!unit_occupancy_status_project_id_unit_id_fkey(project_id,unit_id,contract_id,legacy_grade,funding_status,move_in_status,operational_intent,occupancy_intent,balance_paid_at,planned_move_in_date,actual_move_in_date,last_contact_at,next_contact_at,updated_at,trade_funding_type,trade_funding_status),
+  occupancy:unit_occupancy_status!unit_occupancy_status_project_id_unit_id_fkey(project_id,unit_id,contract_id,legacy_grade,funding_status,move_in_status,operational_intent,occupancy_intent,balance_paid_at,planned_move_in_date,actual_move_in_date,last_contact_at,next_contact_at,updated_at,trade_funding_type,trade_funding_status,problem_flags,problem_lock_released,problem_note),
   contracts:contract!contract_project_id_unit_id_fkey(project_id,unit_id,contract_id,customer_id,contract_status,updated_at,
     holder:customer!contract_customer_id_project_id_fkey(project_id,id,name,phone,phone_quality,assigned_counselor_id))`;
 const RECHECK_SELECT = `project_id,unit_id,

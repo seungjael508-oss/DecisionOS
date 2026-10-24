@@ -17,7 +17,8 @@ import type { Database } from "@/lib/supabase/types";
 import { completeTodayTask } from "@/lib/move-in/today-task.server";
 import type { TodayTaskOutcome } from "@/lib/move-in/today-task";
 import { isTradeFundingStatus, isTradeFundingType } from "@/lib/move-in/trade-funding";
-import type { SaveMoveInBalancePaidInput, SaveMoveInTradeFundingInput } from "@/lib/move-in/workspace-save";
+import type { SaveMoveInBalancePaidInput, SaveMoveInProblemHouseholdInput, SaveMoveInTradeFundingInput } from "@/lib/move-in/workspace-save";
+import { PROBLEM_LOCK_ERRCODE, isProblemFlag, normalizeProblemFlags } from "@/lib/move-in/problem-household";
 
 type CreateMoveInConsultationResult =
   | { ok: false }
@@ -189,7 +190,40 @@ export async function saveMoveInBalancePaid(input: SaveMoveInBalancePaidInput): 
   const { error } = await supabase.rpc("update_unit_occupancy_status", args);
   if (error) {
     if (error.code === "42501") return { ok: false, message: "이 세대의 입주 상태를 수정할 권한이 없습니다." };
+    if (error.code === PROBLEM_LOCK_ERRCODE) return { ok: false, message: "문제세대 입주잠금 중입니다. 관리자 해제 승인 후 처리해 주세요." };
     return { ok: false, message: "저장하지 못했습니다. 다시 시도해 주세요." };
   }
   return { ok: true, changed: true };
+}
+
+/**
+ * 관리자(PROJECT_ADMIN) 문제세대 지정·해제·입주잠금 해제 승인. 권한·현재 ACTIVE 계약·이력은 RPC가 다시 검증·기록한다.
+ * 해제 승인 전에는 입주완료 처리가 DB 트리거에서 막힌다(잔금완납이어도 동일).
+ */
+export async function saveMoveInProblemHousehold(input: SaveMoveInProblemHouseholdInput): Promise<{ ok: true; changed: boolean } | { ok: false; message: string }> {
+  const access = await requireMoveInAccess(input.projectId);
+  if (!access.ok || access.role !== "PROJECT_ADMIN") return { ok: false, message: "문제세대는 관리자만 수정할 수 있습니다." };
+  if (![input.projectId, input.unitId, input.customerId, input.contractId].every((v) => UUID.test(v))) {
+    return { ok: false, message: "세대 정보를 확인할 수 없습니다. 새로고침 후 다시 시도해 주세요." };
+  }
+  if (!Array.isArray(input.flags) || !input.flags.every(isProblemFlag) || typeof input.lockReleased !== "boolean") {
+    return { ok: false, message: "문제세대 분류 값이 올바르지 않습니다." };
+  }
+  const flags = normalizeProblemFlags(input.flags);
+  const reason = String(input.reason ?? "").trim(), note = String(input.note ?? "").trim();
+  if (!reason || reason.length > 200) return { ok: false, message: "변경 사유를 입력해 주세요(200자 이내)." };
+  if (note.length > 200) return { ok: false, message: "관리 메모는 200자 이내로 입력해 주세요." };
+  const supabase = await createServerClient();
+  const { data, error } = await supabase.rpc("set_move_in_problem_household", {
+    p_project_id: input.projectId, p_unit_id: input.unitId, p_customer_id: input.customerId,
+    p_expected_contract_id: input.contractId, p_flags: flags, p_lock_released: flags.length > 0 && input.lockReleased,
+    p_note: flags.length ? note || null : null, p_reason: reason,
+  });
+  if (error) {
+    if (error.code === "42501") return { ok: false, message: "문제세대는 관리자만 수정할 수 있습니다." };
+    if (error.code === "40001" || error.message.includes("active contract")) return { ok: false, message: "현재 계약자가 바뀌었습니다. 새로고침 후 다시 확인해 주세요." };
+    return { ok: false, message: "저장하지 못했습니다. 다시 시도해 주세요." };
+  }
+  const changed = !!data && typeof data === "object" && !Array.isArray(data) && data.changed === true;
+  return { ok: true, changed };
 }

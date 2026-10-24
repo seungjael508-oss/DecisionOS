@@ -69,6 +69,7 @@ export function ConsultationCreateForm({
   currentOccupancyIntent,
   saveDisabled = false,
   canChangeToDGrade = false,
+  moveInLocked = false,
 }: {
   projectId: string;
   unitId: string;
@@ -81,6 +82,8 @@ export function ConsultationCreateForm({
   saveDisabled?: boolean;
   /** canSelectDGrade(PROJECT_ADMIN·COUNSELOR, 또는 현재 등급이 이미 D). 표시 제한일 뿐이며 상담 저장 RPC가 다시 검증한다. */
   canChangeToDGrade?: boolean;
+  /** 문제세대 해제 승인 전. 입주완료 선택을 막는다(표시 제한이며 DB 트리거가 다시 차단) */
+  moveInLocked?: boolean;
 }) {
   const router = useRouter();
   const saving=useUnitSave(),submitting=useRef(false);
@@ -124,6 +127,10 @@ export function ConsultationCreateForm({
     const nextMoveIn = String(formData.get("move_in_status") ?? "") as
       | MoveInStatus
       | "";
+    if (moveInLocked && nextMoveIn === "MOVED_IN") {
+      setError("문제세대 입주잠금 중입니다. 관리자 해제 승인 후 입주완료로 바꿀 수 있습니다.");
+      return;
+    }
 
     submitting.current=true;
     setPending(true);
@@ -294,8 +301,8 @@ export function ConsultationCreateForm({
             >
               <option value="">변경 안 함</option>
               {MOVE_IN_STATUS_VALUES.map((value) => (
-                <option key={value} value={value}>
-                  {MOVE_IN_STATUS_LABELS[value]}
+                <option key={value} value={value} disabled={value === "MOVED_IN" && moveInLocked}>
+                  {MOVE_IN_STATUS_LABELS[value]}{value === "MOVED_IN" && moveInLocked ? " (문제세대 잠금)" : ""}
                 </option>
               ))}
             </select>

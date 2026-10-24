@@ -13,6 +13,7 @@ import {
 import { createBrowserClient } from "@/lib/supabase/client";
 import type { OccupancyRecord } from "@/lib/move-in/queries";
 import type { Database } from "@/lib/supabase/types";
+import { PROBLEM_LOCK_ERRCODE, isProblemLocked, normalizeProblemFlags } from "@/lib/move-in/problem-household";
 
 type Axis = "funding_status" | "move_in_status";
 
@@ -79,6 +80,11 @@ export function OccupancyEditor({
   const [axis, setAxis] = useState<Axis | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // 문제세대 해제 승인 전이면 입주완료 선택을 막는다(표시 제한이며 DB 트리거가 다시 차단)
+  const moveInLocked = isProblemLocked({
+    problemFlags: normalizeProblemFlags(occupancy.problem_flags),
+    problemLockReleased: occupancy.problem_lock_released === true,
+  });
 
   async function onSubmit(formData: FormData) {
     if (!axis) return;
@@ -133,6 +139,10 @@ export function OccupancyEditor({
           "p_clear_balance_paid_at",
         );
       }
+      if (nextStatus === "MOVED_IN" && moveInLocked && occupancy.move_in_status !== "MOVED_IN") {
+        setError("문제세대 입주잠금 중입니다. 관리자 해제 승인 후 입주완료로 바꿀 수 있습니다.");
+        return;
+      }
       if (nextStatus === "MOVED_IN") {
         const moved = fromDateTimeLocal(
           String(formData.get("actual_move_in_date") ?? ""),
@@ -160,7 +170,7 @@ export function OccupancyEditor({
     );
     setPending(false);
     if (rpcError) {
-      setError("상태를 변경하지 못했습니다.");
+      setError(rpcError.code === PROBLEM_LOCK_ERRCODE ? "문제세대 입주잠금 중입니다. 관리자 해제 승인 후 처리해 주세요." : "상태를 변경하지 못했습니다.");
       return;
     }
     setAxis(null);
@@ -169,6 +179,9 @@ export function OccupancyEditor({
 
   return (
     <div className="mt-3">
+      {moveInLocked ? (
+        <p role="note" className="mb-2 text-sm font-semibold text-red-700">문제세대 입주잠금 — 관리자 해제 승인 전까지 입주완료 처리가 차단됩니다.</p>
+      ) : null}
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
@@ -216,7 +229,7 @@ export function OccupancyEditor({
           ) : null}
 
           {axis === "move_in_status" ? (
-            <MoveInFields occupancy={occupancy} />
+            <MoveInFields occupancy={occupancy} moveInLocked={moveInLocked} />
           ) : null}
 
           <label className="mt-3 flex flex-col gap-1 text-sm" htmlFor={reasonId}>
@@ -255,7 +268,7 @@ export function OccupancyEditor({
   );
 }
 
-function MoveInFields({ occupancy }: { occupancy: OccupancyRecord }) {
+function MoveInFields({ occupancy, moveInLocked }: { occupancy: OccupancyRecord; moveInLocked: boolean }) {
   const [status, setStatus] = useState<MoveInStatus>(occupancy.move_in_status);
 
   return (
@@ -268,11 +281,14 @@ function MoveInFields({ occupancy }: { occupancy: OccupancyRecord }) {
           onChange={(event) => setStatus(event.target.value as MoveInStatus)}
           className="border border-neutral-400 px-2 py-1"
         >
-          {MOVE_IN_STATUS_VALUES.map((value) => (
-            <option key={value} value={value}>
-              {MOVE_IN_STATUS_LABELS[value]}
-            </option>
-          ))}
+          {MOVE_IN_STATUS_VALUES.map((value) => {
+            const locked = value === "MOVED_IN" && moveInLocked && occupancy.move_in_status !== "MOVED_IN";
+            return (
+              <option key={value} value={value} disabled={locked}>
+                {MOVE_IN_STATUS_LABELS[value]}{locked ? " (문제세대 잠금)" : ""}
+              </option>
+            );
+          })}
         </select>
       </label>
       {status === "PLANNED" ? (

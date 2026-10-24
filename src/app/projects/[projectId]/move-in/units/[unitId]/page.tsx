@@ -15,6 +15,7 @@ import { TradeFundingEditor } from "@/components/move-in/trade-funding-editor";
 import { isTradeFundingStatus, isTradeFundingType } from "@/lib/move-in/trade-funding";
 import { SpecialCaseEditor } from "@/components/move-in/special-case-editor";
 import { OccupancyEditor } from "@/components/move-in/occupancy-editor";
+import { isProblemLocked, normalizeProblemFlags } from "@/lib/move-in/problem-household";
 import { OccupancyStatusCards } from "@/components/move-in/occupancy-status-cards";
 import { AccessDenied, QueryError } from "@/components/move-in/status-copy";
 import { requireMoveInAccess } from "@/lib/move-in/access";
@@ -211,6 +212,7 @@ export default async function MoveInUnitDetailPage({
           currentOperationalIntent={detail.occupancy?.operational_intent ?? null}
           currentOccupancyIntent={detail.occupancy?.occupancy_intent ?? null}
           canChangeToDGrade={canSelectDGrade(access.role, latestGrade)}
+          moveInLocked={isProblemLocked({ problemFlags: normalizeProblemFlags(detail.occupancy?.problem_flags), problemLockReleased: detail.occupancy?.problem_lock_released === true })}
         /></div>
       ) : null}
 
