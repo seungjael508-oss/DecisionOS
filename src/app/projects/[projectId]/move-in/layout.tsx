@@ -27,7 +27,7 @@ export default async function MoveInLayout({
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen flex-col min-[1100px]:flex-row">
       <MoveInNav
         projectId={access.projectId}
         projectName={access.projectName}

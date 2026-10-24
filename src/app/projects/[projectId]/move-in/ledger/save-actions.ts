@@ -1,6 +1,6 @@
 'use server';
 import {verifyUnitWorkspaceIdentity,loadUnitWorkspace} from '@/lib/move-in/unit-workspace.server';
-import {createMoveInConsultation,saveMoveInTradeFunding} from '@/app/projects/[projectId]/move-in/units/[unitId]/actions';
+import {createMoveInConsultation,saveMoveInBalancePaid,saveMoveInProblemHousehold,saveMoveInTradeFunding} from '@/app/projects/[projectId]/move-in/units/[unitId]/actions';
 import {saveMoveInUnitDeal,saveMoveInSpecialCase} from '@/app/projects/[projectId]/move-in/deals/actions';
 import {loadLedgerWorkspace} from '@/lib/move-in/ledger-workspace.server';
 import {parseWorkspaceContext,resolveWorkspaceAdjacentIds,buildWorkspaceSelectionHref} from '@/lib/move-in/ledger-context';
@@ -24,7 +24,7 @@ export async function saveLedgerUnit(request:WorkspaceSaveRequest):Promise<Works
  let attempted=false;
  try {
   const {projectId,unitId,identity,change}=request;
-  if(!change||!['consultation','deal','special','tradeFunding'].includes(change.kind)||!identity||!['stay','next'].includes(request.afterSave))return {ok:false,code:'invalid_input',committed:false};
+  if(!change||!['consultation','deal','special','tradeFunding','balancePaid','problemHousehold'].includes(change.kind)||!identity||!['stay','next'].includes(request.afterSave))return {ok:false,code:'invalid_input',committed:false};
   const input=change.input;
   if(!input||input.projectId!==projectId||input.unitId!==unitId||
    (change.kind==='special'?change.input.currentCustomerId!==identity.customerId:change.input.customerId!==identity.customerId)||
@@ -43,11 +43,14 @@ export async function saveLedgerUnit(request:WorkspaceSaveRequest):Promise<Works
   const checked=await verifyUnitWorkspaceIdentity(projectId,unitId,identity);
   if(!checked.ok)return {ok:false,code:'stale_contract',committed:false};
   if(change.kind==='special'&&!['PROJECT_ADMIN','CLIENT_MANAGER'].includes(checked.access.role))return {ok:false,code:'forbidden',committed:false};
+  if((change.kind==='balancePaid'||change.kind==='problemHousehold')&&checked.access.role!=='PROJECT_ADMIN')return {ok:false,code:'forbidden',committed:false};
   attempted=true;
   const saved=change.kind==='consultation'
    ?await createMoveInConsultation({...change.input,expectedContractId:identity.contractId,returnTo:context.returnTo,afterSave:undefined})
    :change.kind==='deal'?await saveMoveInUnitDeal(change.input)
-   :change.kind==='tradeFunding'?await saveMoveInTradeFunding(change.input):await saveMoveInSpecialCase({...change.input,returnTo:context.returnTo});
+   :change.kind==='tradeFunding'?await saveMoveInTradeFunding(change.input)
+   :change.kind==='balancePaid'?await saveMoveInBalancePaid(change.input)
+   :change.kind==='problemHousehold'?await saveMoveInProblemHousehold(change.input):await saveMoveInSpecialCase({...change.input,returnTo:context.returnTo});
   // Legacy actions deliberately collapse transport and SQL failures. Treat an unconfirmed write as unknown, never auto-retry.
   if(!saved.ok)return {ok:false,code:'save_failed',committed:'unknown'};
   const refreshed=await refreshLedgerUnit(request);

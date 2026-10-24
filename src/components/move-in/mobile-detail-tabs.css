@@ -1,0 +1,9 @@
+/* 모바일(1100px 미만) 세대 상세 탭: 섹션은 모두 렌더된 채 선택 탭만 보인다(입력 중인 값 유지).
+   데스크톱은 탭 없이 기존 한 화면 배치 그대로. */
+@media (max-width: 1099px) {
+  [data-mobile-tab="info"] [data-tab]:not([data-tab="info"]),
+  [data-mobile-tab="consult"] [data-tab]:not([data-tab="consult"]),
+  [data-mobile-tab="pay"] [data-tab]:not([data-tab="pay"]) {
+    display: none;
+  }
+}

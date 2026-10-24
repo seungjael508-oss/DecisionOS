@@ -15,7 +15,7 @@ export function LedgerFilterMenu({axis,options,selection,onChange,assignees}: {
     onChange({...selection,[mode]:checked?[...selection[mode].filter(v=>v!==value),value]:selection[mode].filter(v=>v!==value),[other]:checked?selection[other].filter(v=>v!==value):selection[other]});
   }
   return <div className="relative">
-    <button type="button" aria-label={`${label} 필터`} aria-expanded={open} onClick={()=>setOpen(v=>!v)} className="rounded border border-neutral-400 bg-white px-3 py-2 text-sm">
+    <button type="button" aria-label={`${label} 필터`} aria-expanded={open} onClick={()=>setOpen(v=>!v)} className="rounded border border-neutral-400 bg-white px-3 py-2 text-sm max-[1099px]:min-h-11">
       {label}{selection.include.length+selection.exclude.length?` · ${selection.include.length+selection.exclude.length}`:''}
     </button>
     {open?<fieldset aria-label={`${label} 조건`} className="absolute left-0 top-full z-40 mt-1 w-72 rounded border border-neutral-400 bg-white p-3 shadow-lg" onKeyDown={e=>{if(e.key==='Escape')setOpen(false);}}>

@@ -1,23 +1,5 @@
-/* Scoped to the ledger marker: other screens and shared navigation stay unchanged. */
-@media (max-width: 1099px) {
-  .flex.min-h-screen:has([data-ledger-workspace]) {
-    flex-direction: column;
-  }
-  .flex.min-h-screen:has([data-ledger-workspace]) > aside {
-    width: 100%;
-    border-right: 0;
-    border-bottom: 1px solid #d4d4d4;
-  }
-  .flex.min-h-screen:has([data-ledger-workspace]) > aside nav {
-    flex-direction: row;
-    overflow-x: auto;
-    margin-top: 0.75rem;
-  }
-  .flex.min-h-screen:has([data-ledger-workspace]) > aside nav a {
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-}
+/* Scoped to the ledger marker: other screens and shared navigation stay unchanged.
+   모바일 헤더 전환은 MoveInNav가 모든 입주촉진 화면에 공통으로 처리한다. */
 /* The full print table exists only during an explicit, authorized print action. */
 @media print {
   .flex.min-h-screen:has([data-ledger-print]) {

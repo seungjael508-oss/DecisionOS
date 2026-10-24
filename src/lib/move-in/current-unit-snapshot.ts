@@ -5,6 +5,7 @@ import { classifyContactOutcome } from '@/lib/move-in/contact-outcome';
 import { currentAbsenceStreak } from '@/lib/move-in/d-grade-reasons';
 import { absenceContactType } from '@/lib/move-in/consultation';
 import { isTradeFundingStatus, isTradeFundingType } from '@/lib/move-in/trade-funding';
+import { normalizeProblemFlags } from '@/lib/move-in/problem-household';
 import type { Json } from '@/lib/supabase/types';
 import type { AnomalyReason, AuthorizedAccess, CurrentUnitRecord, CurrentUnitSnapshot, DealRecord, DealSummary, LedgerSummaryRow, ContactRecord, ContactStatus, SourceTag, SpecialRecord } from '@/lib/move-in/ledger-types';
 
@@ -37,6 +38,8 @@ export function resolveCurrentUnitSnapshot(input: {
   const c = unit.contracts.find(c => c.contract_status === 'ACTIVE')!, o = unit.occupancy!;
   const special = input.special?.project_id === access.projectId && input.special.unit_id === unit.unit_id && input.special.contract_id === c.contract_id &&
     (access.role !== 'COUNSELOR' || c.holder!.assigned_counselor_id === access.memberId) ? input.special : null;
+  // 해제 승인·메모는 문제세대일 때만 의미가 있다
+  const problemFlags = normalizeProblemFlags(o.problem_flags);
   const intent = resolveEffectiveMoveInIntent(o.operational_intent, o.occupancy_intent);
   const reasons = deriveSpecialManagementReasons({ effectiveIntent: intent, legacyGrade: o.legacy_grade, fundingStatus: o.funding_status, manuallyFlagged: special?.manually_flagged, visitRequired: special?.visit_required });
   const sourceTags = [...new Set(input.sourceTags)];
@@ -51,6 +54,8 @@ export function resolveCurrentUnitSnapshot(input: {
     // 알 수 없는 값은 분류 없음(유형이 없으면 상태도 없음)
     tradeFundingType: isTradeFundingType(o.trade_funding_type) ? o.trade_funding_type : null,
     tradeFundingStatus: isTradeFundingType(o.trade_funding_type) && isTradeFundingStatus(o.trade_funding_status) ? o.trade_funding_status : null,
+    problemFlags, problemLockReleased: problemFlags.length > 0 && o.problem_lock_released === true,
+    problemNote: problemFlags.length ? o.problem_note ?? null : null,
     specialReasons: [...reasons, ...sourceReasons], specialPriority: Number.isFinite(rank) ? rank : null, sourceTags,
     sourceUpdatedAt: [c.updated_at, o.updated_at, special?.updated_at].filter((v): v is string => !!v).sort().at(-1)!,
   };

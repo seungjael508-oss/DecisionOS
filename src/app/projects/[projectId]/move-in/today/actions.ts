@@ -17,6 +17,15 @@ export type AbsenceActionResult =
 type RpcError = { code?: string; message?: string } | null;
 type RpcClient = {
   rpc: (name: string, args: object) => Promise<{ data: unknown; error: RpcError }>;
+  from: (table: "move_in_visit_target") => {
+    select: (columns: "unit_id") => {
+      eq: (column: "project_id", value: string) => {
+        eq: (column: "visit_target_id", value: string) => {
+          maybeSingle: () => Promise<{ data: { unit_id: string } | null; error: unknown }>;
+        };
+      };
+    };
+  };
 };
 
 const STALE_MESSAGE = "세대 정보가 바뀌었습니다. 새로고침 후 다시 확인해 주세요.";
@@ -24,8 +33,9 @@ const STALE_MESSAGE = "세대 정보가 바뀌었습니다. 새로고침 후 다
 /**
  * 방문 결과 저장. 기본등급은 바꾸지 않으며 상담 저장은 기존 상담 RPC를 거친다.
  * 저장 성공 후 오늘 업무를 처리한다: 방문 완료·다음 방문일 없는 재방문 필요 = 오늘 완료, 다음 방문일 = 그날까지 미룸.
+ * 완료 처리할 세대는 클라이언트 값이 아니라 저장한 방문대상의 unit_id로 정한다.
  */
-export async function recordVisitResult(input: RecordVisitResultInput & { unitId: string }): Promise<AbsenceActionResult> {
+export async function recordVisitResult(input: RecordVisitResultInput): Promise<AbsenceActionResult> {
   const access = await requireMoveInAccess(input.projectId);
   if (!access.ok) return { ok: false, message: "권한이 없습니다." };
   const args = buildRecordVisitResultArgs(input);
@@ -48,8 +58,12 @@ export async function recordVisitResult(input: RecordVisitResultInput & { unitId
     return { ok: false, message: "방문 결과를 저장하지 못했습니다." };
   }
   const saved = input.result === "VISITED" ? "방문 완료로 저장했습니다." : args.p_next_visit_at ? "재방문 필요로 저장하고 다음 방문일까지 미뤘습니다." : "재방문 필요로 저장했습니다.";
-  const task = await completeTodayTask(input.projectId, input.unitId, args.p_next_visit_at);
-  if (task === "failed") return { ok: true, message: `${saved} ${TODAY_TASK_PENDING_MESSAGE}`, taskPending: { unitId: input.unitId, nextAt: args.p_next_visit_at } };
+  const target = await supabase.from("move_in_visit_target").select("unit_id")
+    .eq("project_id", input.projectId).eq("visit_target_id", input.visitTargetId).maybeSingle();
+  const unitId = target.error ? null : target.data?.unit_id ?? null;
+  if (!unitId) return { ok: true, message: `${saved} 오늘 업무 완료 처리를 하지 못했습니다. 새로고침 후 목록에서 완료 처리해 주세요.` };
+  const task = await completeTodayTask(input.projectId, unitId, args.p_next_visit_at);
+  if (task === "failed") return { ok: true, message: `${saved} ${TODAY_TASK_PENDING_MESSAGE}`, taskPending: { unitId, nextAt: args.p_next_visit_at } };
   return { ok: true, message: saved };
 }
 

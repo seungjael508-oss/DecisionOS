@@ -1536,6 +1536,11 @@ export type Database = {
           operational_intent_as_of: string | null
           occupancy_status_id: string
           planned_move_in_date: string | null
+          problem_flags: string[]
+          problem_lock_released: boolean
+          problem_note: string | null
+          problem_updated_at: string | null
+          problem_updated_by: string | null
           project_id: string
           unit_id: string
           trade_funding_status: string | null
@@ -1561,6 +1566,11 @@ export type Database = {
           operational_intent_as_of?: string | null
           occupancy_status_id?: string
           planned_move_in_date?: string | null
+          problem_flags?: string[]
+          problem_lock_released?: boolean
+          problem_note?: string | null
+          problem_updated_at?: string | null
+          problem_updated_by?: string | null
           project_id: string
           unit_id: string
           trade_funding_status?: string | null
@@ -1586,6 +1596,11 @@ export type Database = {
           operational_intent_as_of?: string | null
           occupancy_status_id?: string
           planned_move_in_date?: string | null
+          problem_flags?: string[]
+          problem_lock_released?: boolean
+          problem_note?: string | null
+          problem_updated_at?: string | null
+          problem_updated_by?: string | null
           project_id?: string
           unit_id?: string
           trade_funding_status?: string | null
@@ -1829,6 +1844,19 @@ export type Database = {
           p_project_id: string
         }
         Returns: string
+      }
+      set_move_in_problem_household: {
+        Args: {
+          p_customer_id: string
+          p_expected_contract_id: string
+          p_flags: string[]
+          p_lock_released: boolean
+          p_note: string | null
+          p_project_id: string
+          p_reason: string
+          p_unit_id: string
+        }
+        Returns: Json
       }
       set_move_in_trade_funding: {
         Args: {

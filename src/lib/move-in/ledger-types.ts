@@ -5,6 +5,7 @@ import type { FundingStatus, MoveInStatus, OccupancyIntent, OperationalIntent } 
 import type { UnitDealTypedFields } from '@/lib/move-in/deals';
 import type { DGradeReason } from '@/lib/move-in/d-grade-reasons';
 import type { TradeFundingStatus, TradeFundingType } from '@/lib/move-in/trade-funding';
+import type { ProblemFlag } from '@/lib/move-in/problem-household';
 
 export type AuthorizedAccess = Extract<MoveInAccess, { ok: true }>;
 export type SourceTag = 'ASEL' | 'INVESTOR' | 'DELINQUENT' | 'ONLINE';
@@ -17,6 +18,8 @@ export type OccupancyRecord = {
   planned_move_in_date: string | null; actual_move_in_date: string | null; updated_at: string;
   /** C·D 거래 자금조달 유형(A11). 값 검증은 스냅샷에서 한다 */
   trade_funding_type?: string | null; trade_funding_status?: string | null;
+  /** 문제세대(A14). 값 검증은 스냅샷에서 한다 */
+  problem_flags?: string[] | null; problem_lock_released?: boolean | null; problem_note?: string | null;
 };
 /** Narrow DB selection; never a unit detail/history DTO. */
 export type CurrentUnitRecord = { project_id: string; unit_id: string; building_no: string; unit_no: string; unit_type: string | null; contracts: ContractRecord[]; occupancy: OccupancyRecord | null };
@@ -40,6 +43,8 @@ export type CurrentUnitSnapshot = {
   effectiveIntent: EffectiveIntentValue; rentalType: RentalType; legacyConsidering: boolean;
   balancePaidAt: string | null; plannedMoveInDate: string | null; actualMoveInDate: string | null;
   tradeFundingType: TradeFundingType | null; tradeFundingStatus: TradeFundingStatus | null;
+  /** 문제세대 적색 표기. problemLockReleased = 관리자 최종 해제 승인(입주완료 처리 허용) */
+  problemFlags: ProblemFlag[]; problemLockReleased: boolean; problemNote: string | null;
   specialReasons: string[]; specialPriority: number | null; sourceTags: SourceTag[];
   sourceUpdatedAt: string; fetchedAt: string; revision: string;
 };

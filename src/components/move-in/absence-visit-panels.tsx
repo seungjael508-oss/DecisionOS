@@ -38,7 +38,6 @@ function VisitResultForm({ projectId, target }: { projectId: string; target: Mov
       projectId,
       visitTargetId: target.visitTargetId,
       contractId: target.contractId,
-      unitId: target.unitId,
       result,
       content: String(form.get("content") ?? ""),
       occupancyIntent: result === "VISITED" ? String(form.get("occupancy_intent") ?? "") || null : null,
@@ -52,23 +51,23 @@ function VisitResultForm({ projectId, target }: { projectId: string; target: Mov
 
   return <form onSubmit={onSubmit} className="flex flex-wrap items-end gap-2">
     <label className="flex flex-col text-sm">결과
-      <select value={result} onChange={(event) => setResult(event.target.value as typeof result)} className="border border-neutral-400 px-2 py-1">
+      <select value={result} onChange={(event) => setResult(event.target.value as typeof result)} className="border border-neutral-400 px-2 py-1 max-md:min-h-11">
         <option value="VISITED">방문 완료(의향 확인)</option>
         <option value="REVISIT_NEEDED">재방문 필요(방문 부재)</option>
       </select>
     </label>
     {result === "VISITED" ? <label className="flex flex-col text-sm">확인한 의향
-      <select name="occupancy_intent" defaultValue="" required className="border border-neutral-400 px-2 py-1">
+      <select name="occupancy_intent" defaultValue="" required className="border border-neutral-400 px-2 py-1 max-md:min-h-11">
         <option value="" disabled>선택</option>
         {OCCUPANCY_INTENT_VALUES.map((value) => <option key={value} value={value}>{OCCUPANCY_INTENT_LABELS[value]}</option>)}
       </select>
     </label> : <label className="flex flex-col text-sm">다음 방문일(선택)
-      <input type="date" name="next_visit_date" className="border border-neutral-400 px-2 py-1" />
+      <input type="date" name="next_visit_date" className="border border-neutral-400 px-2 py-1 max-md:min-h-11" />
     </label>}
     <label className="flex min-w-48 flex-1 flex-col text-sm">방문 내용
-      <input name="content" required className="border border-neutral-400 px-2 py-1" />
+      <input name="content" required className="border border-neutral-400 px-2 py-1 max-md:min-h-11" />
     </label>
-    <button type="submit" disabled={pending} className="border border-neutral-900 bg-neutral-900 px-2 py-1 text-white disabled:opacity-50">{pending ? "저장 중…" : "저장"}</button>
+    <button type="submit" disabled={pending} className="border border-neutral-900 bg-neutral-900 px-2 py-1 text-white disabled:opacity-50 max-md:min-h-11 max-md:w-full">{pending ? "저장 중…" : "저장"}</button>
     {notice ? <p role="status" className={`w-full text-sm ${notice.ok ? "text-neutral-800" : "text-red-700"}`}>{notice.message}</p> : null}
     {notice?.taskPending ? <TodayTaskRetry projectId={projectId} unitId={notice.taskPending.unitId} nextAt={notice.taskPending.nextAt} /> : null}
   </form>;

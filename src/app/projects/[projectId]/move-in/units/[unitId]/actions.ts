@@ -13,10 +13,12 @@ import {
 } from "@/lib/move-in/return-to";
 import { loadUnitRows } from "@/lib/move-in/queries";
 import { createServerClient } from "@/lib/supabase/server";
+import type { Database } from "@/lib/supabase/types";
 import { completeTodayTask } from "@/lib/move-in/today-task.server";
 import type { TodayTaskOutcome } from "@/lib/move-in/today-task";
 import { isTradeFundingStatus, isTradeFundingType } from "@/lib/move-in/trade-funding";
-import type { SaveMoveInTradeFundingInput } from "@/lib/move-in/workspace-save";
+import type { SaveMoveInBalancePaidInput, SaveMoveInProblemHouseholdInput, SaveMoveInTradeFundingInput } from "@/lib/move-in/workspace-save";
+import { PROBLEM_LOCK_ERRCODE, isProblemFlag, normalizeProblemFlags } from "@/lib/move-in/problem-household";
 
 type CreateMoveInConsultationResult =
   | { ok: false }
@@ -128,6 +130,97 @@ export async function saveMoveInTradeFunding(input: SaveMoveInTradeFundingInput)
   });
   if (error) {
     if (error.code === "42501") return { ok: false, message: "이 세대의 자금유형을 수정할 권한이 없습니다." };
+    if (error.code === "40001" || error.message.includes("active contract")) return { ok: false, message: "현재 계약자가 바뀌었습니다. 새로고침 후 다시 확인해 주세요." };
+    return { ok: false, message: "저장하지 못했습니다. 다시 시도해 주세요." };
+  }
+  const changed = !!data && typeof data === "object" && !Array.isArray(data) && data.changed === true;
+  return { ok: true, changed };
+}
+
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+const REVERTIBLE_MOVE_IN = ["NOT_CONTACTED", "CONTACTED", "PLANNED", "DELAYED"] as const;
+
+/**
+ * 관리자(PROJECT_ADMIN) 잔금완납 지정·완납일 수정·해제. 상태 변경과 이력은 기존 update_unit_occupancy_status RPC가 기록한다.
+ * 입주완료 세대는 상태를 낮추지 않고 완납일만 바꾼다. 해제는 잔금완납으로 바뀌기 직전 입주진행으로 되돌린다(이력 없으면 접촉완료).
+ */
+export async function saveMoveInBalancePaid(input: SaveMoveInBalancePaidInput): Promise<{ ok: true; changed: boolean } | { ok: false; message: string }> {
+  const access = await requireMoveInAccess(input.projectId);
+  if (!access.ok || access.role !== "PROJECT_ADMIN") return { ok: false, message: "잔금완납은 관리자만 수정할 수 있습니다." };
+  if (![input.projectId, input.unitId, input.customerId, input.contractId].every((v) => UUID.test(v))) {
+    return { ok: false, message: "세대 정보를 확인할 수 없습니다. 새로고침 후 다시 시도해 주세요." };
+  }
+  const reason = input.reason.trim();
+  if (!reason || reason.length > 200) return { ok: false, message: "변경 사유를 입력해 주세요(200자 이내)." };
+  if (input.paidOn !== "") {
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date());
+    if (!DATE_ONLY.test(input.paidOn) || Number.isNaN(Date.parse(`${input.paidOn}T00:00:00+09:00`)) || input.paidOn > today) {
+      return { ok: false, message: "잔금 완납일을 오늘 이전 날짜로 입력해 주세요." };
+    }
+  }
+  const supabase = await createServerClient();
+  const { data: current, error: readError } = await supabase.from("unit_occupancy_status")
+    .select("move_in_status,balance_paid_at,planned_move_in_date")
+    .eq("project_id", input.projectId).eq("unit_id", input.unitId).eq("contract_id", input.contractId).maybeSingle();
+  if (readError || !current) return { ok: false, message: "입주 상태를 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요." };
+
+  const args: Database["public"]["Functions"]["update_unit_occupancy_status"]["Args"] = {
+    p_project_id: input.projectId, p_unit_id: input.unitId, p_contract_id: input.contractId, p_reason: reason,
+  };
+  const movedIn = current.move_in_status === "MOVED_IN";
+  if (input.paidOn !== "") {
+    const paidAt = new Date(`${input.paidOn}T00:00:00+09:00`).toISOString();
+    const sameDay = current.balance_paid_at
+      ? new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date(current.balance_paid_at)) === input.paidOn : false;
+    if (sameDay && (movedIn || current.move_in_status === "BALANCE_PAID")) return { ok: true, changed: false };
+    if (!movedIn) args.p_move_in_status = "BALANCE_PAID";
+    args.p_balance_paid_at = paidAt;
+  } else {
+    if (current.move_in_status !== "BALANCE_PAID" && !current.balance_paid_at) return { ok: true, changed: false };
+    if (current.move_in_status === "BALANCE_PAID") {
+      const { data: history } = await supabase.from("contract_status_history").select("previous_value")
+        .eq("project_id", input.projectId).eq("unit_id", input.unitId).eq("contract_id", input.contractId)
+        .eq("field_changed", "move_in_status").eq("new_value", "BALANCE_PAID")
+        .order("changed_at", { ascending: false }).limit(1).maybeSingle();
+      const previous = REVERTIBLE_MOVE_IN.find((v) => v === history?.previous_value);
+      args.p_move_in_status = previous === "PLANNED" && !current.planned_move_in_date ? "CONTACTED" : previous ?? "CONTACTED";
+    }
+    if (current.balance_paid_at) args.p_clear_balance_paid_at = true;
+  }
+  const { error } = await supabase.rpc("update_unit_occupancy_status", args);
+  if (error) {
+    if (error.code === "42501") return { ok: false, message: "이 세대의 입주 상태를 수정할 권한이 없습니다." };
+    if (error.code === PROBLEM_LOCK_ERRCODE) return { ok: false, message: "문제세대 입주잠금 중입니다. 관리자 해제 승인 후 처리해 주세요." };
+    return { ok: false, message: "저장하지 못했습니다. 다시 시도해 주세요." };
+  }
+  return { ok: true, changed: true };
+}
+
+/**
+ * 관리자(PROJECT_ADMIN) 문제세대 지정·해제·입주잠금 해제 승인. 권한·현재 ACTIVE 계약·이력은 RPC가 다시 검증·기록한다.
+ * 해제 승인 전에는 입주완료 처리가 DB 트리거에서 막힌다(잔금완납이어도 동일).
+ */
+export async function saveMoveInProblemHousehold(input: SaveMoveInProblemHouseholdInput): Promise<{ ok: true; changed: boolean } | { ok: false; message: string }> {
+  const access = await requireMoveInAccess(input.projectId);
+  if (!access.ok || access.role !== "PROJECT_ADMIN") return { ok: false, message: "문제세대는 관리자만 수정할 수 있습니다." };
+  if (![input.projectId, input.unitId, input.customerId, input.contractId].every((v) => UUID.test(v))) {
+    return { ok: false, message: "세대 정보를 확인할 수 없습니다. 새로고침 후 다시 시도해 주세요." };
+  }
+  if (!Array.isArray(input.flags) || !input.flags.every(isProblemFlag) || typeof input.lockReleased !== "boolean") {
+    return { ok: false, message: "문제세대 분류 값이 올바르지 않습니다." };
+  }
+  const flags = normalizeProblemFlags(input.flags);
+  const reason = String(input.reason ?? "").trim(), note = String(input.note ?? "").trim();
+  if (!reason || reason.length > 200) return { ok: false, message: "변경 사유를 입력해 주세요(200자 이내)." };
+  if (note.length > 200) return { ok: false, message: "관리 메모는 200자 이내로 입력해 주세요." };
+  const supabase = await createServerClient();
+  const { data, error } = await supabase.rpc("set_move_in_problem_household", {
+    p_project_id: input.projectId, p_unit_id: input.unitId, p_customer_id: input.customerId,
+    p_expected_contract_id: input.contractId, p_flags: flags, p_lock_released: flags.length > 0 && input.lockReleased,
+    p_note: flags.length ? note || null : null, p_reason: reason,
+  });
+  if (error) {
+    if (error.code === "42501") return { ok: false, message: "문제세대는 관리자만 수정할 수 있습니다." };
     if (error.code === "40001" || error.message.includes("active contract")) return { ok: false, message: "현재 계약자가 바뀌었습니다. 새로고침 후 다시 확인해 주세요." };
     return { ok: false, message: "저장하지 못했습니다. 다시 시도해 주세요." };
   }
