@@ -23,7 +23,7 @@ export function BalancePaidEditor({projectId,unitId,customerId,contractId,moveIn
   if(paidOn&&(paidOn>today)){setError('잔금 완납일을 오늘 이전 날짜로 입력해 주세요.');return;}
   submitting.current=true;setPending(true);setError(null);
   try{
-   const result=await saving.save({kind:'balancePaid',input:{projectId,unitId,customerId,contractId,paidOn,reason}},'stay');
+   const result=await saving.save({kind:'balancePaid',input:{projectId,unitId,customerId,contractId,paidOn,reason,expectedBalancePaidAt:balancePaidAt}},'stay');
    if(!result.ok)setError('저장 결과를 확인하지 못했습니다. 화면 안내에 따라 다시 확인해 주세요.');
   }finally{submitting.current=false;setPending(false);}
  }
@@ -39,6 +39,7 @@ export function BalancePaidEditor({projectId,unitId,customerId,contractId,moveIn
    {paid?<BalancePaidBadge remainder={remainder}/>:null}
   </h2>
   <p className="mt-1 text-sm text-neutral-700">현재: {MOVE_IN_STATUS_LABELS[moveIn]}{balancePaidAt?` · 완납일 ${seoulDay(balancePaidAt)}`:' · 완납일 없음'}</p>
+  <p className="mt-1 text-xs text-neutral-600">직원 확정 완납 상태입니다. 회계상 납부율·실제 수납액·미수금은 납부자료 기준으로 별도 확인합니다.</p>
   {moveIn==='MOVED_IN'?<p className="mt-1 text-xs text-neutral-600">입주완료 세대는 입주진행을 유지하고 완납일만 바꿉니다.</p>:null}
   <form key={`${moveIn}:${balancePaidAt??''}`} className="mt-3 flex flex-col gap-2" onSubmit={onSubmit} onChange={()=>saving?.markDirty('balancePaid')}>
    <label className="flex flex-col text-sm">잔금 완납일

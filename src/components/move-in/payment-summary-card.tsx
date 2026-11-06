@@ -11,24 +11,34 @@ function BalanceAccountLine({ account }: { account?: BalanceAccountView }) {
   return <p className="mt-3 text-sm" aria-label="잔금 가상계좌"><span className="font-medium">잔금 가상계좌</span> {text} <span className="text-neutral-600">(아파트 분양 잔금 전용 · 발코니·옵션 납부계좌 아님)</span></p>;
 }
 
-export function PaymentSummaryCard({ occupancy, projection, account }: { occupancy: OccupancyRecord | null; projection?: RegisteredPaymentProjection | null; account?: BalanceAccountView }) {
-  if (projection) return <><RegisteredPaymentCard projection={projection} /><BalanceAccountLine account={account} /></>;
-  const balancePaid = occupancy?.move_in_status === "BALANCE_PAID";
+export function PaymentSummaryCard({ occupancy, projection, account }: { occupancy: Pick<OccupancyRecord, 'move_in_status' | 'balance_paid_at'> | null; projection?: RegisteredPaymentProjection | null; account?: BalanceAccountView }) {
+  // Only the current operational status overrides amounts; a historical date does not.
+  const operationallyPaid = occupancy?.move_in_status === "BALANCE_PAID";
+  const balancePaid = operationallyPaid || Boolean(occupancy?.balance_paid_at);
   const balancePaidAt = balancePaid ? occupancy?.balance_paid_at ?? null : null;
+  const confirmation = <div className="mt-3 text-sm" aria-label="직원 확정 완납 상태">
+    <p className="font-semibold">직원 확정 완납: {balancePaid ? '확정' : '미확정'}{balancePaidAt ? ` · 확정일 ${formatDateTime(balancePaidAt)}` : ''}</p>
+    <p>직원 확정 상태와 회계상 수납 정보는 별도입니다. 확정만으로 납부원금·실제 수납액·미수금을 변경하지 않습니다.</p>
+    {operationallyPaid && projection && projection.balanceScheduled > 0 && <p role="status" className="font-semibold text-orange-800">자료상 미수금 확인 필요: {money(projection.balanceScheduled)} · 회계자료 대조 필요: 직원 확정 내역과 납부자료를 대조해 주세요.</p>}
+    {balancePaid && !projection && <p role="status">납부자료 미확인: 회계상 납부율·미수금을 확인할 수 없습니다.</p>}
+  </div>;
+  if (projection) return <>{confirmation}<RegisteredPaymentCard projection={projection} balancePaid={operationallyPaid} /><BalanceAccountLine account={account} /></>;
   return (
     <section className="mt-8 border border-neutral-300 p-4" aria-label="납부내역 및 잔금">
       <h2 className="text-lg font-semibold">납부내역 및 잔금</h2>
+      {confirmation}
       <dl className="mt-3 grid max-w-xl grid-cols-[10rem_1fr] gap-y-1 text-sm">
         <dt>계약금 납부액</dt><dd>납부정보 미등록</dd>
         <dt>계약금 상태</dt><dd>납부정보 미등록</dd>
         <dt>중도금 납부액</dt><dd>납부정보 미등록</dd>
         <dt>중도금 대출 여부</dt><dd>납부정보 미등록</dd>
         <dt>현재 납부 누계</dt><dd>납부정보 미등록</dd>
-        <dt>잔금 예정액</dt><dd>납부정보 미등록</dd>
+        <dt>운영상 미납금</dt><dd>{operationallyPaid ? money(0) : '납부정보 미등록'}</dd>
+        <dt>잔금 예정액</dt><dd>{operationallyPaid ? money(0) : '납부정보 미등록'}</dd>
         <dt>잔금 납부액</dt><dd>납부정보 미등록</dd>
-        <dt>잔금 미납액</dt><dd>납부정보 미등록</dd>
+        <dt>잔금 미납액</dt><dd>{operationallyPaid ? money(0) : '납부정보 미등록'}</dd>
         <dt>연체금</dt><dd>납부정보 미등록</dd>
-        <dt>잔금 완납 여부</dt><dd>{balancePaid ? "완납 (입주진행 상태 기준)" : "납부정보 미등록"}</dd>
+        <dt>회계상 완납 여부</dt><dd>납부자료 미확인</dd>
         <dt>잔금 완납일</dt><dd>{balancePaidAt ? formatDateTime(balancePaidAt) : "납부정보 미등록"}</dd>
       </dl>
     </section>
@@ -42,11 +52,13 @@ const adjustmentLabels = {
   additionalLateFee: '추가납부 연체료', excessAmount: '초과금액', refundAmount: '환불금액', unrefundedAmount: '미환불금액',
 } as const;
 
-function RegisteredPaymentCard({ projection }: { projection: RegisteredPaymentProjection }) {
+function RegisteredPaymentCard({ projection, balancePaid }: { projection: RegisteredPaymentProjection; balancePaid: boolean }) {
   const metrics = [
-    ['분양금액', money(projection.salePrice)], ['납부원금', money(projection.totalPrincipalPaid)],
-    ['납부율', `${projection.paymentRate.toFixed(1)}%`], ['미납금', money(projection.balanceScheduled)],
-    ['잔금 예정액', money(projection.finalBalanceScheduled)], ['연체료', money(projection.totalLateFee)],
+    ['분양금액', money(projection.salePrice)], ['회계상 납부원금', money(projection.totalPrincipalPaid)],
+    ['회계상 납부율', `${projection.paymentRate.toFixed(1)}%`], ['자료상 미수금', money(projection.balanceScheduled)],
+    ['운영상 미납금', money(balancePaid ? 0 : projection.balanceScheduled)],
+    ['실제 수납액 (납부자료 기준)', money(projection.installments.reduce((sum, row) => sum + row.actualCashReceived, 0))],
+    ['잔금 예정액', money(balancePaid ? 0 : projection.finalBalanceScheduled)], ['연체료', money(projection.totalLateFee)],
   ];
   return <section className="mt-8 border border-neutral-300 p-4" aria-label="납부내역 및 잔금">
     <h2 className="text-lg font-semibold">납부내역 및 잔금</h2>
@@ -55,7 +67,7 @@ function RegisteredPaymentCard({ projection }: { projection: RegisteredPaymentPr
         <dt className="text-sm text-neutral-600">{label}</dt><dd className="mt-1 break-words text-lg font-semibold tabular-nums">{value}</dd>
       </div>)}
     </dl>
-    <p className="mt-3 text-sm text-neutral-600">미납금은 분양금액에서 납부원금을 뺀 전체 잔여액으로, 미도래 잔금도 포함합니다. 실입금액·연체료·할인료는 납부원금과 별도입니다.</p>
+    <p className="mt-3 text-sm text-neutral-600">자료상 미수금은 분양금액에서 납부원금을 뺀 전체 잔여액으로, 미도래 잔금도 포함합니다. 운영상 완납 세대는 운영상 미납금과 잔금 예정액을 0원으로 표시합니다. 실입금액·연체료·할인료는 납부원금과 별도입니다.</p>
     <p className="mt-1 text-sm text-neutral-600">자기자금 투입: 확인 필요</p>
     <details className="mt-4">
       <summary className="cursor-pointer font-semibold">차수별 납부내역</summary>

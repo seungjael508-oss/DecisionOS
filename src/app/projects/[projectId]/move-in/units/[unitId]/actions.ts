@@ -13,7 +13,6 @@ import {
 } from "@/lib/move-in/return-to";
 import { loadUnitRows } from "@/lib/move-in/queries";
 import { createServerClient } from "@/lib/supabase/server";
-import type { Database } from "@/lib/supabase/types";
 import { completeTodayTask } from "@/lib/move-in/today-task.server";
 import type { TodayTaskOutcome } from "@/lib/move-in/today-task";
 import { isTradeFundingStatus, isTradeFundingType } from "@/lib/move-in/trade-funding";
@@ -138,13 +137,12 @@ export async function saveMoveInTradeFunding(input: SaveMoveInTradeFundingInput)
 }
 
 const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
-const REVERTIBLE_MOVE_IN = ["NOT_CONTACTED", "CONTACTED", "PLANNED", "DELAYED"] as const;
 
 /**
- * 관리자(PROJECT_ADMIN) 잔금완납 지정·완납일 수정·해제. 상태 변경과 이력은 기존 update_unit_occupancy_status RPC가 기록한다.
+ * 관리자(PROJECT_ADMIN) 잔금완납 지정·완납일 수정·해제. 기존 set_move_in_balance_paid RPC로 계약·충돌을 검증한다.
  * 입주완료 세대는 상태를 낮추지 않고 완납일만 바꾼다. 해제는 잔금완납으로 바뀌기 직전 입주진행으로 되돌린다(이력 없으면 접촉완료).
  */
-export async function saveMoveInBalancePaid(input: SaveMoveInBalancePaidInput): Promise<{ ok: true; changed: boolean } | { ok: false; message: string }> {
+export async function saveMoveInBalancePaid(input: SaveMoveInBalancePaidInput): Promise<{ ok: true; changed: boolean } | { ok: false; message: string; code?: 'stale_balance' }> {
   const access = await requireMoveInAccess(input.projectId);
   if (!access.ok || access.role !== "PROJECT_ADMIN") return { ok: false, message: "잔금완납은 관리자만 수정할 수 있습니다." };
   if (![input.projectId, input.unitId, input.customerId, input.contractId].every((v) => UUID.test(v))) {
@@ -154,7 +152,8 @@ export async function saveMoveInBalancePaid(input: SaveMoveInBalancePaidInput): 
   if (!reason || reason.length > 200) return { ok: false, message: "변경 사유를 입력해 주세요(200자 이내)." };
   if (input.paidOn !== "") {
     const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date());
-    if (!DATE_ONLY.test(input.paidOn) || Number.isNaN(Date.parse(`${input.paidOn}T00:00:00+09:00`)) || input.paidOn > today) {
+    const parsed = new Date(`${input.paidOn}T00:00:00+09:00`);
+    if (!DATE_ONLY.test(input.paidOn) || Number.isNaN(parsed.getTime()) || new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul' }).format(parsed) !== input.paidOn || input.paidOn > today) {
       return { ok: false, message: "잔금 완납일을 오늘 이전 날짜로 입력해 주세요." };
     }
   }
@@ -163,37 +162,29 @@ export async function saveMoveInBalancePaid(input: SaveMoveInBalancePaidInput): 
     .select("move_in_status,balance_paid_at,planned_move_in_date")
     .eq("project_id", input.projectId).eq("unit_id", input.unitId).eq("contract_id", input.contractId).maybeSingle();
   if (readError || !current) return { ok: false, message: "입주 상태를 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요." };
-
-  const args: Database["public"]["Functions"]["update_unit_occupancy_status"]["Args"] = {
-    p_project_id: input.projectId, p_unit_id: input.unitId, p_contract_id: input.contractId, p_reason: reason,
-  };
-  const movedIn = current.move_in_status === "MOVED_IN";
-  if (input.paidOn !== "") {
-    const paidAt = new Date(`${input.paidOn}T00:00:00+09:00`).toISOString();
-    const sameDay = current.balance_paid_at
-      ? new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date(current.balance_paid_at)) === input.paidOn : false;
-    if (sameDay && (movedIn || current.move_in_status === "BALANCE_PAID")) return { ok: true, changed: false };
-    if (!movedIn) args.p_move_in_status = "BALANCE_PAID";
-    args.p_balance_paid_at = paidAt;
-  } else {
-    if (current.move_in_status !== "BALANCE_PAID" && !current.balance_paid_at) return { ok: true, changed: false };
-    if (current.move_in_status === "BALANCE_PAID") {
-      const { data: history } = await supabase.from("contract_status_history").select("previous_value")
-        .eq("project_id", input.projectId).eq("unit_id", input.unitId).eq("contract_id", input.contractId)
-        .eq("field_changed", "move_in_status").eq("new_value", "BALANCE_PAID")
-        .order("changed_at", { ascending: false }).limit(1).maybeSingle();
-      const previous = REVERTIBLE_MOVE_IN.find((v) => v === history?.previous_value);
-      args.p_move_in_status = previous === "PLANNED" && !current.planned_move_in_date ? "CONTACTED" : previous ?? "CONTACTED";
-    }
-    if (current.balance_paid_at) args.p_clear_balance_paid_at = true;
+  const expected = input.expectedBalancePaidAt;
+  if (expected !== null && (typeof expected !== 'string' || !Number.isFinite(Date.parse(expected)))) {
+    return { ok: false, message: '조회 당시 완납 정보를 확인할 수 없습니다. 최신 데이터를 다시 조회해 주세요.', code: 'stale_balance' };
   }
-  const { error } = await supabase.rpc("update_unit_occupancy_status", args);
+  if (current.balance_paid_at === null ? expected !== null : expected === null || Date.parse(current.balance_paid_at) !== Date.parse(expected)) {
+    return { ok: false, code: 'stale_balance', message: '완납 정보가 변경되어 저장하지 않았습니다. 최신 데이터를 다시 조회해 주세요.' };
+  }
+
+  const { data, error } = await supabase.rpc("set_move_in_balance_paid", {
+    p_project_id: input.projectId, p_unit_id: input.unitId, p_contract_id: input.contractId,
+    p_customer_id: input.customerId, p_paid: input.paidOn !== '',
+    p_expected_balance_paid_at: expected,
+    p_paid_at: input.paidOn ? new Date(`${input.paidOn}T00:00:00+09:00`).toISOString() : null,
+    p_reason: reason,
+  });
   if (error) {
     if (error.code === "42501") return { ok: false, message: "이 세대의 입주 상태를 수정할 권한이 없습니다." };
     if (error.code === PROBLEM_LOCK_ERRCODE) return { ok: false, message: "문제세대 입주잠금 중입니다. 관리자 해제 승인 후 처리해 주세요." };
+    if (error.code === '40001') return { ok: false, code: 'stale_balance', message: '현재 계약 또는 완납 정보가 변경되어 저장하지 않았습니다. 최신 데이터를 다시 조회해 주세요.' };
+    if (error.code === '23503') return { ok: false, message: '현재 계약이 변경되었습니다. 최신 데이터를 다시 조회해 주세요.' };
     return { ok: false, message: "저장하지 못했습니다. 다시 시도해 주세요." };
   }
-  return { ok: true, changed: true };
+  return { ok: true, changed: !!data && typeof data === 'object' && !Array.isArray(data) && data.changed === true };
 }
 
 /**
