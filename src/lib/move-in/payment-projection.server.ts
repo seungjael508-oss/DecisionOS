@@ -88,10 +88,27 @@ export function aggregatePaymentRows(input: {
     unrefundedAmount: amount(row.unrefundedAmount),
   }));
   const salePrice = amount(input.salePrice);
+  // One invocation is one bound contract. Ambiguous repeated receipts must be
+  // reconciled at source, never silently discarded or counted as new cash.
+  const seen = new Set<string>();
+  const obligations = new Map<string, { scheduled: number; paid: number; final: boolean }>();
+  for (const row of rows) {
+    const fingerprint = JSON.stringify([row.installmentType, row.dueDate, row.paymentDate, row.scheduledAmount, row.principalPaid, row.actualCashReceived, row.lateFee, row.discountAmount, row.additionalScheduled, row.additionalPaid, row.additionalPrincipal, row.additionalLateFee, row.excessAmount, row.refundAmount, row.unrefundedAmount]);
+    if (seen.has(fingerprint)) throw new Error('duplicate payment row: source reconciliation required');
+    seen.add(fingerprint);
+    const key = JSON.stringify([row.installmentType, row.dueDate]);
+    const obligation = obligations.get(key) ?? { scheduled: 0, paid: 0, final: row.installmentType === '잔금' };
+    // The workbook puts an obligation on its first receipt row only. Repeated
+    // nonzero schedules need reconciliation; their meaning cannot be inferred.
+    if (obligation.scheduled > 0 && row.scheduledAmount > 0) throw new Error('duplicate payment obligation: source reconciliation required');
+    obligation.scheduled += row.scheduledAmount;
+    obligation.paid += row.principalPaid;
+    obligations.set(key, obligation);
+  }
   const totalPrincipalPaid = rows.reduce((sum, row) => sum + row.principalPaid, ZERO);
-  const finalRows = rows.filter((row) => row.installmentType === "잔금");
-  const finalBalanceScheduled = finalRows.length
-    ? finalRows.reduce((sum, row) => sum + Math.max(row.scheduledAmount - row.principalPaid, ZERO), ZERO)
+  const finalObligations = [...obligations.values()].filter(group => group.final);
+  const finalBalanceScheduled = finalObligations.length
+    ? finalObligations.reduce((sum, group) => sum + Math.max(group.scheduled - group.paid, ZERO), ZERO)
     : null;
   return {
     salePrice,
@@ -197,7 +214,9 @@ export async function loadPaymentProjection(
     current.data.contract_id !== identity.contractId ||
     !isPaymentProjectionGrade(current.data.legacy_grade)
   ) return null;
-  const projection = aggregatePaymentRows({ salePrice: source.salePrice, rows: source.rows });
+  let projection: ReturnType<typeof aggregatePaymentRows>;
+  try { projection = aggregatePaymentRows({ salePrice: source.salePrice, rows: source.rows }); }
+  catch { return null; }
   return {
     projectId,
     unitId,
@@ -225,7 +244,8 @@ export function paymentForCurrentContract(input: PaymentProjectionIdentity & {
   if (input.projectId !== PAYMENT_PROJECT_ID || !input.contractId || !input.unitId) return null;
   if (!/^\d+$/.test(input.buildingNo) || !/^\d+$/.test(input.unitNo)) return null;
   const key = `${Number(input.buildingNo)}-${Number(input.unitNo)}`;
-  const binding = PAYMENT_PROJECTION_IDENTITIES[key], source = PAYMENT_SOURCE_PROJECTIONS[key];
+  const binding = PAYMENT_PROJECTION_IDENTITIES[key];
+  const source: PaymentSourceProjection | undefined = PAYMENT_SOURCE_PROJECTIONS[key];
   if (!binding || !source || binding.projectId !== input.projectId || binding.unitId !== input.unitId || binding.contractId !== input.contractId ||
       `${source.buildingNo}-${source.unitNo}` !== key || source.sourceSha256 !== PAYMENT_SOURCE_MANIFEST.sourceSha256) return null;
   // Missing/invalid source is not a known zero. Do not let the legacy aggregate's
@@ -234,7 +254,9 @@ export function paymentForCurrentContract(input: PaymentProjectionIdentity & {
     !/^(계약[12]|[1-6]차|잔금)$/.test(row.installmentType) ||
     ['scheduledAmount','principalPaid','actualCashReceived','lateFee','discountAmount','additionalScheduled','additionalPaid','additionalPrincipal','additionalLateFee','excessAmount','refundAmount','unrefundedAmount']
       .some(field => !Number.isSafeInteger(row[field as keyof PaymentSourceRow]) || Number(row[field as keyof PaymentSourceRow]) < 0))) return null;
-  const aggregate = aggregatePaymentRows(source);
+  let aggregate: ReturnType<typeof aggregatePaymentRows>;
+  try { aggregate = aggregatePaymentRows(source); }
+  catch { return null; }
   const asOfDate = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
   // One obligation can have several receipt rows, with the scheduled amount
   // present only on the first row. Preserve receipts; classify their total.

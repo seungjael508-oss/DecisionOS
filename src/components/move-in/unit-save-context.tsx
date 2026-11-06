@@ -42,7 +42,10 @@ export function UnitSaveProvider({workspace,returnTo,onRefreshed,children}:{work
    const result:WorkspaceSaveResult=localDestination&&(saved.ok||saved.committed===true)?{...saved,destination:localDestination}:saved;
    if(!mounted.current)return {ok:false};
    if(result.ok){if(apply(result))return {ok:true};setBlocked(true);setMessage('현재 세대 또는 계약자가 변경되어 저장 결과를 반영하지 않았습니다. 상세를 다시 확인해 주세요.');return {ok:false};}
-   if(result.committed!==false){
+   if(result.code==='stale_balance'){
+    setBlocked(true);setMessage('완납 정보가 변경되어 저장하지 않았습니다. 최신 데이터를 다시 조회해 주세요.');
+    pending.current=async()=>apply(await refreshLedgerUnit(request));setRetryable(true);
+   }else if(result.committed!==false){
     setBlocked(true);
     setMessage(result.committed===true?'저장 요청 처리 후 최신 상태를 확인하지 못했습니다. 입력을 유지했습니다. 다시 저장하지 말고 결과를 재확인해 주세요.':'저장 여부를 확인하지 못했습니다. 입력을 유지했습니다. 중복 저장을 피하려면 상담 이력과 현재 상태를 먼저 확인해 주세요.');
     if(result.committed===true&&result.code==='refresh_failed'){
