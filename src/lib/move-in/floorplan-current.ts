@@ -9,6 +9,7 @@ export function toFloorplanUnit(snapshot: CurrentUnitSnapshot, location: UnitLoc
     projectId: snapshot.projectId, unitId: snapshot.unitId, buildingNo: location.buildingNo, unitNo: location.unitNo, floor: location.floor,
     currentGrade: snapshot.currentGrade, funding: snapshot.funding, moveIn: snapshot.moveIn,
     effectiveIntent: snapshot.effectiveIntent, rentalType: snapshot.rentalType, specialReasons: [...snapshot.specialReasons],
+    problemFlags: [...snapshot.problemFlags],
     balancePaidAt: snapshot.balancePaidAt, actualMoveInDate: snapshot.actualMoveInDate, revision: snapshot.revision, fetchedAt: snapshot.fetchedAt,
   };
 }

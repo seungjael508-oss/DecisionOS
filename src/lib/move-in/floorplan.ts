@@ -1,7 +1,8 @@
-import type { LegacyGrade } from "@/lib/move-in/consultation";
+import { isLegacyGrade } from "@/lib/move-in/consultation";
 import type { CurrentUnitSnapshot } from "@/lib/move-in/ledger-types";
 import { SPECIAL_REASON_LABELS } from "@/lib/move-in/intent";
 import { formatUnitLabel } from "@/lib/move-in/labels";
+import { isProblemHousehold } from "@/lib/move-in/problem-household";
 
 export const FLOORPLAN_COLOR_MODES = [
   "moveInStatus",
@@ -26,7 +27,7 @@ export function isFloorplanColorMode(value: string): value is FloorplanColorMode
 /** Display-only fields from the approved current snapshot. No identity/history/phone DTO. */
 export type FloorplanUnit = Pick<CurrentUnitSnapshot,
   "projectId" | "unitId" | "currentGrade" | "funding" | "moveIn" | "effectiveIntent" | "rentalType" |
-  "specialReasons" | "balancePaidAt" | "actualMoveInDate" | "revision" | "fetchedAt"
+  "specialReasons" | "balancePaidAt" | "actualMoveInDate" | "revision" | "fetchedAt" | "problemFlags"
 > & { buildingNo: string; unitNo: string; floor: number | null };
 
 export type ParsedHo = {
@@ -116,46 +117,41 @@ const EMPTY_CELL = {
   label: "미등록",
 };
 
-/** Paid status takes precedence; old colorBy values cannot replace the remaining grade encoding. */
+/** Only problem/paid status colors the background. Grade labels remain visible. */
 export function floorplanCellTone(
   unit: FloorplanUnit | undefined,
   colorBy: FloorplanColorMode = "legacyGrade",
 ): { className: string; label: string } {
   void colorBy;
   const grade = unit?.currentGrade;
+  const label = grade && isLegacyGrade(grade) ? grade : EMPTY_CELL.label;
+  if (unit && isProblemHousehold(unit)) return { className: PROBLEM_TONE, label };
   if (unit && (unit.moveIn === "BALANCE_PAID" || unit.balancePaidAt)) {
-    return { className: PAID_TONE, label: grade && Object.hasOwn(GRADE_TONE, grade) ? grade : EMPTY_CELL.label };
+    return { className: PAID_TONE, label };
   }
-  if (!grade || !Object.hasOwn(GRADE_TONE, grade)) return EMPTY_CELL;
-  return { className: GRADE_TONE[grade as LegacyGrade], label: grade };
+  return { className: EMPTY_CELL.className, label };
 }
 
 const PAID_TONE = "bg-green-200 text-neutral-900";
-
-const GRADE_TONE: Record<LegacyGrade, string> = {
-  A: "bg-emerald-300 text-neutral-900",
-  B: "bg-sky-200 text-neutral-900",
-  C: "bg-amber-200 text-neutral-900",
-  D: "bg-red-200 text-neutral-900",
-  부재: "bg-neutral-200 text-neutral-900",
-  상담거절: "bg-stone-300 text-neutral-900",
-};
+const PROBLEM_TONE = "bg-red-200 text-neutral-900";
 
 export function floorplanLegend(colorBy: FloorplanColorMode = "legacyGrade") {
   void colorBy;
   return [
+    { value: "PROBLEM", label: "문제세대", className: PROBLEM_TONE },
     { value: "BALANCE_PAID", label: "잔금완납", className: PAID_TONE },
-    ...(Object.keys(GRADE_TONE) as LegacyGrade[]).map(value => ({ value, label: value, className: GRADE_TONE[value] })),
+    { value: "OTHER", label: "그 외 세대", className: EMPTY_CELL.className },
   ];
 }
 
-export const FLOORPLAN_AUXILIARY_LEGEND = ["대출필요", "매매", "임대", "특별관리", "잔금완납", "실제입주"] as const;
+export const FLOORPLAN_AUXILIARY_LEGEND = ["문제세대", "대출필요", "매매", "임대", "특별관리", "잔금완납", "실제입주"] as const;
 const reasonLabels: Record<string, string> = { ...SPECIAL_REASON_LABELS, ASEL: "아셀", INVESTOR: "투자", DELINQUENT: "연체자" };
 
 /** Presentation only: the current-state resolver has already run on the server. */
 export function floorplanCurrentPresentation(unit: FloorplanUnit) {
   const tone = floorplanCellTone(unit);
   const tags: { key: string; label: string }[] = [];
+  if (isProblemHousehold(unit)) tags.push({ key: "problem", label: "문제세대" });
   if (unit.funding === "LOAN_NEEDED") tags.push({ key: "loan", label: "대출필요" });
   if (unit.effectiveIntent === "SALE_TRANSFER") tags.push({ key: "sale", label: "매매" });
   if (unit.effectiveIntent === "RENT") tags.push({ key: "rental", label: "임대" });
