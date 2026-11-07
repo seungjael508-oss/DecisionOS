@@ -116,16 +116,21 @@ const EMPTY_CELL = {
   label: "미등록",
 };
 
-/** Old colorBy values remain accepted but can never replace the current-grade encoding. */
+/** Paid status takes precedence; old colorBy values cannot replace the remaining grade encoding. */
 export function floorplanCellTone(
   unit: FloorplanUnit | undefined,
   colorBy: FloorplanColorMode = "legacyGrade",
 ): { className: string; label: string } {
   void colorBy;
   const grade = unit?.currentGrade;
+  if (unit && (unit.moveIn === "BALANCE_PAID" || unit.balancePaidAt)) {
+    return { className: PAID_TONE, label: grade && Object.hasOwn(GRADE_TONE, grade) ? grade : EMPTY_CELL.label };
+  }
   if (!grade || !Object.hasOwn(GRADE_TONE, grade)) return EMPTY_CELL;
   return { className: GRADE_TONE[grade as LegacyGrade], label: grade };
 }
+
+const PAID_TONE = "bg-green-200 text-neutral-900";
 
 const GRADE_TONE: Record<LegacyGrade, string> = {
   A: "bg-emerald-300 text-neutral-900",
@@ -138,7 +143,10 @@ const GRADE_TONE: Record<LegacyGrade, string> = {
 
 export function floorplanLegend(colorBy: FloorplanColorMode = "legacyGrade") {
   void colorBy;
-  return (Object.keys(GRADE_TONE) as LegacyGrade[]).map(value => ({ value, label: value, className: GRADE_TONE[value] }));
+  return [
+    { value: "BALANCE_PAID", label: "잔금완납", className: PAID_TONE },
+    ...(Object.keys(GRADE_TONE) as LegacyGrade[]).map(value => ({ value, label: value, className: GRADE_TONE[value] })),
+  ];
 }
 
 export const FLOORPLAN_AUXILIARY_LEGEND = ["대출필요", "매매", "임대", "특별관리", "잔금완납", "실제입주"] as const;
