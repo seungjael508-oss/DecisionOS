@@ -32,10 +32,10 @@ export function MoveInNav({
   const [clicked, setClicked] = useState<{ href: string; from: string } | null>(null);
   const pendingHref = clicked && clicked.from === pathname ? clicked.href : null;
   const base = `/projects/${projectId}/move-in`;
-  // 확정 메뉴 3개만 노출. 나머지 화면(입주 현황·동호배치도·데이터 가져오기·사용자 관리 등)은
-  // 라우트·권한을 그대로 두고 메뉴에서만 숨긴다. 동호수 상세는 통합원장 세대 클릭 패널로 제공
+  // 기존 동호배치도 경로를 모바일·데스크톱 공용 메뉴에 연결한다.
   const items = [
     { href: `${base}/ledger`, label: "통합원장", exact: false },
+    { href: `${base}/floorplan`, label: "동호수관리", exact: true },
     { href: `${base}/today`, label: "오늘 관리대상", exact: true },
     { href: `${base}/worklog`, label: "업무일지", exact: true },
   ];
