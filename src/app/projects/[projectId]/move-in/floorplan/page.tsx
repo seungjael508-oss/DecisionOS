@@ -24,7 +24,7 @@ export default async function MoveInFloorplanPage({
   if (!access.ok) return null;
 
   const query = await searchParams;
-  // Old colorBy parameters are accepted without changing the grade encoding.
+  // Old colorBy parameters cannot override the problem/paid status colors.
   const result = await loadCurrentFloorplanRows(projectId);
   if (result.error) return <QueryError />;
 
@@ -34,7 +34,7 @@ export default async function MoveInFloorplanPage({
   return (
     <main className="p-8">
       <h1 className="mb-6 text-2xl font-semibold">동호배치도</h1>
-      <p className="mb-4 text-sm">오늘 현재 상태 · 잔금완납은 초록색, 그 외 현재등급 기준</p>
+      <p className="mb-4 text-sm">오늘 현재 상태 · 잔금완납·문제세대만 색상 표시</p>
       {result.anomalyCount > 0 ? <p className="mb-4" role="status">확인필요 {result.anomalyCount}세대는 배치도에서 제외했습니다.</p> : null}
       {result.rows.length === 0 ? (
         <EmptyState>등록된 동호수가 없습니다.</EmptyState>
