@@ -124,7 +124,13 @@ describe('완납·문제세대만 색상 강조', () => {
   });
 
   test('문제세대 플래그를 좁은 배치도 DTO로 전달하고 메모·고객 정보는 보내지 않는다', () => {
-    const snapshot = { ...base, problemFlags: ['SEIZURE', 'ASEL'], problemNote: 'private note', currentCustomerId: 'private-customer' } as CurrentUnitSnapshot;
+    const snapshot: CurrentUnitSnapshot = {
+      ...base, currentContractId: 'c1', currentCustomerId: 'private-customer',
+      operationalIntent: 'UNDECIDED', occupancyIntent: 'UNDECIDED', legacyConsidering: false,
+      plannedMoveInDate: null, tradeFundingType: null, tradeFundingStatus: null,
+      problemFlags: ['SEIZURE', 'ASEL'], problemLockReleased: false, problemNote: 'private note',
+      specialPriority: null, sourceTags: [], sourceUpdatedAt: base.fetchedAt,
+    };
     const unit = toFloorplanUnit(snapshot, { projectId: 'p1', unitId: 'u1', buildingNo: '101', unitNo: '101', floor: 1 });
     expect(unit?.problemFlags).toEqual(['SEIZURE', 'ASEL']);
     expect(unit?.problemFlags).not.toBe(snapshot.problemFlags);
