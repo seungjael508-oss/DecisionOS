@@ -27,11 +27,10 @@ export function FloorplanBoard({ projectId, units, buildingNo, colorBy = "legacy
   const legend = floorplanLegend(colorBy);
   return <section aria-label={`${buildingNo}동 동호배치도`}>
     <h2 className="mb-4 text-xl font-semibold">{buildingNo}동</h2>
-    <ul className="mb-3 flex flex-wrap gap-3 text-sm" aria-label="현재등급 범례">
+    <ul className="mb-3 flex flex-wrap gap-3 text-sm" aria-label="세대 상태 범례">
       {legend.map(item => <li key={item.value} className="flex items-center gap-2">
         <span aria-hidden="true" className={`inline-block h-4 w-4 border border-neutral-400 ${item.className}`} />{item.label}
       </li>)}
-      <li className="flex items-center gap-2"><span aria-hidden="true" className="inline-block h-4 w-4 border border-neutral-400 bg-white" />미등록</li>
     </ul>
     <ul className="mb-4 flex flex-wrap gap-2 text-xs" aria-label="보조 태그 범례">
       {FLOORPLAN_AUXILIARY_LEGEND.map(label => <li key={label} className="rounded border border-neutral-400 px-2 py-1">{label}</li>)}

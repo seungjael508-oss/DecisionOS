@@ -8,7 +8,7 @@ import { listBuildings, selectBuilding, type FloorplanColorMode, type FloorplanU
 // Building changes reuse the narrow authorized DTO; no API calls or state inference.
 export function FloorplanClient({ projectId, units, initialBuildingNo }: {
   projectId: string; units: FloorplanUnit[]; initialBuildingNo: string;
-  /** Accepted for old callers; paid status overrides the current-grade background. */
+  /** Accepted for old callers; backgrounds always use problem/paid status. */
   initialColorBy?: FloorplanColorMode;
 }) {
   const buildings = listBuildings(units);

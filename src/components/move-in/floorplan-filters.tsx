@@ -19,6 +19,6 @@ export function FloorplanFilters({ buildings, buildingNo, onBuildingChange }: {
       </label>
       <button type="submit" className="border border-neutral-800 px-3 py-1">적용</button>
     </form>
-    <p className="text-sm">표시 기준: <strong>잔금완납은 초록색, 그 외 현재등급</strong></p>
+    <p className="text-sm">표시 기준: <strong>문제세대는 빨간색, 잔금완납은 초록색, 그 외 흰색</strong> · 두 조건이 겹치면 문제세대를 우선 표시합니다.</p>
   </div>;
 }
