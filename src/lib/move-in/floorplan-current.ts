@@ -12,6 +12,7 @@ export function toFloorplanUnit(snapshot: CurrentUnitSnapshot, location: UnitLoc
     balancePaidAt: snapshot.balancePaidAt, actualMoveInDate: snapshot.actualMoveInDate, revision: snapshot.revision, fetchedAt: snapshot.fetchedAt,
     fieldConfirmedBalancePaid: snapshot.fieldConfirmedBalancePaid,
     problemFlags: [...snapshot.problemFlags],
+    problemLockReleased: snapshot.problemLockReleased,
     sourceTags: [...snapshot.sourceTags],
   };
 }

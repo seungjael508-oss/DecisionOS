@@ -30,7 +30,7 @@ export function isFloorplanColorMode(value: string): value is FloorplanColorMode
 export type FloorplanUnit = Pick<CurrentUnitSnapshot,
   "projectId" | "unitId" | "currentGrade" | "funding" | "moveIn" | "effectiveIntent" | "rentalType" |
   "specialReasons" | "balancePaidAt" | "fieldConfirmedBalancePaid" | "actualMoveInDate" | "revision" | "fetchedAt"
-> & { buildingNo: string; unitNo: string; floor: number | null; moveReservation?: MoveReservation; movingDate?: string | null; problemFlags?: readonly ProblemFlag[]; sourceTags?: CurrentUnitSnapshot['sourceTags'] };
+> & { buildingNo: string; unitNo: string; floor: number | null; moveReservation?: MoveReservation; movingDate?: string | null; problemFlags?: readonly ProblemFlag[]; problemLockReleased?: boolean; sourceTags?: CurrentUnitSnapshot['sourceTags'] };
 
 export type ParsedHo = {
   floor: number;

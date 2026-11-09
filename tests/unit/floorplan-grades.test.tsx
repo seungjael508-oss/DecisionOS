@@ -10,6 +10,26 @@ vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
 afterEach(cleanup);
 const base: FloorplanUnit = {projectId:'p',unitId:'u',buildingNo:'101',unitNo:'201',floor:2,currentGrade:null,funding:'NORMAL',moveIn:'CONTACTED',effectiveIntent:'UNDECIDED',rentalType:null,specialReasons:[],balancePaidAt:null,actualMoveInDate:null,revision:'r',fetchedAt:'2026-11-09'};
 
+test.each([false,true])('problem flags remain visible with paid, grade and reservation; released=%s', released=>{
+  const html=renderToStaticMarkup(createElement(FloorplanBoard,{projectId:'p',units:[{...base,currentGrade:'A',balancePaidAt:'2026-11-09',moveReservation:'BOOKED',movingDate:'2026-11-15',problemFlags:['SEIZURE','LITIGATION'],problemLockReleased:released,specialReasons:[]}]}));
+  expect(html).toContain('[가압류]');
+  expect(html).toContain('[소송]');
+  expect(html).toContain(released?'해제승인':'입주잠금');
+  expect(html).not.toContain(released?'입주잠금':'해제승인');
+  expect(html).toContain('data-grade="A"');
+  expect(html).toContain('data-balance-paid="true"');
+  expect(html).toContain('bg-green-100');
+  expect(html).toContain('data-move-reserved="true"');
+  expect(html).toContain('문제세대');
+});
+
+test('problem flags alone render for units without grade or special reasons',()=>{
+  const html=renderToStaticMarkup(createElement(FloorplanBoard,{projectId:'p',units:[{...base,problemFlags:['SEIZURE']}]}));
+  expect(html).toContain('[가압류]');
+  expect(html).toContain('입주잠금');
+  expect(html).not.toContain('data-grade=');
+});
+
 test.each(['A','B','C','D'])('%s grade remains visible with payment, reservation and management tags', grade => {
   const html=renderToStaticMarkup(createElement(FloorplanBoard,{projectId:'p',units:[{...base,currentGrade:grade,balancePaidAt:'2026-11-09',moveReservation:'BOOKED',movingDate:'2026-11-15',sourceTags:['ASEL','DELINQUENT'],specialReasons:['MANUAL']}]}));
   expect(html).toContain(`data-grade="${grade}"`);

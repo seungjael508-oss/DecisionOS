@@ -4,7 +4,8 @@ import {
   buildFloorplanGrid, cellKey, listBuildings, type FloorplanColorMode, type FloorplanUnit,
 } from "@/lib/move-in/floorplan";
 import { floorplanSelection } from "@/lib/move-in/floorplan-current";
-import { MoveReservationBadge, SourceManagementBadges } from './ledger-badges';
+import { MoveReservationBadge, ProblemHouseholdBadges, SourceManagementBadges } from './ledger-badges';
+import { problemReasonText } from '@/lib/move-in/problem-household';
 
 function FloorplanTile({ projectId, unit }: { projectId: string; unit: FloorplanUnit }) {
   const selection = floorplanSelection(projectId, unit);
@@ -13,7 +14,8 @@ function FloorplanTile({ projectId, unit }: { projectId: string; unit: Floorplan
   const reserved = unit.moveReservation === 'BOOKED';
   const grade = unit.currentGrade || null;
   const special = unit.specialReasons.length > 0;
-  const tagLabels = [grade ? `${grade}등급` : '', ...(unit.sourceTags ?? []).filter(tag => tag === 'ASEL' || tag === 'DELINQUENT').map(tag => tag === 'ASEL' ? '아셀' : '연체'), special ? '특별관리' : '', reserved ? '이사예약' : '', paid ? '잔금완납' : '', paid && !unit.balancePaidAt ? '완납일 미확인' : ''].filter(Boolean);
+  const problemLabel = unit.problemFlags?.length ? `문제세대 ${problemReasonText(unit.problemFlags)} · ${unit.problemLockReleased ? '해제승인' : '입주잠금'}` : '';
+  const tagLabels = [grade ? `${grade}등급` : '', problemLabel, ...(unit.sourceTags ?? []).filter(tag => tag === 'ASEL' || tag === 'DELINQUENT').map(tag => tag === 'ASEL' ? '아셀' : '연체'), special ? '특별관리' : '', reserved ? '이사예약' : '', paid ? '잔금완납' : '', paid && !unit.balancePaidAt ? '완납일 미확인' : ''].filter(Boolean);
   return <Link prefetch={false} href={selection.detailHref}
     data-move-reserved={reserved ? 'true' : undefined}
     data-balance-paid={paid ? 'true' : undefined}
@@ -21,6 +23,7 @@ function FloorplanTile({ projectId, unit }: { projectId: string; unit: Floorplan
     title={tagLabels.join(' · ') || undefined}
     aria-label={`${unit.buildingNo}동 ${unit.unitNo}호${tagLabels.length ? ` · ${tagLabels.join(' · ')}` : ''}`}>
     <span>{unit.unitNo}</span>
+    <ProblemHouseholdBadges flags={unit.problemFlags} released={unit.problemLockReleased}/>
     {reserved ? <MoveReservationBadge date={unit.movingDate ?? null}/> : null}
     {grade || special || unit.sourceTags?.some(tag => tag === 'ASEL' || tag === 'DELINQUENT') ? <span className="flex flex-wrap justify-center gap-1">
       {grade ? <span data-grade={grade} className="rounded border border-current px-1 text-xs">{grade}등급</span> : null}
