@@ -22,3 +22,9 @@ src/lib/move-in/ledger-finance-data.server.ts
 docs/production-snapshot/cutover/08-addon-holder-crosscheck.sql
 # Stay J C·D 거래 자금유형 초기 후보(운영 추출 원본). 배포·커밋 금지
 stayj_cd_trade_initial_candidates.json
+
+# Operational unit-level records: private release artifact only
+src/lib/move-in/balance-confirmations-data.server.ts
+
+# Operational unit-level records: private release artifact only
+src/lib/move-in/floorplan-reservations-data.server.ts

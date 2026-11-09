@@ -1,7 +1,10 @@
 import type { LegacyGrade } from "@/lib/move-in/consultation";
+import { isConfirmedBalancePaid } from '@/lib/move-in/balance-paid';
+import type { MoveReservation } from '@/lib/move-in/ledger-management-source';
 import type { CurrentUnitSnapshot } from "@/lib/move-in/ledger-types";
 import { SPECIAL_REASON_LABELS } from "@/lib/move-in/intent";
 import { formatUnitLabel } from "@/lib/move-in/labels";
+import { problemReasonText, type ProblemFlag } from '@/lib/move-in/problem-household';
 
 export const FLOORPLAN_COLOR_MODES = [
   "moveInStatus",
@@ -26,8 +29,8 @@ export function isFloorplanColorMode(value: string): value is FloorplanColorMode
 /** Display-only fields from the approved current snapshot. No identity/history/phone DTO. */
 export type FloorplanUnit = Pick<CurrentUnitSnapshot,
   "projectId" | "unitId" | "currentGrade" | "funding" | "moveIn" | "effectiveIntent" | "rentalType" |
-  "specialReasons" | "balancePaidAt" | "actualMoveInDate" | "revision" | "fetchedAt"
-> & { buildingNo: string; unitNo: string; floor: number | null };
+  "specialReasons" | "balancePaidAt" | "fieldConfirmedBalancePaid" | "actualMoveInDate" | "revision" | "fetchedAt"
+> & { buildingNo: string; unitNo: string; floor: number | null; moveReservation?: MoveReservation; movingDate?: string | null; problemFlags?: readonly ProblemFlag[]; sourceTags?: CurrentUnitSnapshot['sourceTags'] };
 
 export type ParsedHo = {
   floor: number;
@@ -148,6 +151,7 @@ const reasonLabels: Record<string, string> = { ...SPECIAL_REASON_LABELS, ASEL: "
 export function floorplanCurrentPresentation(unit: FloorplanUnit) {
   const tone = floorplanCellTone(unit);
   const tags: { key: string; label: string }[] = [];
+  if (unit.problemFlags?.length) tags.push({ key: 'problem', label: `문제세대 ${problemReasonText(unit.problemFlags)}` });
   if (unit.funding === "LOAN_NEEDED") tags.push({ key: "loan", label: "대출필요" });
   if (unit.effectiveIntent === "SALE_TRANSFER") tags.push({ key: "sale", label: "매매" });
   if (unit.effectiveIntent === "RENT") tags.push({ key: "rental", label: "임대" });
@@ -156,8 +160,8 @@ export function floorplanCurrentPresentation(unit: FloorplanUnit) {
     for (const reason of new Set(unit.specialReasons)) tags.push({ key: `reason:${reason}`, label: reasonLabels[reason] ?? "기타 특별관리" });
   }
   // Payment availability/amount is not an input. MOVED_IN does not imply payment.
-  if (unit.moveIn === "BALANCE_PAID" || unit.balancePaidAt) tags.push({ key: "paid", label: "잔금완납" });
-  if (unit.moveIn === "MOVED_IN" || unit.actualMoveInDate) tags.push({ key: "moved", label: "실제입주" });
-  return { className: tone.className, gradeLabel: tone.label, tags,
+  if (isConfirmedBalancePaid(unit)) tags.push({ key: "paid", label: "잔금완납" });
+  if (unit.actualMoveInDate) tags.push({ key: "moved", label: "실제입주" });
+  return { className: isConfirmedBalancePaid(unit) ? 'bg-green-100 text-neutral-900' : tone.className, gradeLabel: tone.label, tags,
     ariaLabel: `${formatUnitLabel(unit.buildingNo, unit.unitNo)} 현재등급 ${tone.label}${tags.length ? ` · ${tags.map(t => t.label).join(" · ")}` : ""}` };
 }

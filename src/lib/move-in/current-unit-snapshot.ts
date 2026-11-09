@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { fieldConfirmedBalancePaid } from '@/lib/move-in/balance-confirmations';
 import { deriveSpecialManagementReasons, resolveEffectiveMoveInIntent, specialManagementPriority } from '@/lib/move-in/intent';
 import { usesAssignedCustomerScope } from '@/lib/move-in/field-access';
 import { classifyContactOutcome } from '@/lib/move-in/contact-outcome';
@@ -51,6 +52,7 @@ export function resolveCurrentUnitSnapshot(input: {
     operationalIntent: o.operational_intent, occupancyIntent: o.occupancy_intent,
     effectiveIntent: intent.value, rentalType: intent.rentalType, legacyConsidering: intent.legacyConsidering,
     balancePaidAt: o.balance_paid_at, plannedMoveInDate: o.planned_move_in_date, actualMoveInDate: o.actual_move_in_date,
+    fieldConfirmedBalancePaid: fieldConfirmedBalancePaid(access.projectId, unit.unit_id, now),
     // 알 수 없는 값은 분류 없음(유형이 없으면 상태도 없음)
     tradeFundingType: isTradeFundingType(o.trade_funding_type) ? o.trade_funding_type : null,
     tradeFundingStatus: isTradeFundingType(o.trade_funding_type) && isTradeFundingStatus(o.trade_funding_status) ? o.trade_funding_status : null,

@@ -1,0 +1,16 @@
+{
+  "purpose": "Private operational source modules are deliberately omitted from the public repository. Restore from the reviewed local release artifact before building, following the existing generated-finance-source workflow.",
+  "candidateDeployment": "dpl_3c9YHSoxPRaYst6nJKnoqWCvDaYV",
+  "artifact": "tmp/release-floorplan-grades",
+  "generated": [
+    {
+      "path": "src/lib/move-in/balance-confirmations-data.server.ts",
+      "sha256": "a74b13eb9cebe5b7ad2f52f6d0d7e9772bbd748993e3aa5ccef4e85d4c5145c5"
+    },
+    {
+      "path": "src/lib/move-in/floorplan-reservations-data.server.ts",
+      "sha256": "e1a17bcb49cab5cbaae78b7c2f3890ca4116ed5b0b99b17a7765ea2be2b7cde8"
+    }
+  ],
+  "dbWrites": 0
+}
