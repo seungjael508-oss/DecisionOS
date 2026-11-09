@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { resolveCurrentUnitSnapshot } from '@/lib/move-in/current-unit-snapshot';
+import { toFloorplanUnit } from '@/lib/move-in/floorplan-current';
 import { deriveSpecialManagementReasons } from '@/lib/move-in/intent';
 import { applyLedgerQuery, parseLedgerQuery, type LedgerFilterRow } from '@/lib/move-in/ledger-filters';
 import { ledgerOptions } from '@/lib/move-in/ledger-presentation';
@@ -22,6 +23,18 @@ function unit(contractId: string, grade = 'A'): CurrentUnitRecord {
 }
 const special = (contractId: string, visit: boolean, manual = true): SpecialRecord =>
   ({ project_id: P, unit_id: 'unit-1', contract_id: contractId, manually_flagged: manual, visit_required: visit, updated_at: '2026-10-02T00:00:00Z' });
+
+test.each([false,true])('authorized floorplan projection preserves problem flags and release state: %s', released=>{
+  const input=unit('k-1');
+  input.occupancy!.problem_flags=['SEIZURE','LITIGATION'];
+  input.occupancy!.problem_lock_released=released;
+  const current=resolveCurrentUnitSnapshot({unit:input,access:access('PROJECT_ADMIN'),special:null,sourceTags:[],now});
+  expect(current.kind).toBe('ok');
+  if(current.kind!=='ok') throw new Error('Synthetic current contract must resolve');
+  const row=toFloorplanUnit(current.snapshot,{projectId:P,unitId:'unit-1',buildingNo:'101',unitNo:'101',floor:1});
+  expect(row?.problemFlags).toEqual(['SEIZURE','LITIGATION']);
+  expect(row?.problemLockReleased).toBe(released);
+});
 const reasonsOf = (u: CurrentUnitRecord, s: SpecialRecord | null, role: 'PROJECT_ADMIN' | 'COUNSELOR' = 'PROJECT_ADMIN', memberId = 'm-1') => {
   const r = resolveCurrentUnitSnapshot({ unit: u, access: access(role, memberId), special: s, sourceTags: [], now });
   return r.kind === 'ok' ? r.snapshot.specialReasons : null;
