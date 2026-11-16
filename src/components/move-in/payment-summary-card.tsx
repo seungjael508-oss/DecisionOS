@@ -12,9 +12,9 @@ function BalanceAccountLine({ account }: { account?: BalanceAccountView }) {
 }
 
 export function PaymentSummaryCard({ occupancy, projection, account }: { occupancy: Pick<OccupancyRecord, 'move_in_status' | 'balance_paid_at'> | null; projection?: RegisteredPaymentProjection | null; account?: BalanceAccountView }) {
-  // Only the current operational status overrides amounts; a historical date does not.
-  const operationallyPaid = occupancy?.move_in_status === "BALANCE_PAID";
-  const balancePaid = operationallyPaid || Boolean(occupancy?.balance_paid_at);
+  // Settlement remains independent of the later move-in status.
+  const operationallyPaid = Boolean(occupancy?.balance_paid_at);
+  const balancePaid = operationallyPaid;
   const balancePaidAt = balancePaid ? occupancy?.balance_paid_at ?? null : null;
   const confirmation = <div className="mt-3 text-sm" aria-label="직원 확정 완납 상태">
     <p className="font-semibold">직원 확정 완납: {balancePaid ? '확정' : '미확정'}{balancePaidAt ? ` · 확정일 ${formatDateTime(balancePaidAt)}` : ''}</p>

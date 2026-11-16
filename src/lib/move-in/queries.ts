@@ -1,4 +1,5 @@
 import { usesAssignedCustomerScope } from "@/lib/move-in/field-access";
+import { fieldConfirmedBalancePaid } from '@/lib/move-in/balance-confirmations';
 import { requireMoveInAccess } from "@/lib/move-in/access";
 import type { ProjectMemberRow } from "@/lib/move-in/members";
 import { readAllRows } from '@/lib/supabase/read-all';
@@ -128,6 +129,7 @@ export async function loadDashboard(projectId: string, now = new Date()) {
     occupancy:computeMoveInKpis(visible.length,visible.map(u=>({
       occupancyIntent:u.occupancy?.occupancy_intent??null,fundingStatus:u.occupancy?.funding_status??null,
       moveInStatus:u.occupancy?.move_in_status??null,balancePaidAt:u.occupancy?.balance_paid_at,
+      fieldConfirmedBalancePaid:fieldConfirmedBalancePaid(projectId,u.unit_id,now),
       actualMoveInDate:u.occupancy?.actual_move_in_date,plannedMoveInDate:u.occupancy?.planned_move_in_date,
     }))),
   }} as const;

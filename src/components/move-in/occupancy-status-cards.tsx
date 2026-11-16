@@ -40,6 +40,8 @@ export function OccupancyStatusCards({
         <p className="mt-2 text-xl font-semibold">
           {occupancy ? MOVE_IN_STATUS_LABELS[occupancy.move_in_status] : "미등록"}
         </p>
+        <p className="mt-2 text-sm">잔금완납: {occupancy?.balance_paid_at ? '완납' : '미완납'}</p>
+        <p className="mt-1 text-sm">실제 입주: {occupancy?.actual_move_in_date ? '입주완료' : '미입주'}</p>
       </article>
     </section>
   );

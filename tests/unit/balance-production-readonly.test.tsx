@@ -1,0 +1,26 @@
+import {expect,test} from 'vitest';
+import {readFileSync,writeFileSync,mkdirSync,readdirSync} from 'node:fs';
+import {createElement} from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
+import {FloorplanBoard} from '@/components/move-in/floorplan-board';
+import {floorplanCurrentPresentation,type FloorplanUnit} from '@/lib/move-in/floorplan';
+import {buildMoveInWorklogSnapshot} from '@/lib/worklog/snapshot';
+import {worklogDayRange} from '@/lib/worklog/day-range';
+import {WorklogSnapshotView} from '@/components/move-in/worklog-snapshot-view';
+test.skipIf(!process.env.BALANCE_READONLY_QA)('current read-only DB snapshot: 851 tiles, 150 green, same worklog totals',()=>{
+ const db=JSON.parse(readFileSync('tmp/floorplan-db.json','utf8'));
+ const units:FloorplanUnit[]=db.map((u:any)=>({projectId:'1283e198-5043-4027-96d6-edcc7a6686c6',unitId:u.unit_id,buildingNo:u.building_no,unitNo:u.unit_no,floor:u.floor,currentGrade:u.legacy_grade,funding:'NORMAL',moveIn:u.move_in_status,effectiveIntent:'UNDECIDED',rentalType:null,specialReasons:[],problemFlags:u.problem_flags??[],balancePaidAt:u.balance_paid_at,actualMoveInDate:null,revision:'qa',fetchedAt:'2026-11-06T00:00:00Z'}));
+ const boards=[...new Set(units.map(u=>u.buildingNo))].map(buildingNo=>renderToStaticMarkup(createElement(FloorplanBoard,{projectId:units[0].projectId,units,buildingNo}))).join('');
+ expect(units.length).toBe(851);expect(new Set(units.map(u=>u.unitId)).size).toBe(851);
+ expect((boards.match(/href="\/projects\/[^\"]+\/move-in\/units\//g)||[]).length).toBe(851);
+ expect((boards.match(/data-balance-paid="true"/g)||[]).length).toBe(150);
+ expect(units.filter(u=>floorplanCurrentPresentation(u).className.includes('bg-green-100')!==Boolean(u.balancePaidAt))).toHaveLength(0);
+ const snapshot=buildMoveInWorklogSnapshot(db.map((u:any)=>({unitId:u.unit_id,buildingNo:u.building_no,unitType:u.unit_type})),db.map((u:any)=>({unitId:u.unit_id,occupancyIntent:'UNDECIDED',fundingStatus:'NORMAL',moveInStatus:u.move_in_status,balancePaidAt:u.balance_paid_at,actualMoveInDate:null,plannedMoveInDate:null,nextContactAt:null})),[],worklogDayRange('2026-11-06','Asia/Seoul'));
+ expect(snapshot.balanceByType?.total.totalUnits).toBe(851);expect(snapshot.balanceByType?.total.balancePaid).toBe(150);
+ const html=renderToStaticMarkup(createElement(WorklogSnapshotView,{snapshot}));
+ const dir='outputs/balance-review-20261106';mkdirSync(dir,{recursive:true});
+ const css=readdirSync('.next/static/chunks').filter(n=>n.endsWith('.css')).map(n=>readFileSync('.next/static/chunks/'+n,'utf8')).join('\n');
+ writeFileSync(dir+'/worklog-preview.html','<!doctype html><html lang="ko"><meta charset="utf-8"><style>'+css+'\n@page{size:A4 landscape;margin:12mm}body{font-family:"Malgun Gothic",sans-serif;padding:12px}section{break-inside:avoid}thead{display:table-header-group}tr{break-inside:avoid}th,td{font-size:10px;padding:5px}</style><body><h1>업무일지 출력 검증 · 2026-11-06</h1><p>운영 DB 읽기 전용 세대·완납 집계. 상담·활동은 출력 검증용 빈 자료.</p>'+html+'</body></html>');
+ writeFileSync(dir+'/type-summary.json',JSON.stringify(snapshot.balanceByType,null,2));
+ writeFileSync(dir+'/floorplan-preview.html','<!doctype html><meta charset="utf-8"><style>'+css+'</style>'+boards);
+});

@@ -1,6 +1,6 @@
 import 'server-only';
 import { createHash } from 'node:crypto';
-import { paymentForCurrentContract } from '@/lib/move-in/payment-projection.server';
+import { paymentForCurrentContract, type PaymentContractLink } from '@/lib/move-in/payment-projection.server';
 import { PAYMENT_SOURCE_MANIFEST } from '@/lib/move-in/payment-projection-source.server';
 import { usesAssignedCustomerScope } from '@/lib/move-in/field-access';
 import { LEDGER_FINANCE_MANIFEST, LEDGER_FINANCE_SOURCE } from '@/lib/move-in/ledger-finance-data.server';
@@ -23,11 +23,11 @@ export function canViewBalanceAccount(access: AuthorizedAccess, assigneeId: stri
 }
 
 /** 세대 상세용 잔금 가상계좌. 현재 ACTIVE 계약 결속(분양대금)이 확인될 때만 계좌를 연결한다. */
-export function balanceAccountFor(input: { access: AuthorizedAccess; projectId: string; unitId: string; contractId: string; buildingNo: string; unitNo: string; assigneeId: string | null }): BalanceAccountView {
+export function balanceAccountFor(input: { access: AuthorizedAccess; projectId: string; unitId: string; contractId: string; buildingNo: string; unitNo: string; assigneeId: string | null; contractChain?: readonly PaymentContractLink[] }): BalanceAccountView {
   if (!canViewBalanceAccount(input.access, input.assigneeId)) return { kind: 'restricted' };
   const key = /^\d+$/.test(input.buildingNo) && /^\d+$/.test(input.unitNo) ? `${Number(input.buildingNo)}-${Number(input.unitNo)}` : null;
   const account = key ? LEDGER_FINANCE_SOURCE[key]?.account : undefined;
-  const bound = paymentForCurrentContract({ projectId: input.projectId, unitId: input.unitId, contractId: input.contractId, buildingNo: input.buildingNo, unitNo: input.unitNo });
+  const bound = paymentForCurrentContract({ projectId: input.projectId, unitId: input.unitId, contractId: input.contractId, buildingNo: input.buildingNo, unitNo: input.unitNo, contractChain: input.contractChain });
   return account && bound ? { kind: 'ok', bank: account.bank, number: account.number } : { kind: 'unknown' };
 }
 
@@ -53,11 +53,12 @@ function addonPart(addon: LedgerFinanceAddon | undefined, holderName: string | n
  */
 export function ledgerFinanceFor(input: {
   projectId: string; unitId: string; contractId: string; buildingNo: string; unitNo: string; holderName: string | null; contractHistory: boolean; canViewAccount: boolean;
+  contractChain?: readonly PaymentContractLink[];
 }, now = new Date()): LedgerFinance {
   const today = kstToday(now);
   const key = /^\d+$/.test(input.buildingNo) && /^\d+$/.test(input.unitNo) ? `${Number(input.buildingNo)}-${Number(input.unitNo)}` : null;
   const source = key ? LEDGER_FINANCE_SOURCE[key] : undefined;
-  const sale = paymentForCurrentContract({ projectId: input.projectId, unitId: input.unitId, contractId: input.contractId, buildingNo: input.buildingNo, unitNo: input.unitNo }, now);
+  const sale = paymentForCurrentContract({ projectId: input.projectId, unitId: input.unitId, contractId: input.contractId, buildingNo: input.buildingNo, unitNo: input.unitNo, contractChain: input.contractChain }, now);
   const balcony = addonPart(source?.balcony, input.holderName, input.contractHistory, today);
   const option = addonPart(source?.option, input.holderName, input.contractHistory, today);
   const account = sale && source?.account && input.canViewAccount ? source.account : null;
@@ -77,10 +78,10 @@ export function ledgerFinanceFor(input: {
 }
 
 /** 원장 행에 금액·계좌를 붙인다(현재 ACTIVE 계약·현재 계약자 기준). 납부상태 필터·잔금 정렬 값도 채운다. */
-export function attachLedgerFinance(row: LedgerSummaryRow, access: AuthorizedAccess, now = new Date()): LedgerSummaryRow {
+export function attachLedgerFinance(row: LedgerSummaryRow, access: AuthorizedAccess, now = new Date(), contractChain?: readonly PaymentContractLink[]): LedgerSummaryRow {
   const finance = ledgerFinanceFor({ projectId: row.projectId, unitId: row.unitId, contractId: row.currentContractId, buildingNo: row.buildingNo, unitNo: row.unitNo,
     // 이력 여부를 모르는 행은 연결하지 않는다
-    holderName: row.customerName, contractHistory: row.contractHistory !== false, canViewAccount: canViewBalanceAccount(access, row.assigneeId) }, now);
+    holderName: row.customerName, contractHistory: row.contractHistory !== false, canViewAccount: canViewBalanceAccount(access, row.assigneeId), contractChain }, now);
   return { ...row, finance, payment: finance.status, balance: finance.totalUnpaid };
 }
 

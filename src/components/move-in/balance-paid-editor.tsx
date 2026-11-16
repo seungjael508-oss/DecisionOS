@@ -15,7 +15,7 @@ export function BalancePaidEditor({projectId,unitId,customerId,contractId,moveIn
 }){
  const saving=useUnitSave(),submitting=useRef(false);
  const [pending,setPending]=useState(false),[error,setError]=useState<string|null>(null);
- const paid=moveIn==='BALANCE_PAID'||Boolean(balancePaidAt),today=seoulDay(new Date().toISOString());
+ const paid=Boolean(balancePaidAt),today=seoulDay(new Date().toISOString());
  async function submit(paidOn:string,form:HTMLFormElement){
   if(saveDisabled||submitting.current||!saving||saving.busy||saving.blocked)return;
   const reason=String(new FormData(form).get('reason')??'').trim();

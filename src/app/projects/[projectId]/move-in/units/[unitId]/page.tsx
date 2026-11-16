@@ -1,11 +1,13 @@
 import { CustomerPhone } from "@/components/move-in/customer-phone";
+import { SourceManagementBadges } from '@/components/move-in/ledger-badges';
+import { approvedUnitSourceTags } from '@/lib/move-in/ledger-source-tags.server';
 import Link from "next/link";
 import { ConsultationCreateForm } from "@/components/move-in/consultation-create-form";
 import { D_GRADE_REASON_LABELS } from "@/lib/move-in/d-grade-reasons";
 import { loadDGradeReasons } from "@/lib/move-in/d-grade-reasons.server";
 import { ConsultationHistory } from "@/components/move-in/consultation-history";
 import { PaymentSummaryCard } from "@/components/move-in/payment-summary-card";
-import { paymentForCurrentContract } from '@/lib/move-in/payment-projection.server';
+import { paymentForCurrentContract, loadPaymentContractChain } from '@/lib/move-in/payment-projection.server';
 import { balanceAccountFor } from '@/lib/move-in/ledger-finance.server';
 import { verifyUnitWorkspaceIdentity } from '@/lib/move-in/unit-workspace.server';
 import { UnitDetailWorkspace } from "@/components/move-in/unit-detail-workspace";
@@ -118,8 +120,9 @@ export default async function MoveInUnitDetailPage({
     latestGrade,
     detail.occupancy,
   );
+  const contractChain = await loadPaymentContractChain(projectId, unitId);
   const paymentCandidate = detail.contractId && detail.customerId
-    ? paymentForCurrentContract({ projectId, unitId, contractId: detail.contractId, buildingNo: detail.buildingNo, unitNo: detail.unitNo })
+    ? paymentForCurrentContract({ projectId, unitId, contractId: detail.contractId, buildingNo: detail.buildingNo, unitNo: detail.unitNo, contractChain })
     : null;
   const payment = paymentCandidate && detail.contractId && detail.customerId &&
     (await verifyUnitWorkspaceIdentity(projectId, unitId, { contractId: detail.contractId, customerId: detail.customerId })).ok
@@ -142,6 +145,9 @@ export default async function MoveInUnitDetailPage({
       <h1 className="text-4xl font-semibold max-[1099px]:hidden">
         {formatUnitLabel(detail.buildingNo, detail.unitNo)} · {detail.unitType ?? "타입 미등록"} · {detail.customerName ?? "계약자 미등록"} · {latestGrade ? `${latestGrade}등급` : "등급 미등록"}
       </h1>
+      <div data-tab="info" aria-label="원천 관리 태그" className="mt-3 flex flex-wrap gap-2">
+        <SourceManagementBadges tags={approvedUnitSourceTags(projectId, detail.buildingNo, detail.unitNo)}/>
+      </div>
       <dl data-tab="info" className="mt-4 grid max-w-xl grid-cols-[7rem_1fr] gap-y-1 text-lg max-[1099px]:text-sm">
         <dt className="text-neutral-600">전화번호</dt>
         <dd>{detail.customerId ? <CustomerPhone raw={detail.customerPhone} status={detail.phoneQuality} /> : "—"}</dd>
@@ -190,7 +196,7 @@ export default async function MoveInUnitDetailPage({
       )}
 
       <div data-tab="pay"><PaymentSummaryCard occupancy={detail.occupancy} projection={payment} account={payment && detail.contractId
-        ? balanceAccountFor({ access, projectId, unitId, contractId: detail.contractId, buildingNo: detail.buildingNo, unitNo: detail.unitNo, assigneeId: detail.assignedCounselorId })
+        ? balanceAccountFor({ access, projectId, unitId, contractId: detail.contractId, buildingNo: detail.buildingNo, unitNo: detail.unitNo, assigneeId: detail.assignedCounselorId, contractChain })
         : { kind: "unknown" }} /></div>
       <section data-tab="consult" className="mt-10 max-[1099px]:order-2">
         <h2 className="mb-3 text-lg font-semibold">상담/콜 이력</h2>

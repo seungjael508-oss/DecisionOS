@@ -1,4 +1,5 @@
 import type { FundingStatus, MoveInStatus, OccupancyIntent } from "@/lib/move-in/labels";
+import { isConfirmedBalancePaid } from '@/lib/move-in/balance-paid';
 import { isLegacyGrade, type LegacyGrade } from "@/lib/move-in/consultation";
 import { todayYmd, worklogDayRange, isInstantInDay } from "@/lib/worklog/day-range";
 
@@ -57,6 +58,7 @@ export function buildDashboardActivity(events: DashboardEvent[], baseline: Dashb
 }
 
 export type OccupancyCountsInput = {
+  fieldConfirmedBalancePaid?: boolean;
   occupancyIntent: OccupancyIntent | null;
   fundingStatus: FundingStatus | null;
   moveInStatus: MoveInStatus | null;
@@ -97,8 +99,7 @@ export function computeMoveInKpis(
 ): MoveInKpis {
   return {
     totalUnits,
-    balancePaid: occupancies.filter((row) => hasBalancePaid(row.balancePaidAt))
-      .length,
+    balancePaid: occupancies.filter(isConfirmedBalancePaid).length,
     movedIn: occupancies.filter((row) => hasMovedIn(row.actualMoveInDate)).length,
     planned: occupancies.filter((row) =>
       hasPlannedMoveIn(row.plannedMoveInDate, row.actualMoveInDate),

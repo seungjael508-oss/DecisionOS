@@ -1,4 +1,5 @@
 import { LEDGER_BLANK, type LedgerAxis, type LedgerStatePatch } from '@/lib/move-in/ledger-filters';
+import { isConfirmedBalancePaid, type BalancePaidDisplay } from '@/lib/move-in/balance-paid';
 import type { LedgerClientRow, LedgerFinance, LedgerFinancePart } from '@/lib/move-in/ledger-types';
 import { FUNDING_STATUS_LABELS, MOVE_IN_STATUS_LABELS, OPERATIONAL_INTENT_LABELS, OCCUPANCY_INTENT_LABELS, formatUnitLabel, formatDateTime } from '@/lib/move-in/labels';
 import { SPECIAL_REASON_LABELS } from '@/lib/move-in/intent';
@@ -39,9 +40,9 @@ function accountCells(finance: LedgerFinance | undefined): [string, string, stri
   if (!finance || finance.accountRestricted) return ['권한 없음', '권한 없음', '—'];
   return finance.account ? [finance.account.bank, finance.account.number, '아파트 분양 잔금 전용'] : ['미확인', '미확인', '—'];
 }
-/** 잔금완납 강조 기준: 입주진행 잔금완납, 잔금 완납일 있음(평면도 태그와 같음), 또는 금액 자료상 납부상태 완납 */
-export function isBalancePaid(row: Pick<LedgerClientRow,'moveIn'|'balancePaidAt'> & Partial<Pick<LedgerClientRow,'finance'>>) {
-  return row.moveIn === 'BALANCE_PAID' || Boolean(row.balancePaidAt) || row.finance?.status === 'PAID';
+/** 완납일 또는 승인된 현장 확인. 회계 금액과 실제 입주는 별도다. */
+export function isBalancePaid(row: Pick<LedgerClientRow,'moveIn'|'balancePaidAt'> & BalancePaidDisplay & Partial<Pick<LedgerClientRow,'finance'>>) {
+  return isConfirmedBalancePaid(row);
 }
 /** 이사예약 표시 기준: 예약현황 원천에서 예약완료(취소·실패 제외) */
 export function isMoveReserved(row: Pick<LedgerClientRow,'management'>) { return row.management?.moveReservation === 'BOOKED'; }

@@ -1,4 +1,13 @@
 import { PROBLEM_FLAG_LABELS, problemReasonText, type ProblemFlag } from '@/lib/move-in/problem-household';
+import type { SourceTag } from '@/lib/move-in/ledger-types';
+
+/** 승인 원천 태그의 표시 전용 배지. 문제세대 잠금·등급·완납을 변경하거나 추정하지 않는다. */
+export function SourceManagementBadges({tags}: {tags?: readonly SourceTag[]}) {
+  return <>{(['ASEL', 'DELINQUENT'] as const).filter(tag => tags?.includes(tag)).map(tag =>
+    <span key={tag} data-source-tag={tag} className="inline-flex items-center whitespace-nowrap rounded border border-current px-1 text-xs">
+      {tag === 'ASEL' ? '아셀' : '연체'}
+    </span>)}</>;
+}
 
 /** 통합원장 잔금완납 배지(TAS-20261023-01 규격: 배경 #dcfce7, 테두리 #86efac, 글자 #15803d). 잔여금액이 있으면 옆에 함께 표기 */
 export function BalancePaidBadge({remainder}: {remainder: string | null}) {

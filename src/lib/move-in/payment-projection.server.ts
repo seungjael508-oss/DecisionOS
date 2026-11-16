@@ -27,6 +27,8 @@ export type PaymentProjection = {
   projectId: string;
   unitId: string;
   contractId: string;
+  /** Source contractId is immutable; this identifies the authorized current holder. */
+  currentContractId?: string;
   salePrice: number;
   installments: PaymentInstallment[];
   totalPrincipalPaid: number;
@@ -55,6 +57,49 @@ export type PaymentProjectionIdentity = {
   unitId: string;
   contractId: string;
 };
+
+export type PaymentContractLink = {
+  contract_id: string; project_id: string; unit_id: string;
+  previous_contract_id: string | null; contract_status: string;
+  cancellation_reason: string | null;
+  customer_id?: string;
+};
+
+/** Historical contracts must remain visible through the caller's existing RLS session. */
+export async function loadPaymentContractChain(projectId: string, unitId: string): Promise<PaymentContractLink[]> {
+  const client = await createServerClient();
+  const result = await client.from('contract')
+    .select('contract_id,project_id,unit_id,customer_id,previous_contract_id,contract_status,cancellation_reason')
+    .eq('project_id', projectId).eq('unit_id', unitId).limit(1000).returns<PaymentContractLink[]>();
+  return !result.error && result.data.length < 1000 ? result.data : [];
+}
+
+/** RLS-scoped database rows only. Validate the entire chain, including after the source. */
+function paymentChainMatches(input: PaymentProjectionIdentity, sourceId: string, links?: readonly PaymentContractLink[]): boolean {
+  if (!links) return input.contractId === sourceId;
+  if (!links.length || links.length > 1000) return false;
+  const byId = new Map<string, PaymentContractLink>();
+  for (const link of links) {
+    if (link.project_id !== input.projectId || link.unit_id !== input.unitId) return false;
+    const existing = byId.get(link.contract_id);
+    if (existing && (existing.previous_contract_id !== link.previous_contract_id || existing.contract_status !== link.contract_status || existing.cancellation_reason !== link.cancellation_reason)) return false;
+    byId.set(link.contract_id, link);
+  }
+  const active = [...byId.values()].filter(link => link.contract_status === 'ACTIVE');
+  if (active.length !== 1 || active[0].contract_id !== input.contractId) return false;
+  const seen = new Set<string>();
+  let id: string | null = input.contractId;
+  let found = false;
+  while (id !== null) {
+    const link: PaymentContractLink | undefined = byId.get(id);
+    if (!link || seen.has(id)) return false;
+    if (id !== input.contractId && (link.contract_status !== 'CANCELLED' || link.cancellation_reason !== 'HOLDER_CHANGED')) return false;
+    seen.add(id);
+    if (id === sourceId) found = true;
+    id = link.previous_contract_id;
+  }
+  return found;
+}
 
 export type PaymentInstallmentStatus = "PAID" | "PARTIAL" | "OVERDUE" | "UPCOMING";
 
@@ -240,13 +285,14 @@ export type RegisteredPaymentProjection = Omit<PaymentProjection, 'installments'
  */
 export function paymentForCurrentContract(input: PaymentProjectionIdentity & {
   buildingNo: string; unitNo: string;
+  contractChain?: readonly PaymentContractLink[];
 }, now = new Date()): RegisteredPaymentProjection | null {
   if (input.projectId !== PAYMENT_PROJECT_ID || !input.contractId || !input.unitId) return null;
   if (!/^\d+$/.test(input.buildingNo) || !/^\d+$/.test(input.unitNo)) return null;
   const key = `${Number(input.buildingNo)}-${Number(input.unitNo)}`;
   const binding = PAYMENT_PROJECTION_IDENTITIES[key];
   const source: PaymentSourceProjection | undefined = PAYMENT_SOURCE_PROJECTIONS[key];
-  if (!binding || !source || binding.projectId !== input.projectId || binding.unitId !== input.unitId || binding.contractId !== input.contractId ||
+  if (!binding || !source || binding.projectId !== input.projectId || binding.unitId !== input.unitId || !paymentChainMatches(input, binding.contractId, input.contractChain) ||
       `${source.buildingNo}-${source.unitNo}` !== key || source.sourceSha256 !== PAYMENT_SOURCE_MANIFEST.sourceSha256) return null;
   // Missing/invalid source is not a known zero. Do not let the legacy aggregate's
   // numeric normalization turn an absent source value into a displayed amount.
@@ -270,7 +316,7 @@ export function paymentForCurrentContract(input: PaymentProjectionIdentity & {
     totals.set(key, total);
   }
   return {
-    projectId: input.projectId, unitId: input.unitId, contractId: input.contractId,
+    projectId: input.projectId, unitId: input.unitId, contractId: binding.contractId, currentContractId: input.contractId,
     ...aggregate, sourceSha256: source.sourceSha256, asOfDate,
     totalLateFee: aggregate.installments.reduce((sum, row) => sum + row.lateFee, 0),
     installments: aggregate.installments.map(row => ({ ...row, status: paymentInstallmentStatus({ ...totals.get(installmentKey(row))!, now: asOfDate }) })),

@@ -2,11 +2,13 @@
  * 통합원장 상단 '입주촉진 집중관리' 챕터. 이미 권한 검증·현재 ACTIVE 계약 기준으로 투영된 원장 행만 나눈다
  * (서버 재조회·추정 없음). 챕터는 다른 원장 필터와 AND로 결합된다.
  */
-export const LEDGER_CHAPTERS = ["all", "c_undecided", "d_undecided", "cd_sale_rent", "absence_visit"] as const;
+import { isConfirmedBalancePaid } from '@/lib/move-in/balance-paid';
+export const LEDGER_CHAPTERS = ["all", "balance_paid", "c_undecided", "d_undecided", "cd_sale_rent", "absence_visit"] as const;
 export type LedgerChapter = typeof LEDGER_CHAPTERS[number];
 
 export const LEDGER_CHAPTER_LABELS: Record<LedgerChapter, string> = {
   all: "전체 원장",
+  balance_paid: "잔금완납",
   c_undecided: "C등급 미정",
   d_undecided: "D등급 미정",
   cd_sale_rent: "C·D 전매·임대",
@@ -21,6 +23,8 @@ export type LedgerChapterRow = {
   currentGrade: string | null;
   effectiveIntent: string | null;
   absenceStreak?: number | null;
+  balancePaidAt?: string | null;
+  fieldConfirmedBalancePaid?: boolean;
 };
 
 export function isLedgerChapter(value: string | null | undefined): value is LedgerChapter {
@@ -29,6 +33,7 @@ export function isLedgerChapter(value: string | null | undefined): value is Ledg
 
 export function matchesLedgerChapter(row: LedgerChapterRow, chapter: LedgerChapter): boolean {
   if (chapter === "all") return true;
+  if (chapter === "balance_paid") return isConfirmedBalancePaid(row);
   // 미정 = 확정 입주의향 없음(기존 '미확정' 빠른필터와 같은 effectiveIntent UNDECIDED)
   if (chapter === "c_undecided") return row.currentGrade === "C" && row.effectiveIntent === "UNDECIDED";
   if (chapter === "d_undecided") return row.currentGrade === "D" && row.effectiveIntent === "UNDECIDED";

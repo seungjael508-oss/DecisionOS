@@ -7,6 +7,7 @@ import { ledgerOptionLabel, ledgerOptions } from '@/lib/move-in/ledger-presentat
 import { formatDateTime } from '@/lib/move-in/labels';
 import { D_GRADE_REASONS, D_GRADE_REASON_LABELS, summarizeDGradeReasons } from '@/lib/move-in/d-grade-reasons';
 import { LEDGER_CHAPTERS, LEDGER_CHAPTER_LABELS, countLedgerChapters, matchesLedgerChapter } from '@/lib/move-in/ledger-chapters';
+import { balancePaidPercent } from '@/lib/move-in/balance-paid';
 import { LedgerTable } from '@/components/move-in/ledger-table';
 import { LedgerCardList } from '@/components/move-in/ledger-card-list';
 import { LedgerFilterMenu } from '@/components/move-in/ledger-filter-menu';
@@ -70,6 +71,7 @@ export function MasterLedgerClient({projectId,result:initialResult,initialQuery,
     <div className="print:hidden">
       <div className="mb-4 flex flex-wrap items-center gap-3"><h1 className="text-2xl font-semibold">통합원장</h1>
         <p className="text-sm text-neutral-600">현재 snapshot · {formatDateTime(result.snapshotAsOf)}</p></div>
+      <p className="mb-4 text-sm" aria-label="완납 집계">전체 {chapterCounts.all}세대 · 잔금완납 {chapterCounts.balance_paid}세대 · 미완납 {chapterCounts.all - chapterCounts.balance_paid}세대 · 완납률 {balancePaidPercent(chapterCounts.balance_paid, chapterCounts.all)}%</p>
       <nav aria-label="입주촉진 집중관리" className="mb-4 rounded border border-neutral-300 p-3">
         <p className="mb-2 text-sm font-semibold">입주촉진 집중관리</p>
         <div className="flex flex-wrap gap-2">{LEDGER_CHAPTERS.map(chapter=>{

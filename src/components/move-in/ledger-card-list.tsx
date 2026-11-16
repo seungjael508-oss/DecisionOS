@@ -1,7 +1,7 @@
 import type { LedgerClientRow } from '@/lib/move-in/ledger-types';
 import { LEDGER_COLUMNS, balancePaidRemainder, isBalancePaid, isMoveReserved, ledgerCells, ledgerOptionLabel } from '@/lib/move-in/ledger-presentation';
 import { isProblemHousehold, problemReasonText } from '@/lib/move-in/problem-household';
-import { BalancePaidBadge, MoveReservationBadge, ProblemHouseholdBadges, ProblemReasonText } from './ledger-badges';
+import { BalancePaidBadge, MoveReservationBadge, ProblemHouseholdBadges, ProblemReasonText, SourceManagementBadges } from './ledger-badges';
 
 const at = (label: (typeof LEDGER_COLUMNS)[number]) => LEDGER_COLUMNS.indexOf(label);
 
@@ -18,8 +18,10 @@ export function LedgerCardList({rows,assignees}: {rows:readonly LedgerClientRow[
         className={`block w-full rounded border p-4 text-left ${problem?'border-red-300 border-l-[3px] border-l-red-600 bg-red-50 active:bg-red-100':paid?'border-green-300 border-l-[3px] border-l-green-500 bg-green-50 active:bg-green-100':'border-neutral-300 bg-white active:bg-neutral-100'}`}>
         <span className="flex items-baseline justify-between gap-2">
           <span className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
+            <SourceManagementBadges tags={row.sourceTags}/>
             <ProblemHouseholdBadges flags={row.problemFlags} released={row.problemLockReleased}/>
             {paid?<BalancePaidBadge remainder={balancePaidRemainder(row)}/>:null}
+            {paid&&!row.balancePaidAt?<span className="text-xs">완납일 미확인</span>:null}
             {reserved?<MoveReservationBadge date={row.management?.movingDate??null}/>:null}
             <span className="text-lg font-semibold">{cells[at('동/호수')]}</span>
           </span>
@@ -28,6 +30,7 @@ export function LedgerCardList({rows,assignees}: {rows:readonly LedgerClientRow[
         <span className="mt-1 block">{cells[at('계약자')]} · {cells[at('전화번호')]}</span>
         {row.currentGrade==='D'?<span className="mt-1 block text-sm font-medium text-red-800">D 사유 {row.dGradeReasons.length?row.dGradeReasons.map(r=>ledgerOptionLabel('dGradeReason',r,assignees)).join(' · '):'미확인'}</span>:null}
         <span className="mt-1 block text-sm text-neutral-700">입주예약 {reservation} · 납부 {cells[at('납부상태')]} · 미납 {cells[at('전체 미납액')]}</span>
+        <span className="mt-1 block text-sm text-neutral-700">잔금완납: {paid ? '완납' : '미완납'} · 실제 입주: {row.actualMoveInDate ? '입주완료' : '미입주'}</span>
         <ProblemReasonText flags={row.problemFlags} released={row.problemLockReleased}/>
         <span className="mt-1 block text-sm text-neutral-700">{cells[at('접촉상태')]} · 최종접촉 {cells[at('최종접촉')]} · 담당 {cells[at('담당자')]}</span>
         {special!=='—'?<span className="mt-1 block text-sm text-neutral-700">특별관리 {special}</span>:null}

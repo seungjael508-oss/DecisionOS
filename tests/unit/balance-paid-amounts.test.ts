@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
 vi.mock('@/lib/supabase/server', () => ({ createServerClient: vi.fn() }));
+vi.mock('@/lib/move-in/payment-projection-source.server', () => import('../fixtures/payment-source-empty'));
 import { aggregatePaymentRows, paymentInstallmentStatus, paymentForCurrentContract, type PaymentSourceRow } from '@/lib/move-in/payment-projection.server';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';

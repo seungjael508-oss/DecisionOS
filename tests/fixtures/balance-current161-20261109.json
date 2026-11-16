@@ -1,0 +1,6810 @@
+[
+  {
+    "unit_id": "386980f7-47fb-42cb-932c-8f9256cf9165",
+    "building_no": "101",
+    "unit_no": "1001",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "38487f3f-59e2-48a7-89ad-08420f37bc15",
+    "building_no": "101",
+    "unit_no": "1002",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "711335ab-0de1-4a52-883f-0d2933af494b",
+    "building_no": "101",
+    "unit_no": "1003",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "330b216a-9b88-4234-9720-f1685b3e4c9b",
+    "building_no": "101",
+    "unit_no": "1004",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "42429fc8-6d3d-48e9-8ad9-1d1e2b2c847e",
+    "building_no": "101",
+    "unit_no": "1101",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "658f57d3-7236-4247-8633-dc69753e84a0",
+    "building_no": "101",
+    "unit_no": "1102",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ff6ccd97-9f47-402f-89ce-60c0f22a7a63",
+    "building_no": "101",
+    "unit_no": "1103",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "cf068619-a377-4af2-bc8c-6b825b599892",
+    "building_no": "101",
+    "unit_no": "1104",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "fe8542af-5b87-4ca7-bd6c-7a30f1de755c",
+    "building_no": "101",
+    "unit_no": "1201",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3504bdab-b036-4c89-9540-3274e2655633",
+    "building_no": "101",
+    "unit_no": "1202",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a1163685-443e-471f-bd09-056245b2f94a",
+    "building_no": "101",
+    "unit_no": "1203",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "9112d811-5707-4fbc-a21e-683a0c6aabfd",
+    "building_no": "101",
+    "unit_no": "1204",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1c970009-5792-468f-bd02-bdb67c06dd9b",
+    "building_no": "101",
+    "unit_no": "1301",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c41e77ee-fa56-4058-b187-394dfd26e30b",
+    "building_no": "101",
+    "unit_no": "1302",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "12fdea89-f676-4d11-95ac-53b3bac80dff",
+    "building_no": "101",
+    "unit_no": "1303",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "23cb32e6-3b3a-4596-b806-93b5c23ae57e",
+    "building_no": "101",
+    "unit_no": "1304",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8e5f8fd1-8d2a-4452-a72e-8f763318f9f1",
+    "building_no": "101",
+    "unit_no": "1401",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "e8b6f785-bfa1-4a13-af14-9751025c33be",
+    "building_no": "101",
+    "unit_no": "1402",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-03 01:54:22.074504+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "5c9b62f5-0a7a-49bb-a133-18a6b47dd8a1",
+    "building_no": "101",
+    "unit_no": "1403",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5bbdc4d7-7cda-424b-ae6f-7c2e9c1e7c77",
+    "building_no": "101",
+    "unit_no": "1404",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d1162262-0990-46dd-9568-56ef06090172",
+    "building_no": "101",
+    "unit_no": "1501",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a92e7d31-001f-4bd4-aac8-2084c739e973",
+    "building_no": "101",
+    "unit_no": "1502",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e01ebb09-a338-4372-a379-a484342c30ed",
+    "building_no": "101",
+    "unit_no": "1503",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "90b2d09a-8da4-4778-81a6-0dc457f93a13",
+    "building_no": "101",
+    "unit_no": "1504",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e023de2e-c974-4a49-84d8-5907a5930f1d",
+    "building_no": "101",
+    "unit_no": "1601",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "25dae963-cc98-4bba-8604-58fda98712eb",
+    "building_no": "101",
+    "unit_no": "1602",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2f006218-abba-42ec-87e2-f71c69c65590",
+    "building_no": "101",
+    "unit_no": "1603",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "10099c3d-03de-405d-a9e0-34ae86bf1478",
+    "building_no": "101",
+    "unit_no": "1604",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7277b2d8-7cb4-4ce8-b91f-b7932bdb7087",
+    "building_no": "101",
+    "unit_no": "1701",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "119a8496-6153-42a2-bc5b-f981f04e3e05",
+    "building_no": "101",
+    "unit_no": "1702",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-03 01:54:22.074504+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "dc75a546-cccb-4d9b-bc6b-92d22b811e86",
+    "building_no": "101",
+    "unit_no": "1703",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "808617a6-1eec-4a90-9a73-aff80f171b62",
+    "building_no": "101",
+    "unit_no": "1704",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3f6fe3ed-040b-4395-91fc-36649b934d6b",
+    "building_no": "101",
+    "unit_no": "1801",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8d39d841-845d-49c3-a4e2-b9a18729c05c",
+    "building_no": "101",
+    "unit_no": "1802",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "af48e1e9-241b-40d6-846d-33d64e141a99",
+    "building_no": "101",
+    "unit_no": "1803",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "895da3c1-6c04-4fc5-b57f-2f96f144fa8f",
+    "building_no": "101",
+    "unit_no": "1804",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "5f4e8e34-4582-4674-b4ea-89f76edad6c3",
+    "building_no": "101",
+    "unit_no": "1901",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ee62bfd5-515b-401a-86e6-4f7bf2c947a3",
+    "building_no": "101",
+    "unit_no": "1902",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "177adc08-4920-4509-81c0-e7df5b05c4f2",
+    "building_no": "101",
+    "unit_no": "1903",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "14f603c3-cd22-4a89-a9ac-e9c3e64a730a",
+    "building_no": "101",
+    "unit_no": "1904",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ad4ca02d-b801-4154-82ce-baaa4ae722b6",
+    "building_no": "101",
+    "unit_no": "2001",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "f2f6bd44-1f68-4631-a726-aa84f09294c3",
+    "building_no": "101",
+    "unit_no": "2002",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7b0ce3dc-f753-4d7f-b37b-91f35c0d14d6",
+    "building_no": "101",
+    "unit_no": "2003",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "248b8ad7-4f44-48da-af49-9d14bbf94b70",
+    "building_no": "101",
+    "unit_no": "2004",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "509a4cb8-e021-4097-91c7-1d9c6c17ccbe",
+    "building_no": "101",
+    "unit_no": "201",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "77ed1ecd-1b3c-4937-a013-d273371e6f50",
+    "building_no": "101",
+    "unit_no": "202",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2450c395-a45d-4c7b-9e26-6a65b6a2c3f2",
+    "building_no": "101",
+    "unit_no": "203",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8854a735-7658-4ffa-9bc4-b7cbf0e86038",
+    "building_no": "101",
+    "unit_no": "204",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "db8fc677-e0f1-45a2-bb00-f0964e84706c",
+    "building_no": "101",
+    "unit_no": "2101",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2426e006-555d-40af-adfd-917970098c9f",
+    "building_no": "101",
+    "unit_no": "2102",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7d73e2bf-ae85-413f-8f88-257df2f6cdeb",
+    "building_no": "101",
+    "unit_no": "2103",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "3410ddff-57b7-4cb3-8658-7f2f44a2a4c6",
+    "building_no": "101",
+    "unit_no": "2104",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "808e023f-c501-4d54-96f1-94af907b64d4",
+    "building_no": "101",
+    "unit_no": "2201",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "fdb9246a-d599-47b7-aef1-d9396d4daa3f",
+    "building_no": "101",
+    "unit_no": "2202",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "519c9793-9a49-46e3-bfa5-5fabf42dfad7",
+    "building_no": "101",
+    "unit_no": "2203",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6c0b43f0-30ce-41ab-abe3-fed68d6d0714",
+    "building_no": "101",
+    "unit_no": "2204",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "31cb705a-1b20-4246-9b37-b85d504b8244",
+    "building_no": "101",
+    "unit_no": "2301",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "cc3df856-8f11-4799-ab61-0518b35c457c",
+    "building_no": "101",
+    "unit_no": "2302",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "36e339e9-fdd6-4bbd-88fb-00da472fce04",
+    "building_no": "101",
+    "unit_no": "2303",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "406d170a-ec12-4633-83bd-976db86fb87b",
+    "building_no": "101",
+    "unit_no": "2304",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "12798c36-e9dc-41b9-9151-da5f8f51542d",
+    "building_no": "101",
+    "unit_no": "2401",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-07-22 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "82cba8d1-6751-4635-857d-e8a658c93cfe",
+    "building_no": "101",
+    "unit_no": "2402",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "811f4d10-30c9-4ff4-be0a-380cc3be6e67",
+    "building_no": "101",
+    "unit_no": "2403",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "dd10da08-2d56-483e-bbc4-40ab89b22df8",
+    "building_no": "101",
+    "unit_no": "2404",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b88bd177-01a8-4771-9c2c-7e616eb50dba",
+    "building_no": "101",
+    "unit_no": "2501",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1d5e33db-d618-4d74-a3c2-f7a874eaa472",
+    "building_no": "101",
+    "unit_no": "2502",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2f988082-8e00-473f-b533-c701f6919468",
+    "building_no": "101",
+    "unit_no": "2503",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ea238b60-a6ca-43da-98af-7acc31bd721a",
+    "building_no": "101",
+    "unit_no": "2504",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1b6ec106-5a64-44fa-a724-4e9bc512b731",
+    "building_no": "101",
+    "unit_no": "2601",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "8b2be575-1132-4b7c-a918-4f217633c27b",
+    "building_no": "101",
+    "unit_no": "2602",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "cb50ab0d-0b61-4b62-b1d5-013a5ba34f1f",
+    "building_no": "101",
+    "unit_no": "2603",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "bd61d36e-506a-4876-b5e9-0dd643161f1b",
+    "building_no": "101",
+    "unit_no": "2604",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "46519d27-8ffd-425c-870c-3b8cb1ddbf1d",
+    "building_no": "101",
+    "unit_no": "2701",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "df59df29-0512-4a08-9bcf-79579fa3ea91",
+    "building_no": "101",
+    "unit_no": "2702",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4ac82e78-db02-44c8-8b5a-f8d1f3eace8f",
+    "building_no": "101",
+    "unit_no": "2703",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1352d846-9678-4c7a-b119-aa8884915180",
+    "building_no": "101",
+    "unit_no": "2704",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b6354f11-dcba-4b22-8824-d0120d72fc45",
+    "building_no": "101",
+    "unit_no": "2801",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2a55e411-6bf7-4cfc-bbe6-d150d7767d1a",
+    "building_no": "101",
+    "unit_no": "2802",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1d475f82-020d-47f7-a1b8-cbcc0e2f45dc",
+    "building_no": "101",
+    "unit_no": "2803",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d04a17dd-a83c-4934-a4f5-303eebe22ab9",
+    "building_no": "101",
+    "unit_no": "2804",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e3420a58-44e9-4535-82e6-0fb01e20404d",
+    "building_no": "101",
+    "unit_no": "2901",
+    "unit_type": "122B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6b6e1333-323d-493d-a861-54f7ddfaf9f2",
+    "building_no": "101",
+    "unit_no": "2903",
+    "unit_type": "122A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6ca9046c-5da6-43e0-80c0-0fcceccb940b",
+    "building_no": "101",
+    "unit_no": "301",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "79cfc85d-f6d6-4381-b95a-947c543b1754",
+    "building_no": "101",
+    "unit_no": "302",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4e1ee38e-c17b-48a5-a4b4-1502db1315b9",
+    "building_no": "101",
+    "unit_no": "303",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f1b47b32-5b24-4990-96a7-c85874d68dbf",
+    "building_no": "101",
+    "unit_no": "304",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "CONTACTED"
+  },
+  {
+    "unit_id": "0e9dd5c7-dbd0-423d-a304-04ec2463656c",
+    "building_no": "101",
+    "unit_no": "401",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "608d1036-dd12-4a59-be7d-ddc7509848e2",
+    "building_no": "101",
+    "unit_no": "402",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "109f272c-a843-4c1a-9738-4f73cd910914",
+    "building_no": "101",
+    "unit_no": "403",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "51e046fb-d04e-49cc-be47-b42ffd247b7b",
+    "building_no": "101",
+    "unit_no": "404",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e7ad29a0-37b0-4403-94ab-79cc78ff0284",
+    "building_no": "101",
+    "unit_no": "501",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8f5d0a6e-d9d3-4417-9fc9-c7022ff73b52",
+    "building_no": "101",
+    "unit_no": "502",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-03 01:54:22.074504+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "6e0eacd1-3fae-49b6-9211-22b67866fbe5",
+    "building_no": "101",
+    "unit_no": "503",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ba2aa3c0-e82b-4115-9c2b-0dfceed3c225",
+    "building_no": "101",
+    "unit_no": "504",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 01:54:22.074504+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "83185697-9e3c-416d-84b0-68932dd6250d",
+    "building_no": "101",
+    "unit_no": "601",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8582f16c-a4ae-41e1-a122-050988819c93",
+    "building_no": "101",
+    "unit_no": "602",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "b3686a7b-643d-4103-a2bd-21e77b4ee373",
+    "building_no": "101",
+    "unit_no": "603",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "27b976ec-1873-47be-b2e6-8497f9cd9864",
+    "building_no": "101",
+    "unit_no": "604",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2d18e757-a579-456a-b990-316344e0ab55",
+    "building_no": "101",
+    "unit_no": "701",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "26e82d29-4998-48bd-83ee-0185b68ad7dd",
+    "building_no": "101",
+    "unit_no": "702",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6b02ab55-3521-4e7e-a470-a6190dd2788a",
+    "building_no": "101",
+    "unit_no": "703",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f6f2eaf0-747d-4fec-8490-bf2409b82422",
+    "building_no": "101",
+    "unit_no": "704",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "35a32c99-5c76-45d0-9b3c-d5bc35ac358f",
+    "building_no": "101",
+    "unit_no": "801",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "60549998-0f38-4092-a2d8-041fd9496f75",
+    "building_no": "101",
+    "unit_no": "802",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "48adc651-338b-4143-9a5d-0cfae8019eaa",
+    "building_no": "101",
+    "unit_no": "803",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8163cff8-53a9-466f-a56b-6735f306cded",
+    "building_no": "101",
+    "unit_no": "804",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "d17b8b94-2d27-4b55-a411-e0b90e6a6a4e",
+    "building_no": "101",
+    "unit_no": "901",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "67d6005f-e57c-41bc-a159-49a2546a2f35",
+    "building_no": "101",
+    "unit_no": "902",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "dff2636b-e43d-411a-b011-6ba48e89b9e6",
+    "building_no": "101",
+    "unit_no": "903",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "be391f27-52ec-4c9d-be81-da5ac28e1471",
+    "building_no": "101",
+    "unit_no": "904",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "1e0bb57c-93f5-4151-80b8-dd425c95c7d6",
+    "building_no": "102",
+    "unit_no": "1001",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5320e5b4-b78f-478c-9a34-cdf6c8f06ecd",
+    "building_no": "102",
+    "unit_no": "1002",
+    "unit_type": "74B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "952b7606-787d-4e06-9aaa-f0b3d1162866",
+    "building_no": "102",
+    "unit_no": "1003",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "bfb11b13-7fa1-470f-8717-a50e1c07ec0c",
+    "building_no": "102",
+    "unit_no": "1004",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7680e8b2-f9b0-4519-bf36-cc503c80e5b6",
+    "building_no": "102",
+    "unit_no": "1101",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-03 01:54:22.074504+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "06db7aee-59c4-49c2-a317-705e633ab4a4",
+    "building_no": "102",
+    "unit_no": "1102",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ddfc578b-3aed-4e96-a5ea-23cc3f98a0dd",
+    "building_no": "102",
+    "unit_no": "1103",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e653a310-6d9b-4ea5-afb9-4e9d0d9fa6b6",
+    "building_no": "102",
+    "unit_no": "1104",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "c88c4320-593f-472d-83e1-ec9b9cc2e2f6",
+    "building_no": "102",
+    "unit_no": "1201",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a7c51718-d553-4887-b4c6-1ff7adac6b98",
+    "building_no": "102",
+    "unit_no": "1202",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d5baa12a-d5c7-46f2-8f98-ba00c8dcb963",
+    "building_no": "102",
+    "unit_no": "1203",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "CONTACTED"
+  },
+  {
+    "unit_id": "0c36be31-2c4a-4e76-9091-693100599599",
+    "building_no": "102",
+    "unit_no": "1204",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "b8bb5c27-303a-4294-a92e-727fbc40fb28",
+    "building_no": "102",
+    "unit_no": "1301",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0cbcf92c-5f3a-4d3c-aa93-33c71d0dcdb5",
+    "building_no": "102",
+    "unit_no": "1302",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3e62ff23-90fa-4f27-840b-9d30b59a2f96",
+    "building_no": "102",
+    "unit_no": "1303",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c5349ffa-876f-42a5-bce2-4f7ae2390fc3",
+    "building_no": "102",
+    "unit_no": "1304",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c0d7d3b1-7f35-46a9-8b05-398ffc108ae2",
+    "building_no": "102",
+    "unit_no": "1401",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "bec1d386-a725-4273-8106-b5e13de0a05f",
+    "building_no": "102",
+    "unit_no": "1402",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3927fa70-39c2-407f-a1c0-b432c002685a",
+    "building_no": "102",
+    "unit_no": "1403",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "687919cb-514f-41f0-bb37-c0d49175f7e5",
+    "building_no": "102",
+    "unit_no": "1404",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "55ed81b1-8ab7-4785-983f-e6707585dc9b",
+    "building_no": "102",
+    "unit_no": "1501",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "936aebd1-07ff-4a21-a101-5f2219ff2d46",
+    "building_no": "102",
+    "unit_no": "1502",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b04522bf-8960-4c65-b80e-c91b49c4b44f",
+    "building_no": "102",
+    "unit_no": "1503",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7d9fade3-923e-4639-a16c-bd835ce3895d",
+    "building_no": "102",
+    "unit_no": "1504",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2e63ebdf-b35b-40af-9d80-40ebbc46e10c",
+    "building_no": "102",
+    "unit_no": "1601",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "9a4ddf1a-ec4d-4db9-8ae2-950bf5e05ea4",
+    "building_no": "102",
+    "unit_no": "1602",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7ad0dab8-b6e2-4bd7-8359-cd94ba71a641",
+    "building_no": "102",
+    "unit_no": "1603",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4f7e8c6d-921b-4575-9b3f-f732920ba6e2",
+    "building_no": "102",
+    "unit_no": "1604",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "2ac5ac28-e472-418a-98b4-3108ea736587",
+    "building_no": "102",
+    "unit_no": "1701",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-03 01:54:22.074504+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "c4ac3ff2-d3f9-4923-ae5f-54dbe91cb7a0",
+    "building_no": "102",
+    "unit_no": "1702",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a1bfbf21-6836-48da-bc5a-b13176e749a0",
+    "building_no": "102",
+    "unit_no": "1703",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "598c00da-f7aa-4e71-b7e7-9501f39e1589",
+    "building_no": "102",
+    "unit_no": "1704",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0db4b5db-1063-4e1c-8353-6bc2510aa68b",
+    "building_no": "102",
+    "unit_no": "1801",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3f67d3be-fd01-4a74-8fe3-a13ed2f155fa",
+    "building_no": "102",
+    "unit_no": "1802",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4244771b-d4e9-4787-ae3c-6d9422e5de7d",
+    "building_no": "102",
+    "unit_no": "1803",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-06 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "2e25db34-1238-45d8-b72f-19e4378be676",
+    "building_no": "102",
+    "unit_no": "1804",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c9a82617-fc6c-4ba5-8493-fbe9bfd1e1c9",
+    "building_no": "102",
+    "unit_no": "1901",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ad0be78d-12af-46ad-8d60-e0cfb3d60058",
+    "building_no": "102",
+    "unit_no": "1902",
+    "unit_type": "74B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "0f40424b-ac84-4b75-b8d1-825f42d481a3",
+    "building_no": "102",
+    "unit_no": "1903",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8a8817cd-1127-427d-a312-72b7b601a1a8",
+    "building_no": "102",
+    "unit_no": "1904",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "fda7c591-62c2-496b-bdee-8c47067b53ec",
+    "building_no": "102",
+    "unit_no": "2001",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "21d0e1ee-655a-4968-8fcd-bd98bca70679",
+    "building_no": "102",
+    "unit_no": "2002",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1e496f66-a606-45fc-a650-951493ef973e",
+    "building_no": "102",
+    "unit_no": "2003",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3735ed3e-71d1-4f98-8a5d-8eced3e91bef",
+    "building_no": "102",
+    "unit_no": "2004",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "9c2e0262-4bc5-477d-a141-fe08bde7414c",
+    "building_no": "102",
+    "unit_no": "201",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4df8c647-9abb-4e71-b8e0-d6569fea9541",
+    "building_no": "102",
+    "unit_no": "202",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "bb003f9b-908b-4595-8518-e240c21be525",
+    "building_no": "102",
+    "unit_no": "203",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e24ec7c6-5c7b-4fff-b092-995a8d987925",
+    "building_no": "102",
+    "unit_no": "204",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3c26af4c-fdac-4b58-8819-56c1b4ea0e51",
+    "building_no": "102",
+    "unit_no": "2101",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "18abc155-8c2a-4ee4-b37e-770f41efa959",
+    "building_no": "102",
+    "unit_no": "2102",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3efac2f1-eeaa-4f66-9d8e-a36d122f2a80",
+    "building_no": "102",
+    "unit_no": "2103",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f312e752-eb39-48f5-9765-31a25accd695",
+    "building_no": "102",
+    "unit_no": "2104",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6b2fd375-da09-4008-bed9-26b16037b681",
+    "building_no": "102",
+    "unit_no": "2201",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "766ecefe-82a3-4ac7-b1a9-3b55bc588de4",
+    "building_no": "102",
+    "unit_no": "2202",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "680ad02f-8624-40b0-8f3a-e0d373c792be",
+    "building_no": "102",
+    "unit_no": "2203",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a65b41ad-1af6-4816-83be-4fbd08e841f2",
+    "building_no": "102",
+    "unit_no": "2204",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8788eda6-2f48-4836-ac7e-a983bf6268c0",
+    "building_no": "102",
+    "unit_no": "2301",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6fc03b6e-9082-4f59-ab74-847af5e11bc9",
+    "building_no": "102",
+    "unit_no": "2302",
+    "unit_type": "74B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "89cb3e96-3524-421b-9bc4-0329ed32ff3b",
+    "building_no": "102",
+    "unit_no": "2303",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "44e05da1-0f02-41bf-baf4-99e994a92eb5",
+    "building_no": "102",
+    "unit_no": "2304",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ad1e041b-ac09-42e3-85f8-db25b6160f30",
+    "building_no": "102",
+    "unit_no": "2401",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "38d71ce3-3f9f-44de-957c-f064ccf425e8",
+    "building_no": "102",
+    "unit_no": "2402",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "32c716fd-ba72-4b21-b79b-4bc96f1a6735",
+    "building_no": "102",
+    "unit_no": "2403",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "04438774-9bf3-44e1-9697-14e5170a6c0c",
+    "building_no": "102",
+    "unit_no": "2404",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "71d7df53-a7eb-4d3f-984a-6c299460e2c3",
+    "building_no": "102",
+    "unit_no": "2503",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "a9637d47-2a70-4992-9fe6-aa7c4f0252d5",
+    "building_no": "102",
+    "unit_no": "2504",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "02cd37a4-7994-483e-ba1b-3285885dbf97",
+    "building_no": "102",
+    "unit_no": "301",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d61b29dd-8859-4a87-918d-4f150080f142",
+    "building_no": "102",
+    "unit_no": "302",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a2a48899-8ef7-46a5-a79a-d75f3dab90c3",
+    "building_no": "102",
+    "unit_no": "303",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "9b92924b-6c0e-4644-b0b1-5fa41702e577",
+    "building_no": "102",
+    "unit_no": "304",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "fccb8b9b-65a5-43d4-a6ef-6945f1d2bc7b",
+    "building_no": "102",
+    "unit_no": "401",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "630265b9-12e3-4080-ad41-9292376c3e3b",
+    "building_no": "102",
+    "unit_no": "402",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c0432a12-33f0-4057-8f1c-5d7a0415d335",
+    "building_no": "102",
+    "unit_no": "403",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7036a346-484a-402a-b1c2-21443c0ff3bb",
+    "building_no": "102",
+    "unit_no": "404",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b315bd3b-911b-4d49-ace8-ab8e525afc5b",
+    "building_no": "102",
+    "unit_no": "501",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f49f0c9d-3e7b-4682-a53b-85e3744de20e",
+    "building_no": "102",
+    "unit_no": "502",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a856d4a2-ed4f-4c6d-bcc4-459cc9b63909",
+    "building_no": "102",
+    "unit_no": "503",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "dce264da-8d49-4351-a377-2d419a28ce43",
+    "building_no": "102",
+    "unit_no": "504",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "14f14240-fb69-4c55-9c0d-0d83be99cebb",
+    "building_no": "102",
+    "unit_no": "601",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f30ea8a9-5aa6-4ae7-8e09-8e11d3eb0e04",
+    "building_no": "102",
+    "unit_no": "602",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "49fc9682-2e31-4c83-9e44-60860421626b",
+    "building_no": "102",
+    "unit_no": "603",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "64bf7f3e-8bdf-48c0-87f6-538bb030f982",
+    "building_no": "102",
+    "unit_no": "604",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "918f2555-c492-4e55-acb2-f5ef82f32696",
+    "building_no": "102",
+    "unit_no": "701",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c02aaf60-5764-48bb-b3f1-c47fc9e97837",
+    "building_no": "102",
+    "unit_no": "702",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ae4e6a71-d630-4348-b94e-1386574bfd34",
+    "building_no": "102",
+    "unit_no": "703",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ee408ec7-50a8-4db2-9f1c-c80af6f9cd87",
+    "building_no": "102",
+    "unit_no": "704",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "36c51225-7829-4fe0-8f3e-1addcdd5860e",
+    "building_no": "102",
+    "unit_no": "801",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "57cfab72-1695-4bed-9909-d105162ed35f",
+    "building_no": "102",
+    "unit_no": "802",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "61ca3bfe-da4b-4c46-8eaa-21cb864dfbed",
+    "building_no": "102",
+    "unit_no": "803",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "11b427bb-2775-4813-a166-18b9bfe7d926",
+    "building_no": "102",
+    "unit_no": "804",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "77ce43d0-8eca-4b9a-b5c5-a6381b422583",
+    "building_no": "102",
+    "unit_no": "901",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "dced69d5-06cb-4b55-9ac6-48ec0e2711f9",
+    "building_no": "102",
+    "unit_no": "902",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "85a3fe5b-a708-4c2d-bbb4-2a583c1779fc",
+    "building_no": "102",
+    "unit_no": "903",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "92eb9372-1270-4c3d-93e4-837a948204c6",
+    "building_no": "102",
+    "unit_no": "904",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "27a61407-c84a-4dd0-9e9f-916772766352",
+    "building_no": "103",
+    "unit_no": "1001",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "CONTACTED"
+  },
+  {
+    "unit_id": "a219f12a-244c-4c4c-af3d-98cafda5143a",
+    "building_no": "103",
+    "unit_no": "1002",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "fbdae2c4-017c-41ab-8c0f-6ee6aff7ab02",
+    "building_no": "103",
+    "unit_no": "1003",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4961966a-1f6a-43df-a580-574c0b8fff6e",
+    "building_no": "103",
+    "unit_no": "1004",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c61d44fe-f200-43f8-9ce3-c4fa9b594a2c",
+    "building_no": "103",
+    "unit_no": "102",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e4e2c83f-518b-4ebf-8c7c-aa5281d223a3",
+    "building_no": "103",
+    "unit_no": "103",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c83cb482-3a10-4eb1-85c8-d5f6df2939c4",
+    "building_no": "103",
+    "unit_no": "104",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1a9dec1c-eb8c-44da-9a09-1772aa511f5a",
+    "building_no": "103",
+    "unit_no": "1101",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c1f16c52-d3cd-4fec-8401-170ccb2aa8cd",
+    "building_no": "103",
+    "unit_no": "1102",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c4644c8b-d080-41b5-9b8f-a9f23a208f66",
+    "building_no": "103",
+    "unit_no": "1103",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3a52ea46-1e4a-4ab8-bd95-322a0908e651",
+    "building_no": "103",
+    "unit_no": "1104",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ba99487b-ff13-4931-9ecc-6a0efd5b881c",
+    "building_no": "103",
+    "unit_no": "1201",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "2013e0ca-7db9-4a74-b867-e5f87bdc0852",
+    "building_no": "103",
+    "unit_no": "1202",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2dd8142c-46ac-4f70-83a2-d9a8d51e81c2",
+    "building_no": "103",
+    "unit_no": "1203",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "31c57441-0d2e-4eb1-b4bb-af57f93129c0",
+    "building_no": "103",
+    "unit_no": "1204",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "068ffa92-f195-4a06-8bc9-ae91e9a95cd8",
+    "building_no": "103",
+    "unit_no": "1301",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a69dc9a3-02d9-4b5c-84c9-ebff17bed375",
+    "building_no": "103",
+    "unit_no": "1302",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "535a56d8-25df-4490-bbf8-a4abc9d53616",
+    "building_no": "103",
+    "unit_no": "1303",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "cb824e5a-11e5-4a65-9322-01ce5c88bafd",
+    "building_no": "103",
+    "unit_no": "1304",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "cd2533ac-6281-4138-a571-582862d62a07",
+    "building_no": "103",
+    "unit_no": "1401",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "71325989-8749-4a3c-9013-ab2b0b8cf545",
+    "building_no": "103",
+    "unit_no": "1402",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7bf72866-9085-4982-9123-047fa93dc122",
+    "building_no": "103",
+    "unit_no": "1403",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3a1621c1-f47d-4f97-b52c-556703d0282a",
+    "building_no": "103",
+    "unit_no": "1404",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "28cd0a7f-f6db-4ee4-8015-0628bd8087e1",
+    "building_no": "103",
+    "unit_no": "1501",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3fe6b867-eb89-4a4f-a7d4-dbfc2f86a022",
+    "building_no": "103",
+    "unit_no": "1502",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "10ab0fb8-4f87-4723-95a5-1bb82697e8d7",
+    "building_no": "103",
+    "unit_no": "1503",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "311966d3-c1b8-4dde-a920-5cb679f7074a",
+    "building_no": "103",
+    "unit_no": "1504",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e15cae48-a4cc-4de6-b330-bd53935c89f4",
+    "building_no": "103",
+    "unit_no": "1601",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ceb1ea89-a3f6-4685-a2e6-f5402283b606",
+    "building_no": "103",
+    "unit_no": "1602",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "33a06204-07e8-4516-afce-251751402324",
+    "building_no": "103",
+    "unit_no": "1603",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "36158254-c874-4973-ad95-81281c8ebbfd",
+    "building_no": "103",
+    "unit_no": "1604",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "cacf50fe-25a9-4443-affe-6f020222f4b2",
+    "building_no": "103",
+    "unit_no": "1701",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "20fe3ae6-e193-417a-b026-94e921e83471",
+    "building_no": "103",
+    "unit_no": "1702",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "adc3c129-9a63-4f49-b675-0055a6def3de",
+    "building_no": "103",
+    "unit_no": "1703",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "520c313f-166b-49ad-bea6-7693f3b513e9",
+    "building_no": "103",
+    "unit_no": "1704",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "d2234506-4527-4588-8adf-2bf317a1884f",
+    "building_no": "103",
+    "unit_no": "1801",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "98ab5ed3-0d16-43e0-93c9-a85eecb03b32",
+    "building_no": "103",
+    "unit_no": "1802",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "77221d87-3edf-44db-b1ee-abab41b6b24d",
+    "building_no": "103",
+    "unit_no": "1803",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5b2e404f-c043-4596-8180-3d93a74b346e",
+    "building_no": "103",
+    "unit_no": "1804",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "00ba7592-b554-4b8b-9235-c21dce152246",
+    "building_no": "103",
+    "unit_no": "1901",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "001bd712-6fc6-45a9-87f5-e60003a2bb82",
+    "building_no": "103",
+    "unit_no": "1902",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a69c3cce-e35f-4a7b-828a-8e2c49a8ae9b",
+    "building_no": "103",
+    "unit_no": "1903",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b3519833-57b0-4842-9f80-56591a6e2212",
+    "building_no": "103",
+    "unit_no": "1904",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "9344957c-e2aa-41c5-bf03-de3aa72f7cb3",
+    "building_no": "103",
+    "unit_no": "2001",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a52de457-0191-4c85-b86d-9110c552fc0f",
+    "building_no": "103",
+    "unit_no": "2002",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f0f92fa6-16b6-4e43-b0e1-e760f27a2370",
+    "building_no": "103",
+    "unit_no": "2003",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4bbcddc6-d121-4d29-9c02-ce34fe1de7e2",
+    "building_no": "103",
+    "unit_no": "2004",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "38b256b9-dd23-4113-ab69-ff9362ad23b3",
+    "building_no": "103",
+    "unit_no": "201",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ce6346ff-4869-4932-8696-d681ce559dc8",
+    "building_no": "103",
+    "unit_no": "202",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f46aee8c-5216-4296-8661-0606292d748d",
+    "building_no": "103",
+    "unit_no": "203",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b0497439-42d5-4c21-81ce-f180631784d2",
+    "building_no": "103",
+    "unit_no": "204",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c9a0d6e5-de7a-42ee-9110-0f7bda959a9b",
+    "building_no": "103",
+    "unit_no": "2101",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "caf78fa4-09af-4a7c-b136-5572b5d36f3f",
+    "building_no": "103",
+    "unit_no": "2102",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1851c202-701f-44be-b2c5-65e0ca078f46",
+    "building_no": "103",
+    "unit_no": "2103",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "90a7bc08-be23-49a0-8d8b-9161bd571b30",
+    "building_no": "103",
+    "unit_no": "2104",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "725bbf92-edbc-43e5-abb6-9df4c5ffd95f",
+    "building_no": "103",
+    "unit_no": "2201",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "0c8f1857-7326-46a3-b65b-8dfb1ee7fc7d",
+    "building_no": "103",
+    "unit_no": "2202",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5878a0b6-45d5-4294-a5a1-d686adb7056c",
+    "building_no": "103",
+    "unit_no": "2203",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0871b1ca-b2b7-4a1a-b73b-ccd22dec712f",
+    "building_no": "103",
+    "unit_no": "2204",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "CONTACTED"
+  },
+  {
+    "unit_id": "b1fcba03-cccf-496a-b892-3a92aaa3dfd6",
+    "building_no": "103",
+    "unit_no": "2301",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "9ca8df63-d01f-43f9-a054-5fff9a020eb1",
+    "building_no": "103",
+    "unit_no": "2302",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "338f57cf-e47a-4228-b54a-dc3eea8cb70a",
+    "building_no": "103",
+    "unit_no": "2303",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "dbe3cd3d-74d2-4d96-b824-2d88ac60cb1b",
+    "building_no": "103",
+    "unit_no": "2304",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "254fc02d-3eec-47f1-a50c-8b49fd79b8dd",
+    "building_no": "103",
+    "unit_no": "2401",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c3216905-0f25-4975-b969-a38f69bde701",
+    "building_no": "103",
+    "unit_no": "2402",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "bb7e0184-2ad9-445a-beca-b3f5c63db58b",
+    "building_no": "103",
+    "unit_no": "2403",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e326afbd-d01f-493f-a0b9-bf16ece290f3",
+    "building_no": "103",
+    "unit_no": "2404",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7e47a6fa-31e3-4cbd-a97d-ef52bc1b5f1a",
+    "building_no": "103",
+    "unit_no": "2501",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "afbdf488-2fcb-4711-8e88-3c3d9c0e7c82",
+    "building_no": "103",
+    "unit_no": "2502",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1153c7a4-bae8-4e07-a231-8e1a1d79f324",
+    "building_no": "103",
+    "unit_no": "2503",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "debf53af-06e9-4599-9b15-e1d255c1034c",
+    "building_no": "103",
+    "unit_no": "2504",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "0d519a8d-759d-4d37-afdc-a020809ae157",
+    "building_no": "103",
+    "unit_no": "2601",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3f044fee-8720-46ce-9b3a-8135958a9bc4",
+    "building_no": "103",
+    "unit_no": "2602",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "74cbc569-0df5-483d-9d8d-774938e5d493",
+    "building_no": "103",
+    "unit_no": "2603",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "88c6eb93-65cd-46ba-a23b-f166492d08d0",
+    "building_no": "103",
+    "unit_no": "2604",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "9da5cf9f-343d-479f-b602-2d7793983aa7",
+    "building_no": "103",
+    "unit_no": "2701",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a933655b-aca0-4e4a-a10f-4fb071141e8e",
+    "building_no": "103",
+    "unit_no": "2702",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ad2194f6-3b1f-4ddf-b695-65c3adbb3793",
+    "building_no": "103",
+    "unit_no": "2703",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "62eb6121-17e9-4033-bb0a-67334d5caad2",
+    "building_no": "103",
+    "unit_no": "2704",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "07eaa905-870e-4bc3-8448-84171cebf0ab",
+    "building_no": "103",
+    "unit_no": "2801",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "232d555f-3f45-45cf-9564-99153c827bfb",
+    "building_no": "103",
+    "unit_no": "2802",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f44d5f18-bedf-4da6-becf-8986b8361963",
+    "building_no": "103",
+    "unit_no": "2803",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "914e9ca5-df85-47ea-8615-2ab1370284fa",
+    "building_no": "103",
+    "unit_no": "2804",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "9c0c3683-9602-4167-a59a-888fe438ab25",
+    "building_no": "103",
+    "unit_no": "2903",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-10-20 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "c8f4c394-c64e-4b9b-b794-67e9b63ebe46",
+    "building_no": "103",
+    "unit_no": "2904",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6ff3af5a-c866-417c-abcb-479499eab6e0",
+    "building_no": "103",
+    "unit_no": "301",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0dc60517-b54a-41aa-9f23-1d7d13779ee4",
+    "building_no": "103",
+    "unit_no": "302",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0198ef7b-5f2c-4c52-ad9e-d1532eb63c0d",
+    "building_no": "103",
+    "unit_no": "303",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "25497bb8-c920-491c-874e-45561e7de434",
+    "building_no": "103",
+    "unit_no": "304",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1d57a0ba-e448-403a-adcb-ba8c679e111d",
+    "building_no": "103",
+    "unit_no": "401",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-10-12 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "e968df1a-3c3f-43ab-8667-91bdd3f49d2e",
+    "building_no": "103",
+    "unit_no": "402",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "587888be-d6f2-4dee-bac6-53a91c83996e",
+    "building_no": "103",
+    "unit_no": "403",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8ce2509f-5f36-485e-8cbb-ea97bc0d3ed5",
+    "building_no": "103",
+    "unit_no": "404",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d3f5e2c8-a48c-4554-9e3b-084c4bdb8817",
+    "building_no": "103",
+    "unit_no": "501",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4b4b994e-f30e-403d-8a7d-08c4a04156b4",
+    "building_no": "103",
+    "unit_no": "502",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4ed2a88d-4e69-4862-9c45-1a890a7d4026",
+    "building_no": "103",
+    "unit_no": "503",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a46a79c1-a500-4174-a70d-41e113fe1804",
+    "building_no": "103",
+    "unit_no": "504",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "66b07b61-c292-4baa-b8ca-04de3aecf617",
+    "building_no": "103",
+    "unit_no": "601",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f4f638eb-65be-4ce1-bd36-d581f491ea7e",
+    "building_no": "103",
+    "unit_no": "602",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1f380be4-6ffe-42d9-82f8-fcee643cf0ab",
+    "building_no": "103",
+    "unit_no": "603",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7e0838a5-966d-4e37-8306-cc89d4b1318c",
+    "building_no": "103",
+    "unit_no": "604",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "38cb0fdd-c4f7-4cc2-a87c-cfdca8f977ff",
+    "building_no": "103",
+    "unit_no": "701",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "c69e5ad1-db35-4727-a184-91cd9f45f032",
+    "building_no": "103",
+    "unit_no": "702",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c88d1037-7f9c-4690-ac51-82d9fdbb0d5e",
+    "building_no": "103",
+    "unit_no": "703",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "089876c9-7d23-4349-894e-21052f630249",
+    "building_no": "103",
+    "unit_no": "704",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c5ddd12d-9c0a-4dd2-9deb-5129118ae508",
+    "building_no": "103",
+    "unit_no": "801",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "839556d4-41f0-4e87-a6d0-ee5583605175",
+    "building_no": "103",
+    "unit_no": "802",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1a17d332-abad-469b-875f-3e86dbae4a4d",
+    "building_no": "103",
+    "unit_no": "803",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "ba056610-7ebf-415d-a161-b0a064b4e5d3",
+    "building_no": "103",
+    "unit_no": "804",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "69b69608-958a-4668-8097-eb06b71db832",
+    "building_no": "103",
+    "unit_no": "901",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "9d2f66a5-26e1-4639-9113-ee646367d339",
+    "building_no": "103",
+    "unit_no": "902",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3a0c9ad1-a483-429f-8a2b-b274fdbe4c43",
+    "building_no": "103",
+    "unit_no": "903",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ccb8af1b-963d-444b-be6a-c977fbf61338",
+    "building_no": "103",
+    "unit_no": "904",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "695eef12-ca6f-41a2-88c6-014b7281f077",
+    "building_no": "104",
+    "unit_no": "1001",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d9f900e4-3cd6-4281-b09f-2b257fcc6d48",
+    "building_no": "104",
+    "unit_no": "1002",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4313b0dc-5257-4ecd-84c5-c927c5171cce",
+    "building_no": "104",
+    "unit_no": "1003",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "f55dfd1d-f893-4ea8-ae57-80161ce773c8",
+    "building_no": "104",
+    "unit_no": "1004",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6cdd59d7-bb47-4df2-b7d5-f2b52f1a5650",
+    "building_no": "104",
+    "unit_no": "102",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4753c658-2c78-4c53-8c75-31f0e4e15848",
+    "building_no": "104",
+    "unit_no": "103",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "bf772472-081e-406f-8d42-792474bcb980",
+    "building_no": "104",
+    "unit_no": "104",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "4248d077-1661-4cc1-8c55-e5f675b648ee",
+    "building_no": "104",
+    "unit_no": "1101",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "92289040-fe4f-41d7-a1a2-d04c087f8a92",
+    "building_no": "104",
+    "unit_no": "1102",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "9de15ca6-36e4-404e-b2d4-12d0385e0536",
+    "building_no": "104",
+    "unit_no": "1103",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8b033afc-f06e-45c2-9cbd-96f1d2fd4861",
+    "building_no": "104",
+    "unit_no": "1104",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f6baac02-d244-4b20-a1aa-624134f719c0",
+    "building_no": "104",
+    "unit_no": "1201",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "45f5c6c3-53a6-494c-ae5c-83c9363bb0b8",
+    "building_no": "104",
+    "unit_no": "1202",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b0f2cfa2-46cd-4a27-beb3-cebd50e5de56",
+    "building_no": "104",
+    "unit_no": "1203",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "254e208b-1350-479d-b842-62c161de5417",
+    "building_no": "104",
+    "unit_no": "1204",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c79f4a74-25b9-42a2-87d1-b0fd81c264b5",
+    "building_no": "104",
+    "unit_no": "1301",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "1c041837-1f27-4c19-9e36-f4b6ce88e16a",
+    "building_no": "104",
+    "unit_no": "1302",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3f038a53-9028-44aa-ada5-89d7a3617fe0",
+    "building_no": "104",
+    "unit_no": "1303",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ab96e50c-d8d9-4911-82e4-fec4bd49f67b",
+    "building_no": "104",
+    "unit_no": "1304",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a1c93583-bbf4-4868-9b82-a40b98e8df65",
+    "building_no": "104",
+    "unit_no": "1401",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "25716434-99d0-4b17-809d-83da4c9efb37",
+    "building_no": "104",
+    "unit_no": "1402",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "faf02ed9-1ee5-44e4-8328-7ff31d9eec15",
+    "building_no": "104",
+    "unit_no": "1403",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "537a437a-9599-4ab8-b6b8-513f8755b8d5",
+    "building_no": "104",
+    "unit_no": "1404",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 01:54:22.074504+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "aec41501-d298-411d-afba-388817945e96",
+    "building_no": "104",
+    "unit_no": "1501",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "53762400-7bac-4808-9de1-950e51ff9787",
+    "building_no": "104",
+    "unit_no": "1502",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "066f66b6-09d1-4928-a806-0f6acd3c272d",
+    "building_no": "104",
+    "unit_no": "1503",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "195d2a8e-fd53-431d-ae2c-7ec2c6208d7d",
+    "building_no": "104",
+    "unit_no": "1504",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 01:54:22.074504+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "dd57a4a9-7033-4545-b35d-f781d86ad147",
+    "building_no": "104",
+    "unit_no": "1601",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "adad2c0f-19cf-4bae-aa71-785a00973b2c",
+    "building_no": "104",
+    "unit_no": "1602",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "224e8520-6dc5-48b6-ab48-a7d1cf0825f1",
+    "building_no": "104",
+    "unit_no": "1603",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "99fed244-26cb-40b2-b66a-e6a5b21ce4b8",
+    "building_no": "104",
+    "unit_no": "1604",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c95c9d07-d9ba-4262-aede-f1564ee87940",
+    "building_no": "104",
+    "unit_no": "1701",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "44ab7bf8-b946-4f33-95da-2f4ad44d0233",
+    "building_no": "104",
+    "unit_no": "1702",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "676c7f18-6ece-4cd1-9125-d2bf2bfb71e6",
+    "building_no": "104",
+    "unit_no": "1703",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ef42fe12-dc0a-4ca4-bccf-f281ca452c6c",
+    "building_no": "104",
+    "unit_no": "1704",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "46f4c0d2-c5d1-4832-9617-04331182c5a8",
+    "building_no": "104",
+    "unit_no": "1801",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "74be74ce-67f9-40d0-a07e-9f0fbb05aa19",
+    "building_no": "104",
+    "unit_no": "1802",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d9869a5a-8894-40b5-8abb-e4927dde0c1c",
+    "building_no": "104",
+    "unit_no": "1803",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "1f18617f-e27f-465d-b8c3-a387c6071eb7",
+    "building_no": "104",
+    "unit_no": "1804",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "cc830a37-80a6-4d67-abc4-bbbecbd5340c",
+    "building_no": "104",
+    "unit_no": "1901",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "39ce18ba-af55-4e68-8257-e531ba15bc5a",
+    "building_no": "104",
+    "unit_no": "1902",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "cefc656c-4d46-47b8-8d4a-27add3f76f0e",
+    "building_no": "104",
+    "unit_no": "1903",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "32a16e95-fd7a-4a27-9999-c7150a4bc4cb",
+    "building_no": "104",
+    "unit_no": "1904",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "38fb17ee-9979-4fcb-b5f0-f5b18e05d008",
+    "building_no": "104",
+    "unit_no": "2001",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "dd6c7a2a-49bb-4455-b082-b9ea358c9c5a",
+    "building_no": "104",
+    "unit_no": "2002",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c7304a8c-e742-4c82-8efa-b556adb3dbb3",
+    "building_no": "104",
+    "unit_no": "2003",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "caac75c8-30c2-4d78-bb50-a4c8c8976f03",
+    "building_no": "104",
+    "unit_no": "2004",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "776e4d96-d972-4897-a209-81ba32b3edc2",
+    "building_no": "104",
+    "unit_no": "201",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f1f65c5f-b403-4973-9d11-37c71baebaba",
+    "building_no": "104",
+    "unit_no": "202",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "15763237-0d7c-4411-9e0f-ceae7f65986e",
+    "building_no": "104",
+    "unit_no": "203",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4c0842aa-dca9-430b-bb2d-8225cb89e163",
+    "building_no": "104",
+    "unit_no": "204",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e85a9d92-661c-4662-b440-0255dbef9dc1",
+    "building_no": "104",
+    "unit_no": "2101",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "07401947-8601-44a3-aa60-54a14387e34a",
+    "building_no": "104",
+    "unit_no": "2102",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "5aeb7f7b-4fd5-4415-99a4-8c183efc28f2",
+    "building_no": "104",
+    "unit_no": "2103",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "857a8694-bb29-432f-8dfd-1372245b9951",
+    "building_no": "104",
+    "unit_no": "2104",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "845abc3d-6a40-4fa1-94ed-0b71f5462be8",
+    "building_no": "104",
+    "unit_no": "2201",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5977555c-422d-41be-9f8a-e63b49181852",
+    "building_no": "104",
+    "unit_no": "2202",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e9fef98e-cd1f-4cda-98b7-19d9e70d4e42",
+    "building_no": "104",
+    "unit_no": "2203",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c01d68d2-8218-49ba-85b0-c6f32a71b482",
+    "building_no": "104",
+    "unit_no": "2204",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "543cec3e-900c-4928-990e-39c1eaf11c65",
+    "building_no": "104",
+    "unit_no": "2301",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f80d7e9b-9426-4a76-959b-d4135a059f7b",
+    "building_no": "104",
+    "unit_no": "2302",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f6873d9e-1c57-4230-871d-4fbba9b2f37b",
+    "building_no": "104",
+    "unit_no": "2303",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 01:54:22.074504+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "c1be356f-3c44-43d4-87e0-ed8ca80ec7c8",
+    "building_no": "104",
+    "unit_no": "2304",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "19fcdf0d-22e1-4973-82ad-279d0640279a",
+    "building_no": "104",
+    "unit_no": "2401",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2ab1eec0-4de7-48eb-91f6-c61506e76536",
+    "building_no": "104",
+    "unit_no": "2402",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8600102c-6f96-4e57-9018-daaac7391603",
+    "building_no": "104",
+    "unit_no": "2403",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c0e2fd2a-23d5-4091-b08c-fb4de67bc1f1",
+    "building_no": "104",
+    "unit_no": "2404",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5b29abc5-0ffc-494e-a381-59f1c1450d4c",
+    "building_no": "104",
+    "unit_no": "2501",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f6b3cb46-7392-42b5-99e7-399dd6e51a65",
+    "building_no": "104",
+    "unit_no": "2502",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "471513f1-f84d-4000-9977-ce860d8fe26d",
+    "building_no": "104",
+    "unit_no": "2503",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b886bb87-42b1-426f-8fd4-0d0eda1c0920",
+    "building_no": "104",
+    "unit_no": "2504",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "798bec6f-7e3f-4e80-aae8-f74f11c0fdf2",
+    "building_no": "104",
+    "unit_no": "2601",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "69b2ab43-f3dd-42ba-ba07-182395666c98",
+    "building_no": "104",
+    "unit_no": "2602",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2289efcb-a34e-4a30-80a7-70e227c57e9a",
+    "building_no": "104",
+    "unit_no": "2603",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5b4a0b87-f874-45a0-9ea0-3cdb44caf96b",
+    "building_no": "104",
+    "unit_no": "2604",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2f53a701-a745-4636-bb7e-5c5b5f3485f5",
+    "building_no": "104",
+    "unit_no": "2701",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-06 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "eb33505a-fec6-4e63-b937-915681857fa7",
+    "building_no": "104",
+    "unit_no": "2702",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2fda842c-acfe-4f89-8ad0-bda0c0f8f5a4",
+    "building_no": "104",
+    "unit_no": "2703",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "54d5819b-773d-42fb-acdf-c59b2d2e6c11",
+    "building_no": "104",
+    "unit_no": "2704",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "45971455-0aaf-4d77-ae29-3a0554b1de14",
+    "building_no": "104",
+    "unit_no": "2801",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3945887b-4854-4d26-8306-ccfa83cf4c79",
+    "building_no": "104",
+    "unit_no": "2802",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "cd4267c9-7a36-4ba9-9a05-7b08e588adda",
+    "building_no": "104",
+    "unit_no": "2803",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "200c188c-b61e-4530-8187-56f56a3d26a5",
+    "building_no": "104",
+    "unit_no": "2804",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1129f40b-9bd2-4b32-93c7-92ab9ef77320",
+    "building_no": "104",
+    "unit_no": "2901",
+    "unit_type": "122B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7a2c4f14-1690-4509-86b3-a31e85b33a41",
+    "building_no": "104",
+    "unit_no": "2903",
+    "unit_type": "122A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "46df15ab-02e4-415b-a085-f970723866b6",
+    "building_no": "104",
+    "unit_no": "301",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "304b9de4-744f-4378-9518-5c9794f9b254",
+    "building_no": "104",
+    "unit_no": "302",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "07025ad3-4bc8-42b9-965d-2be15e14d467",
+    "building_no": "104",
+    "unit_no": "303",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3a5a6749-7f4f-493a-96c2-122e9fbd71a4",
+    "building_no": "104",
+    "unit_no": "304",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "85fc8ad8-c65e-4f89-b470-17f1ec40daf3",
+    "building_no": "104",
+    "unit_no": "401",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "695c9c9b-1163-41f4-bb37-ce3f9a6a0280",
+    "building_no": "104",
+    "unit_no": "402",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "80e450e6-47d4-4fcb-894a-926074e88084",
+    "building_no": "104",
+    "unit_no": "403",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c2ba3831-6bca-46b9-8f8a-20fcbc154ac7",
+    "building_no": "104",
+    "unit_no": "404",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f3a5bc4a-b21b-4567-a9cf-27b1d100fa62",
+    "building_no": "104",
+    "unit_no": "501",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "edf9c799-eea9-49e4-8c43-f961fa815826",
+    "building_no": "104",
+    "unit_no": "502",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2072cbf8-1ed0-4fec-8787-86b832abcb9f",
+    "building_no": "104",
+    "unit_no": "503",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "7947a052-2f71-40d4-9b7c-13e213252357",
+    "building_no": "104",
+    "unit_no": "504",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "6d2c14b4-7fec-4f90-a142-f55e6345ebe3",
+    "building_no": "104",
+    "unit_no": "601",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "08264580-4d60-46ba-86a0-99b79628b181",
+    "building_no": "104",
+    "unit_no": "602",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f2b021bc-9c51-40cb-976f-7fb090f3e7cd",
+    "building_no": "104",
+    "unit_no": "603",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "01840c85-0428-4320-b18a-ab826b47c746",
+    "building_no": "104",
+    "unit_no": "604",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ade0ec63-daf9-48c4-b004-094ae1e0e74c",
+    "building_no": "104",
+    "unit_no": "701",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b250afbd-56be-42f4-99a8-465d12e27fd2",
+    "building_no": "104",
+    "unit_no": "702",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6538622e-d9c5-4f91-981b-ad1a72089769",
+    "building_no": "104",
+    "unit_no": "703",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "32f6a830-eaca-4271-9ed9-01a8ba5fef03",
+    "building_no": "104",
+    "unit_no": "704",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "b7d1f3a2-2ac8-4130-b997-244942e45448",
+    "building_no": "104",
+    "unit_no": "801",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c7f02835-7abc-4fac-adb3-06cfc5798b67",
+    "building_no": "104",
+    "unit_no": "802",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "582eb86d-334d-4f28-9894-8b729a7ac105",
+    "building_no": "104",
+    "unit_no": "803",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "01467676-f2d7-4833-a6ae-dc249c67243c",
+    "building_no": "104",
+    "unit_no": "804",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "cc8450e6-9194-4b70-bedf-d63c061c4e3f",
+    "building_no": "104",
+    "unit_no": "901",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "1d9d2e54-de96-4f47-b4ee-e61091653715",
+    "building_no": "104",
+    "unit_no": "902",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ba327772-dbe1-422d-98e1-41c839595797",
+    "building_no": "104",
+    "unit_no": "903",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "a12e2ae2-18b8-4b62-b12e-9fd3666bc7f7",
+    "building_no": "104",
+    "unit_no": "904",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "df3f0e80-7b95-4a66-a1dd-10a46dbbd782",
+    "building_no": "105",
+    "unit_no": "1001",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "177af60f-80e5-437f-af6d-00c668cd682f",
+    "building_no": "105",
+    "unit_no": "1002",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2984aa3e-19cb-4549-ba2d-549c248380c1",
+    "building_no": "105",
+    "unit_no": "1003",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "76284508-0946-4575-82dd-5e03a4d083f8",
+    "building_no": "105",
+    "unit_no": "1004",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c5602697-1fc9-4712-affe-a0ede2b4f008",
+    "building_no": "105",
+    "unit_no": "101",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "cfa740fa-d8f4-4157-b781-26dda35ecc2a",
+    "building_no": "105",
+    "unit_no": "102",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "defcf897-8d9b-46e6-9615-45e934e3b49e",
+    "building_no": "105",
+    "unit_no": "103",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2823fd6f-e071-4932-941e-08ad50338161",
+    "building_no": "105",
+    "unit_no": "1101",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "872d6965-f554-4e0f-8799-ffb8b32ded1d",
+    "building_no": "105",
+    "unit_no": "1102",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "19790c67-643b-4d23-8331-c590b1a402dc",
+    "building_no": "105",
+    "unit_no": "1103",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "110410e4-f512-4468-bb78-f30ccd2c0895",
+    "building_no": "105",
+    "unit_no": "1104",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-06 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "4bb64a86-92a0-4705-85b5-8daa8008e5e5",
+    "building_no": "105",
+    "unit_no": "1201",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "dc8d73bd-4343-4983-86bc-3623b59c3b7c",
+    "building_no": "105",
+    "unit_no": "1202",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e8005b1f-be6c-4343-90be-25bce18d803e",
+    "building_no": "105",
+    "unit_no": "1203",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5921c5f8-8af3-4e3f-9a79-d1dfc6c96cdf",
+    "building_no": "105",
+    "unit_no": "1204",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e9796147-62f4-4b10-a521-f0ea81ead400",
+    "building_no": "105",
+    "unit_no": "1301",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "25295e6b-9866-432e-a870-6f2653c2b5dc",
+    "building_no": "105",
+    "unit_no": "1302",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "9f840671-2ae3-4556-80f8-b960e38ab5dd",
+    "building_no": "105",
+    "unit_no": "1303",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a26c9f63-da12-4ec1-98fb-9b8a0e5e5604",
+    "building_no": "105",
+    "unit_no": "1304",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b6bdc360-9e62-458b-89d6-3ae3672d2c54",
+    "building_no": "105",
+    "unit_no": "1401",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-02-18 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "31e03b14-b6e0-44f4-9ec8-a5f13838da1e",
+    "building_no": "105",
+    "unit_no": "1402",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5693e1d0-cb61-4602-ae17-1ba95dcf7209",
+    "building_no": "105",
+    "unit_no": "1403",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "61cd3667-dd27-435d-ada7-4eec1baa1cc7",
+    "building_no": "105",
+    "unit_no": "1404",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "869900d9-7d76-448b-aea7-25e025fb9ce6",
+    "building_no": "105",
+    "unit_no": "1501",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ceadd803-aa41-4fc7-9607-591c6b1e2fc8",
+    "building_no": "105",
+    "unit_no": "1502",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e1ebab1b-52c2-4331-91de-4a75e5efcb7d",
+    "building_no": "105",
+    "unit_no": "1503",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-06 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "f4020b06-6633-4390-9280-6fa720b03ec7",
+    "building_no": "105",
+    "unit_no": "1504",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "563debd0-1908-461a-a9c5-4d5a8b6bc830",
+    "building_no": "105",
+    "unit_no": "1601",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f8c5744d-84ae-404b-a80a-42c1e6a5a1c3",
+    "building_no": "105",
+    "unit_no": "1602",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "9a75ac01-45b4-4c3a-aa07-f031f7651dd7",
+    "building_no": "105",
+    "unit_no": "1603",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a927347a-76da-4780-b551-0eda11e01f3b",
+    "building_no": "105",
+    "unit_no": "1604",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "058626b7-02cd-47cb-a54a-e50896fbdd4b",
+    "building_no": "105",
+    "unit_no": "1701",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "411493e4-1138-47e4-acaa-5813e9ba239a",
+    "building_no": "105",
+    "unit_no": "1702",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "65c35d51-8fdd-4955-b4d0-869739792442",
+    "building_no": "105",
+    "unit_no": "1703",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "559915f9-de8a-41f9-bb52-b711cf16cfce",
+    "building_no": "105",
+    "unit_no": "1704",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "9ec75a77-68a7-413a-84dc-8b244b51894e",
+    "building_no": "105",
+    "unit_no": "1801",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6ce8c0d4-a90f-4612-b800-1aecf35597b5",
+    "building_no": "105",
+    "unit_no": "1802",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b2bbf474-1a0b-46f9-8a47-c6b113d540a8",
+    "building_no": "105",
+    "unit_no": "1803",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "495056c7-8c86-45d3-b310-d3bd9f687610",
+    "building_no": "105",
+    "unit_no": "1804",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "ed94fd32-7f4f-4e43-8971-b2530f418351",
+    "building_no": "105",
+    "unit_no": "1901",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "a041d4ad-6bd8-4cd5-9867-afa2a086039f",
+    "building_no": "105",
+    "unit_no": "1902",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ba647e50-3285-4b36-a794-614ac492b3ac",
+    "building_no": "105",
+    "unit_no": "1903",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c6c83766-716c-45a5-937b-6a48f09fc8f0",
+    "building_no": "105",
+    "unit_no": "1904",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "33180454-49d9-4e5d-bb8d-571f1afb04c9",
+    "building_no": "105",
+    "unit_no": "2001",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "57ccc845-7841-45f6-bad2-3bbc31511c24",
+    "building_no": "105",
+    "unit_no": "2002",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "27ea5fb9-1376-4ffb-9f28-aa422d7396a9",
+    "building_no": "105",
+    "unit_no": "2003",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "fb96d9b4-99a4-4e21-a4e3-a82d21e2f1bf",
+    "building_no": "105",
+    "unit_no": "2004",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ae24aee1-ed2e-4ea1-b5ad-1a29978ee1ba",
+    "building_no": "105",
+    "unit_no": "201",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "eb367ac6-d50b-4c5a-91ec-d663968c7bc5",
+    "building_no": "105",
+    "unit_no": "202",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "PLANNED"
+  },
+  {
+    "unit_id": "5de922b6-a9e7-40fa-96c4-bad3d6695518",
+    "building_no": "105",
+    "unit_no": "203",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "bf4ba32e-dbe0-4a0e-915f-3ab376fa0143",
+    "building_no": "105",
+    "unit_no": "204",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "eab5d40a-8d3d-40f6-872b-c68524be8588",
+    "building_no": "105",
+    "unit_no": "2101",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "72cd6105-4f65-4a5e-aa92-206b692fa489",
+    "building_no": "105",
+    "unit_no": "2102",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "85ae7849-1363-46fd-b822-bd6f51416b27",
+    "building_no": "105",
+    "unit_no": "2103",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e5d14a9c-0452-492a-83a0-95ffefbc969b",
+    "building_no": "105",
+    "unit_no": "2104",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0d525174-a731-4429-b17a-c93052e247f2",
+    "building_no": "105",
+    "unit_no": "2201",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ff9182e3-87b2-4556-ad7c-ac2dd69d5dfc",
+    "building_no": "105",
+    "unit_no": "2202",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b1942560-cfac-4b5e-8581-2a0b45693bfb",
+    "building_no": "105",
+    "unit_no": "2203",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ca66c814-b218-4d9c-9064-d7876d8826b8",
+    "building_no": "105",
+    "unit_no": "2204",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "41948801-75d4-474b-a391-05b799f8ac94",
+    "building_no": "105",
+    "unit_no": "2301",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "528f1160-51ae-4a4f-b62f-97992cbb2685",
+    "building_no": "105",
+    "unit_no": "2302",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e2a5907b-7c21-4e2b-9864-527c67fdd003",
+    "building_no": "105",
+    "unit_no": "2303",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "1a2317e2-8340-462e-afb0-8113b188e20f",
+    "building_no": "105",
+    "unit_no": "2304",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "2a486402-d467-47b7-98f3-b7e5268480fb",
+    "building_no": "105",
+    "unit_no": "2401",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8d307202-17ff-4919-90e8-c59a06e5a15e",
+    "building_no": "105",
+    "unit_no": "2402",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "05c186ad-e409-4491-a9ca-9c10ed8b5f56",
+    "building_no": "105",
+    "unit_no": "2403",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0c65e2f4-6f6e-4690-8153-920f0e116fdd",
+    "building_no": "105",
+    "unit_no": "2404",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "e4f4c68c-0a51-4951-aa44-fbc783884ebd",
+    "building_no": "105",
+    "unit_no": "2501",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "3b877903-8a0c-470b-bd52-4d920b0222e7",
+    "building_no": "105",
+    "unit_no": "2502",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f7bf6f99-42c0-4cae-bb94-5ab1de963734",
+    "building_no": "105",
+    "unit_no": "2503",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0d11f951-e33b-437d-94b0-fb835ac72762",
+    "building_no": "105",
+    "unit_no": "2504",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6ecfd89c-3997-4fe7-bf7d-b87393b9e11b",
+    "building_no": "105",
+    "unit_no": "2601",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b0397cd5-b261-4d3c-b5f1-920f7fd50ae4",
+    "building_no": "105",
+    "unit_no": "2602",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e381e5bb-3690-4579-bf49-c4774e5ba757",
+    "building_no": "105",
+    "unit_no": "2603",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3d55199a-081a-492a-bafc-cfcfa539ff61",
+    "building_no": "105",
+    "unit_no": "2604",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "9a7b0bae-c9cc-4595-8251-7c7fa4f5b1da",
+    "building_no": "105",
+    "unit_no": "2701",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d1c0e4f9-dfa9-432f-96e6-a7c0fcc04257",
+    "building_no": "105",
+    "unit_no": "2702",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "51ac0dfd-0f77-401d-bdde-071343ac6515",
+    "building_no": "105",
+    "unit_no": "2703",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "089ef609-1184-4236-a629-061189ba16c0",
+    "building_no": "105",
+    "unit_no": "2704",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b13ab1e0-d641-4e90-acee-0fac22b4f15f",
+    "building_no": "105",
+    "unit_no": "2801",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "bd2f33a7-ccfc-4782-9b5f-75c593ab548b",
+    "building_no": "105",
+    "unit_no": "2802",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "273e2213-65f6-456d-a3fc-c0fada97e350",
+    "building_no": "105",
+    "unit_no": "2803",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ea127e4d-807a-4fc0-a36a-a3a76da5357e",
+    "building_no": "105",
+    "unit_no": "2804",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "02ff4385-4878-4fcf-9034-dccf1fbacb82",
+    "building_no": "105",
+    "unit_no": "2901",
+    "unit_type": "122A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "06c35403-6f28-44eb-8894-570ae1dc2a5b",
+    "building_no": "105",
+    "unit_no": "2903",
+    "unit_type": "122B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "9605efd3-cca2-4619-9b4f-92dc9bcdd1dc",
+    "building_no": "105",
+    "unit_no": "301",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a529ce6e-bfdf-4ee9-b915-0bc1bf36f69e",
+    "building_no": "105",
+    "unit_no": "302",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "0ef372bd-f434-4186-a2d9-538b6e641e15",
+    "building_no": "105",
+    "unit_no": "303",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "eba1ef76-58fd-4a01-9054-f2b9538f0c27",
+    "building_no": "105",
+    "unit_no": "304",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ba2bea53-103b-46d8-848e-9c94a69d7de7",
+    "building_no": "105",
+    "unit_no": "401",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "f5643f19-f058-4fc1-b634-598c1e9a5b9f",
+    "building_no": "105",
+    "unit_no": "402",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "c28b6feb-d738-47f0-8c4f-fa45044a82d9",
+    "building_no": "105",
+    "unit_no": "403",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d74ea072-5137-4d19-a8c9-1df06a62992b",
+    "building_no": "105",
+    "unit_no": "404",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "fcd23f07-fb5a-4edd-986a-f0e059635827",
+    "building_no": "105",
+    "unit_no": "501",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e4dcaa82-b53d-4f5c-a021-a89ab911d152",
+    "building_no": "105",
+    "unit_no": "502",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ca54e287-33e1-43fa-8fe8-e5e0e460cbd5",
+    "building_no": "105",
+    "unit_no": "503",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "31c39400-5665-468b-8b16-cd89a90a3675",
+    "building_no": "105",
+    "unit_no": "504",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "9d6b5a1f-397e-4180-8832-f65ae4adfcbe",
+    "building_no": "105",
+    "unit_no": "601",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2def40b6-fab2-4441-aa5d-c688dd6d8be1",
+    "building_no": "105",
+    "unit_no": "602",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "12ae999f-9e79-498e-a6d6-753fd9ce54df",
+    "building_no": "105",
+    "unit_no": "603",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a4182268-e49f-4818-bbad-a88da44fce6d",
+    "building_no": "105",
+    "unit_no": "604",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "d1f54765-245d-41e9-b532-7cc5e273cf55",
+    "building_no": "105",
+    "unit_no": "701",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3b07c630-f8c1-4f61-a1e7-27cc7bcad635",
+    "building_no": "105",
+    "unit_no": "702",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "cba80140-8a90-4d97-9c42-434ef0a7cceb",
+    "building_no": "105",
+    "unit_no": "703",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "467de98a-2642-4cd8-91df-3d9c14153216",
+    "building_no": "105",
+    "unit_no": "704",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5d4145a2-aef2-45c9-97d4-dabdc6dfdc5b",
+    "building_no": "105",
+    "unit_no": "801",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d601e373-d2fb-404a-9348-9df4f390b575",
+    "building_no": "105",
+    "unit_no": "802",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "cfbcdd48-1638-4744-8e39-d05b92965357",
+    "building_no": "105",
+    "unit_no": "803",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "68319a09-2aa8-48bf-8ab9-def34bc7b025",
+    "building_no": "105",
+    "unit_no": "804",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ff21ba05-a6a5-4977-9d14-d37b6457cc51",
+    "building_no": "105",
+    "unit_no": "901",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "4c240ef2-47c6-43f1-84dc-e6dcfa52737d",
+    "building_no": "105",
+    "unit_no": "902",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2c34a7eb-88c1-4eb2-86b2-27f8b06b9c12",
+    "building_no": "105",
+    "unit_no": "903",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2f7563cb-540e-4793-a6ef-bbc13710faf6",
+    "building_no": "105",
+    "unit_no": "904",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 01:54:22.074504+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "16de9b8a-a356-4e23-911f-e95e78744d9d",
+    "building_no": "106",
+    "unit_no": "1001",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3f20f661-0d60-4113-a98f-307d49100f67",
+    "building_no": "106",
+    "unit_no": "1002",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c089c2b4-d309-4c36-be63-22ef71363118",
+    "building_no": "106",
+    "unit_no": "1003",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7d5c63ec-1a62-4c32-9c6c-c00b744bfe4b",
+    "building_no": "106",
+    "unit_no": "1004",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "564c45d7-ec03-4927-ae2b-a355319964dc",
+    "building_no": "106",
+    "unit_no": "1101",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "84ca432a-3986-4b35-8a45-1a3be89708fe",
+    "building_no": "106",
+    "unit_no": "1102",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "075d9b61-f50d-4bbd-9925-d741dce8cf72",
+    "building_no": "106",
+    "unit_no": "1103",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2203d5e9-74e4-4e02-9794-4414cc518f0b",
+    "building_no": "106",
+    "unit_no": "1104",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "45d48a73-9c7e-4663-8eb1-da51e5e16549",
+    "building_no": "106",
+    "unit_no": "1201",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "de850543-850b-4b7a-a1df-ca1711188221",
+    "building_no": "106",
+    "unit_no": "1202",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "225810a5-6f27-4b84-83d3-5ca61f5c6c12",
+    "building_no": "106",
+    "unit_no": "1203",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "49889ea3-40f2-4aa2-bc96-4cd21111cada",
+    "building_no": "106",
+    "unit_no": "1204",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "22ed391e-e0d4-44b4-b6a6-a8ee4da925b6",
+    "building_no": "106",
+    "unit_no": "1301",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "90eace4e-30ac-4995-833e-5bf30ab9bc67",
+    "building_no": "106",
+    "unit_no": "1302",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d4fd26b2-e25a-4598-b080-09ba01185241",
+    "building_no": "106",
+    "unit_no": "1303",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e594e104-f30c-47f7-912b-a0f60349db07",
+    "building_no": "106",
+    "unit_no": "1304",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4c616d01-f294-4af4-8bea-7852abf4d8ad",
+    "building_no": "106",
+    "unit_no": "1401",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "776d663b-127e-4154-93e4-13888644eab9",
+    "building_no": "106",
+    "unit_no": "1402",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e7ada73f-237b-40c1-91d6-ebfa73e69724",
+    "building_no": "106",
+    "unit_no": "1403",
+    "unit_type": "74B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "74513056-35be-4f8c-9f1c-eab00cea47b0",
+    "building_no": "106",
+    "unit_no": "1404",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "1525ccf3-d10d-4b92-b925-aab31f28b3aa",
+    "building_no": "106",
+    "unit_no": "1501",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "74fa9357-982e-4866-9836-6480a7c254d3",
+    "building_no": "106",
+    "unit_no": "1502",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "58ee5f19-41dc-4ab0-a26f-8f410acabe8f",
+    "building_no": "106",
+    "unit_no": "1503",
+    "unit_type": "74B",
+    "balance_paid_at": "2026-11-03 01:54:22.074504+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "4bc7c461-e828-4ffd-be27-2dcb216b77e7",
+    "building_no": "106",
+    "unit_no": "1504",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "CONTACTED"
+  },
+  {
+    "unit_id": "c2494440-9a58-473d-b912-798f0960a89d",
+    "building_no": "106",
+    "unit_no": "1601",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b0cffbed-7ce0-43a7-a8ab-ef1d476d2b4e",
+    "building_no": "106",
+    "unit_no": "1602",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ede113b4-7053-40c8-85c7-6274f4246ed8",
+    "building_no": "106",
+    "unit_no": "1603",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "89f7653a-35de-4919-8630-8a3dae027ba7",
+    "building_no": "106",
+    "unit_no": "1604",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "177fa28b-8df2-434f-9b1f-9330261b8579",
+    "building_no": "106",
+    "unit_no": "1701",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "2f8dde35-e489-487e-93bf-fee6534a1af2",
+    "building_no": "106",
+    "unit_no": "1702",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "e3c23db1-54bc-466a-b169-0df3421ce04a",
+    "building_no": "106",
+    "unit_no": "1703",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "32b7f17b-6a99-48c3-9923-f1404933fc83",
+    "building_no": "106",
+    "unit_no": "1704",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b0b38ed0-787c-4ee3-be5d-a2c258b25789",
+    "building_no": "106",
+    "unit_no": "1801",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5540fc39-ed99-40ad-9137-b61ec631c019",
+    "building_no": "106",
+    "unit_no": "1802",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0cfff36d-12a6-48d2-960d-4d9fc4a93fec",
+    "building_no": "106",
+    "unit_no": "1803",
+    "unit_type": "74B",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "90cb3e7a-24b0-4c23-8853-d81eef272c0f",
+    "building_no": "106",
+    "unit_no": "1804",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "fe8b15ae-b4ec-46c2-ba46-cbb76b039c85",
+    "building_no": "106",
+    "unit_no": "1901",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0115d700-1114-4373-adfe-d08146e6856c",
+    "building_no": "106",
+    "unit_no": "1902",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "a083b544-9c1b-4ffa-970a-51e839c77155",
+    "building_no": "106",
+    "unit_no": "1903",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0df9bb42-16e8-4b07-9daa-24d68d531aee",
+    "building_no": "106",
+    "unit_no": "1904",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0e30f8c8-b12f-45f1-ac8d-0dca941e0fa5",
+    "building_no": "106",
+    "unit_no": "2001",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0648714b-83e1-4afe-82f0-bb70ac06c986",
+    "building_no": "106",
+    "unit_no": "2002",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e73b8b13-ece4-4e12-a13b-c13501382d52",
+    "building_no": "106",
+    "unit_no": "2003",
+    "unit_type": "74B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "34514186-3703-4fff-a0a5-5f2d844c73a9",
+    "building_no": "106",
+    "unit_no": "2004",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c76517fa-dde2-44ce-8dad-6c61459ce2b8",
+    "building_no": "106",
+    "unit_no": "201",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "61081455-cfa8-48c0-8bec-166d9fcdec4a",
+    "building_no": "106",
+    "unit_no": "202",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "9c3b931b-62d9-427a-a966-dd38637616c2",
+    "building_no": "106",
+    "unit_no": "203",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "07697cea-c536-49b4-982a-2f0c2c181470",
+    "building_no": "106",
+    "unit_no": "204",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2aab53d2-0d62-4a91-a751-27626358ea16",
+    "building_no": "106",
+    "unit_no": "2101",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e721c74c-079f-4b59-9e11-e5c351575417",
+    "building_no": "106",
+    "unit_no": "2102",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "13fdf18e-85b1-4549-9cc3-ffd917b80006",
+    "building_no": "106",
+    "unit_no": "2103",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "04775d64-e1db-4c56-842f-3f5f5d046b49",
+    "building_no": "106",
+    "unit_no": "2104",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "afb07733-2e9a-436b-a007-7e31ec620b9b",
+    "building_no": "106",
+    "unit_no": "2201",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f59e716c-bd98-4024-b0aa-69b2028fe32c",
+    "building_no": "106",
+    "unit_no": "2202",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "63d647cd-9073-4adc-8e3b-f7e37ca1d5fb",
+    "building_no": "106",
+    "unit_no": "2203",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c55a5a62-adf3-4845-95d2-469d4aa9b02a",
+    "building_no": "106",
+    "unit_no": "2204",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d8559ca0-31b3-4732-aa4a-9819a7927217",
+    "building_no": "106",
+    "unit_no": "2301",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3524f045-92aa-4771-96ca-579f9dfc64e8",
+    "building_no": "106",
+    "unit_no": "2302",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4795e470-5919-4e0d-a8f3-8c1d85029730",
+    "building_no": "106",
+    "unit_no": "2303",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "16a67b3d-d320-4963-bdbc-80193824a332",
+    "building_no": "106",
+    "unit_no": "2304",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e0e8e30a-8909-447a-8222-80421ac9a933",
+    "building_no": "106",
+    "unit_no": "2401",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "73d064b0-7a37-4178-843e-f51f99bca139",
+    "building_no": "106",
+    "unit_no": "2402",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "10c1c0c1-e32c-4018-a7e7-8ebc1738aece",
+    "building_no": "106",
+    "unit_no": "2403",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f51e4a62-20f0-45b6-896e-2286b19b3dd5",
+    "building_no": "106",
+    "unit_no": "2404",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "16ef546e-2939-4539-b17b-b34d2e77e5c2",
+    "building_no": "106",
+    "unit_no": "2501",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "00108668-bc2d-4a81-b21a-e220134a1ee5",
+    "building_no": "106",
+    "unit_no": "2502",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f694ac49-32c1-45bd-9b71-0613d407f333",
+    "building_no": "106",
+    "unit_no": "2503",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1d66d5bb-e43f-4328-b638-a1e293d223f2",
+    "building_no": "106",
+    "unit_no": "2504",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "0f778fa6-eb28-4653-870a-2a8bf486033a",
+    "building_no": "106",
+    "unit_no": "2601",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "3cee1e2b-10a6-4b49-a9f7-ca9b7b1b56ac",
+    "building_no": "106",
+    "unit_no": "2602",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0ad3f73c-632f-4c9b-b49e-df09e18633d4",
+    "building_no": "106",
+    "unit_no": "2603",
+    "unit_type": "74B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "094cacb2-d241-4cfd-8bf0-082d707ab6d0",
+    "building_no": "106",
+    "unit_no": "2604",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "69338fc7-d8a1-47a9-b7d2-3248d34acd8c",
+    "building_no": "106",
+    "unit_no": "2701",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "fe657d2c-c477-46d8-b181-33ab38c1482b",
+    "building_no": "106",
+    "unit_no": "2702",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-06 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "c0f73de5-44dc-44c9-b7c1-b391d9fd8560",
+    "building_no": "106",
+    "unit_no": "2801",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e6e4d261-0c4f-4d09-81fa-9fcce848b24f",
+    "building_no": "106",
+    "unit_no": "2802",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "fad5bdf3-4994-4ca7-92dc-5b769ef88c03",
+    "building_no": "106",
+    "unit_no": "301",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "87287eb3-ac74-4b9c-bbe1-bc9c0346b563",
+    "building_no": "106",
+    "unit_no": "302",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0fa428a5-d887-41e0-b980-92936f3ee512",
+    "building_no": "106",
+    "unit_no": "303",
+    "unit_type": "74B",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "32d1c83c-c19f-4156-a41d-e39a594594bf",
+    "building_no": "106",
+    "unit_no": "304",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5e1e1169-365f-4d73-bdc9-88356c172db1",
+    "building_no": "106",
+    "unit_no": "401",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0fc3a3bc-21b6-4b31-865a-52a1510222e5",
+    "building_no": "106",
+    "unit_no": "402",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7effd2fa-d966-43a9-be5a-040db4cd4116",
+    "building_no": "106",
+    "unit_no": "403",
+    "unit_type": "74B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "5808aaa3-c5bd-4d52-901c-ee9faced8774",
+    "building_no": "106",
+    "unit_no": "404",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "163718e2-8ad8-49d0-b20b-4c5f3f8d6ac7",
+    "building_no": "106",
+    "unit_no": "501",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7e24da91-8666-4207-b51c-ec4e83bf83b8",
+    "building_no": "106",
+    "unit_no": "502",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1f6d53eb-8e38-4ec9-8d34-3406ec7fd93d",
+    "building_no": "106",
+    "unit_no": "503",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0937e28c-e623-4044-bbcd-4b2594a25fa4",
+    "building_no": "106",
+    "unit_no": "504",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "69969864-e0d1-4aa6-99d5-8f709d374e0c",
+    "building_no": "106",
+    "unit_no": "601",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "60d190ff-5e11-46fb-bc57-053bb5bdf356",
+    "building_no": "106",
+    "unit_no": "602",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e448ce33-9fe1-4b17-b9cd-ef4350a85c7d",
+    "building_no": "106",
+    "unit_no": "603",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "23d3ef28-af1e-435c-ac04-a51a046f5ef0",
+    "building_no": "106",
+    "unit_no": "604",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "24f212c2-e709-40d2-968d-3839550873c5",
+    "building_no": "106",
+    "unit_no": "701",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "40af27ae-5d00-4ab6-87d1-2c202b7b2ead",
+    "building_no": "106",
+    "unit_no": "702",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4975ee1a-3499-4a1c-bf10-161751b53646",
+    "building_no": "106",
+    "unit_no": "703",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "eecbed33-41d1-4f81-b0cf-f6cc07c9f051",
+    "building_no": "106",
+    "unit_no": "704",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "af2b06af-bbe8-48ec-ad74-865aaaa83a5e",
+    "building_no": "106",
+    "unit_no": "801",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b9f01d1b-6c71-400f-a441-262c1e750fda",
+    "building_no": "106",
+    "unit_no": "802",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "db43076d-64c7-453f-a8f4-0c4dc9d2d4a7",
+    "building_no": "106",
+    "unit_no": "803",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6a2d298f-ec30-4fdd-84c3-90bb3ad5a051",
+    "building_no": "106",
+    "unit_no": "804",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "20717698-f492-4e50-93c4-9bdda713b11b",
+    "building_no": "106",
+    "unit_no": "901",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a500254b-f1b1-404d-a5db-ba320e7f1eef",
+    "building_no": "106",
+    "unit_no": "902",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d7a55592-34a2-421e-a0a8-699c33e8cc0c",
+    "building_no": "106",
+    "unit_no": "903",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6f161057-71a5-4090-a153-52ea24489149",
+    "building_no": "106",
+    "unit_no": "904",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a474d893-7615-4ad9-ac94-d839b29269bc",
+    "building_no": "107",
+    "unit_no": "1001",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "53227214-02eb-48fb-b94f-91aa76d01982",
+    "building_no": "107",
+    "unit_no": "1002",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "e27e66f3-2167-4e66-b5c5-c0898b5f9932",
+    "building_no": "107",
+    "unit_no": "1003",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a0c34c06-93c6-4baf-9da5-f0042f0fb7df",
+    "building_no": "107",
+    "unit_no": "1004",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "a79b0bd8-7474-430e-b55a-c7a4a9c3069f",
+    "building_no": "107",
+    "unit_no": "1101",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f2bdf702-1dae-4436-b431-125d2db1d049",
+    "building_no": "107",
+    "unit_no": "1102",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "20ea98a2-e5d8-49dd-95be-32db59fbe194",
+    "building_no": "107",
+    "unit_no": "1103",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c7059892-93d1-42cd-8553-a0b51a3817f4",
+    "building_no": "107",
+    "unit_no": "1104",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3f622345-1922-444a-8f8b-96e17a28e59c",
+    "building_no": "107",
+    "unit_no": "1201",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7bd1e2ea-18ac-45c8-9087-57b1b7d81be6",
+    "building_no": "107",
+    "unit_no": "1202",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1e18ada5-3346-47d3-b389-3958116e2898",
+    "building_no": "107",
+    "unit_no": "1203",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0dbb26ff-ec05-4c61-9834-cbb872f20ed9",
+    "building_no": "107",
+    "unit_no": "1204",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "ba669308-b824-4524-871a-e8094d1e9083",
+    "building_no": "107",
+    "unit_no": "1301",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "4c8a8437-d89d-42be-8170-2bc646d52f07",
+    "building_no": "107",
+    "unit_no": "1302",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "324eba1c-fc34-4c2b-944f-5c303dd7e8bb",
+    "building_no": "107",
+    "unit_no": "1303",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "PLANNED"
+  },
+  {
+    "unit_id": "0b26279f-271e-4a0c-9088-a705c3ed8752",
+    "building_no": "107",
+    "unit_no": "1304",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f8bd6439-813e-44a2-a831-ae4b0348fc86",
+    "building_no": "107",
+    "unit_no": "1401",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b40de59d-5a28-4fef-bfb5-184d2de832af",
+    "building_no": "107",
+    "unit_no": "1402",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f2c9039b-34dd-4d08-952c-87640ea42e1c",
+    "building_no": "107",
+    "unit_no": "1403",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "77b21e67-5c19-4449-8cad-0f0c136284ef",
+    "building_no": "107",
+    "unit_no": "1404",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "882fa042-c23e-4f36-84ce-0e7961fceab3",
+    "building_no": "107",
+    "unit_no": "1501",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b5966a8a-5a12-4c5f-b767-96c37e627614",
+    "building_no": "107",
+    "unit_no": "1502",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e72d8a86-4611-4ebf-b37d-8961618bdcaa",
+    "building_no": "107",
+    "unit_no": "1503",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e14a96cb-b005-47d3-b206-589bc485028f",
+    "building_no": "107",
+    "unit_no": "1504",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "079346fb-4bc6-4595-8157-dd01884382a8",
+    "building_no": "107",
+    "unit_no": "1601",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "52d421a5-ab79-4e9c-b108-3901fed73376",
+    "building_no": "107",
+    "unit_no": "1602",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f2b9327f-4eba-4439-b09c-a97fa8307fa7",
+    "building_no": "107",
+    "unit_no": "1603",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f2526414-a554-4eec-818a-2f5386c07d25",
+    "building_no": "107",
+    "unit_no": "1604",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "df13520a-5f8c-4d5d-8eb3-7384ec194027",
+    "building_no": "107",
+    "unit_no": "1701",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6a7c35f6-0b71-451e-a0bb-ac3670b5e6af",
+    "building_no": "107",
+    "unit_no": "1702",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "22018dec-fe50-4472-bb40-93e4339df11f",
+    "building_no": "107",
+    "unit_no": "1703",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "07a2fde7-deff-4c13-ac42-763b0dc7acff",
+    "building_no": "107",
+    "unit_no": "1704",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "692df178-af98-42db-bdd8-6048cebbf971",
+    "building_no": "107",
+    "unit_no": "1801",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "f03e4a6a-d334-4400-ad74-20db3709de82",
+    "building_no": "107",
+    "unit_no": "1802",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5b0d108f-df51-4be6-bee4-5a462f2ec4f3",
+    "building_no": "107",
+    "unit_no": "1803",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e99ba336-6ee3-49e0-9539-041c29f1b412",
+    "building_no": "107",
+    "unit_no": "1804",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "e7da27a8-7254-4d5e-86ec-92fd08c07f58",
+    "building_no": "107",
+    "unit_no": "1901",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a1b2a09a-6f98-45fe-bdc8-1c0925e5a227",
+    "building_no": "107",
+    "unit_no": "1902",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "abe5eaf1-01e4-4c17-b6f6-476b5b6ba0f5",
+    "building_no": "107",
+    "unit_no": "1903",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2587076b-46ee-4b89-a10e-a554c7a763a4",
+    "building_no": "107",
+    "unit_no": "1904",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "abf03020-7907-4bc1-8b74-dfff31a5144e",
+    "building_no": "107",
+    "unit_no": "2001",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f753055c-9393-4ce4-bc71-ac4af8383ed0",
+    "building_no": "107",
+    "unit_no": "2002",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "8fde51eb-0914-470c-8469-39e341473a33",
+    "building_no": "107",
+    "unit_no": "2003",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4db75e86-e04b-4b47-afb6-ee5af9c98608",
+    "building_no": "107",
+    "unit_no": "2004",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a4abe969-9671-4960-8203-9d677d1316fc",
+    "building_no": "107",
+    "unit_no": "201",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "60495744-8caf-4f56-9273-e255a9d65f1e",
+    "building_no": "107",
+    "unit_no": "202",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0f4f279b-f4eb-4cfb-8b87-47ce7d7b4652",
+    "building_no": "107",
+    "unit_no": "203",
+    "unit_type": "74B",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "8c6b2188-aa3c-48d1-b9b9-a809b64da508",
+    "building_no": "107",
+    "unit_no": "204",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "345543b0-27e0-4ad7-b290-43e919743af3",
+    "building_no": "107",
+    "unit_no": "2101",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f557568d-bacd-4db9-972e-0db254cc3e77",
+    "building_no": "107",
+    "unit_no": "2102",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 01:54:22.074504+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "fb910456-4086-477c-abf5-3727b8d169be",
+    "building_no": "107",
+    "unit_no": "2103",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1a67603d-9a86-4d86-855d-4e1d95444063",
+    "building_no": "107",
+    "unit_no": "2104",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "c6e62268-e151-472e-95e0-09defc73f3ca",
+    "building_no": "107",
+    "unit_no": "2201",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6d7708de-df12-40aa-93e9-0a68a7a9acae",
+    "building_no": "107",
+    "unit_no": "2202",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a59978fa-e217-4bd7-aed3-defefe53f43a",
+    "building_no": "107",
+    "unit_no": "2203",
+    "unit_type": "74B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "a8b3a514-a86b-48a4-8512-955e95bb1c1e",
+    "building_no": "107",
+    "unit_no": "2204",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "912047c8-26c2-46fa-9470-3108dadbaffe",
+    "building_no": "107",
+    "unit_no": "2301",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "76eccd1e-3449-420a-8a10-e7fa57198b25",
+    "building_no": "107",
+    "unit_no": "2302",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a43eec9b-bada-48b6-a037-8af72870b277",
+    "building_no": "107",
+    "unit_no": "2303",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "963ce500-d80d-4ca3-869d-9d805442b92f",
+    "building_no": "107",
+    "unit_no": "2304",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "2d53ec69-387c-4911-a351-6055156d9718",
+    "building_no": "107",
+    "unit_no": "2401",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "5871ad07-f645-4052-8db6-56eb6737c7e0",
+    "building_no": "107",
+    "unit_no": "2402",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "00f6d38e-321f-4c80-be48-a808713ae121",
+    "building_no": "107",
+    "unit_no": "2403",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "518fe74c-bf13-451d-a43e-bdc843115b5a",
+    "building_no": "107",
+    "unit_no": "2404",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7c677f53-2c80-46ce-b265-aeb4c6075efd",
+    "building_no": "107",
+    "unit_no": "2503",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1c7f9e7a-8704-4ed3-874c-e2cce4be8e63",
+    "building_no": "107",
+    "unit_no": "2504",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-06 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "ea09cb2b-a20a-4d61-939f-9c4c7d8b0046",
+    "building_no": "107",
+    "unit_no": "301",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6cdbf907-8326-4d14-b92e-30bf4683d5e8",
+    "building_no": "107",
+    "unit_no": "302",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "14ade6bc-7666-4351-994a-53c58832c12b",
+    "building_no": "107",
+    "unit_no": "303",
+    "unit_type": "74B",
+    "balance_paid_at": "2026-11-06 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "33b7f098-ed8c-4eb7-9094-32bf16605f06",
+    "building_no": "107",
+    "unit_no": "304",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4a8b5325-b6db-48db-a512-b393052dc0ab",
+    "building_no": "107",
+    "unit_no": "401",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "5414cf3c-d0ce-479c-a5b6-8d47b15cc009",
+    "building_no": "107",
+    "unit_no": "402",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e9d1ab97-ea69-48b3-b8a4-f6cb9fdf6ca2",
+    "building_no": "107",
+    "unit_no": "403",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "17fa957f-b270-4f76-b985-a6b972d774f7",
+    "building_no": "107",
+    "unit_no": "404",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "d6bb7487-64b2-4af3-bb34-64673d4ebddf",
+    "building_no": "107",
+    "unit_no": "501",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8fa6cbf5-2c47-4f8b-a7aa-4d430ee3cb50",
+    "building_no": "107",
+    "unit_no": "502",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "bceeeaeb-e0e2-42f7-a1aa-1dbea851779f",
+    "building_no": "107",
+    "unit_no": "503",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6dc08635-1cac-4f60-be72-3bfc9af4f23f",
+    "building_no": "107",
+    "unit_no": "504",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "708ec69a-30aa-41d4-ba65-352372ffde8e",
+    "building_no": "107",
+    "unit_no": "601",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "baabbd3f-cb72-4f5b-b222-3f1a373701ca",
+    "building_no": "107",
+    "unit_no": "602",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "13c7ae09-8f86-46ad-a17b-c78979dc1410",
+    "building_no": "107",
+    "unit_no": "603",
+    "unit_type": "74B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "dd5ddd11-51d6-48ad-a71b-fa691698b81b",
+    "building_no": "107",
+    "unit_no": "604",
+    "unit_type": "74A",
+    "balance_paid_at": "2026-07-14 04:13:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "8a87fa1e-f9b9-4a3e-a1d8-abbd32bb536d",
+    "building_no": "107",
+    "unit_no": "701",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4ffb7d41-81e3-4717-bffd-f9b0021e9d2a",
+    "building_no": "107",
+    "unit_no": "702",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c372bee3-5a89-412b-aa80-52916da7956b",
+    "building_no": "107",
+    "unit_no": "703",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d2508f9d-16d9-436a-a250-91dc8322c645",
+    "building_no": "107",
+    "unit_no": "704",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "15df6b4c-f91f-4245-82d9-435b7a7a35cf",
+    "building_no": "107",
+    "unit_no": "801",
+    "unit_type": "84C",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "8dc668a9-f8bd-4adf-9431-c493cc3a95e5",
+    "building_no": "107",
+    "unit_no": "802",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "74e82275-f108-4bf6-8014-4dd84e9fc6e7",
+    "building_no": "107",
+    "unit_no": "803",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6dd09f2c-ab7d-4bc0-a56a-2b5eb82e990a",
+    "building_no": "107",
+    "unit_no": "804",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "214927ed-cfb9-4d9b-8a7b-e0a9f6181371",
+    "building_no": "107",
+    "unit_no": "901",
+    "unit_type": "84C",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "e53d6ed7-12f1-49c4-9875-be44f4a424b0",
+    "building_no": "107",
+    "unit_no": "902",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2fa26773-3cf0-47c0-a284-1c3416f18bbe",
+    "building_no": "107",
+    "unit_no": "903",
+    "unit_type": "74B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7f548269-5410-4772-b621-9812814754a9",
+    "building_no": "107",
+    "unit_no": "904",
+    "unit_type": "74A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "aa369680-09fc-48da-932a-fecee7ab7d7b",
+    "building_no": "108",
+    "unit_no": "1001",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8dce8899-0187-475c-8b0f-6c573376ac64",
+    "building_no": "108",
+    "unit_no": "1002",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "440df5b4-262c-4af1-b4c2-75ebf310555d",
+    "building_no": "108",
+    "unit_no": "1003",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "720ad62f-8c81-456b-b326-3a8cf5e6c955",
+    "building_no": "108",
+    "unit_no": "1004",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "9f48ffd7-d5b0-4e11-a7e4-d2642940d58e",
+    "building_no": "108",
+    "unit_no": "1101",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "36b5e0b9-ae7c-4e3a-b1d3-50ddc3376c6d",
+    "building_no": "108",
+    "unit_no": "1102",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0360159e-c389-4756-81e4-8ab407047094",
+    "building_no": "108",
+    "unit_no": "1103",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "05a9deb2-5c7e-40ec-a98a-6c75f2e7c503",
+    "building_no": "108",
+    "unit_no": "1104",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "8ff89a91-134c-4d91-bebd-b27cb2b7f287",
+    "building_no": "108",
+    "unit_no": "1201",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-06 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "4de96fb0-1768-4549-8124-a3f0f42b1b80",
+    "building_no": "108",
+    "unit_no": "1202",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "559fe393-c239-411a-9409-514ce7b9b370",
+    "building_no": "108",
+    "unit_no": "1203",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4f1836b3-1658-421a-9339-362636709509",
+    "building_no": "108",
+    "unit_no": "1204",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "a78138f8-0ec8-4b54-ac27-6dbf9de4e075",
+    "building_no": "108",
+    "unit_no": "1301",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c6c444f1-7eaa-4d8c-844c-ddaf037378d9",
+    "building_no": "108",
+    "unit_no": "1302",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "57525d36-b6bb-400e-9995-461c0c033157",
+    "building_no": "108",
+    "unit_no": "1303",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "73957b0e-3e65-4260-bd75-ad863c1a5582",
+    "building_no": "108",
+    "unit_no": "1304",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b77a6040-a16a-45d0-899a-29e579a3f09a",
+    "building_no": "108",
+    "unit_no": "1401",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 01:54:22.074504+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "1d177ef8-7257-4c70-b898-43ce51c7e0d2",
+    "building_no": "108",
+    "unit_no": "1402",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "45843f0d-0b85-43b1-a5f7-421e168492f1",
+    "building_no": "108",
+    "unit_no": "1403",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "446b5ef3-f9ad-40d2-a991-154a14fc84e1",
+    "building_no": "108",
+    "unit_no": "1404",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "35088513-6af4-480a-9006-644fd1fd6e1f",
+    "building_no": "108",
+    "unit_no": "1501",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "f18aff31-240a-4042-8440-dc1bc86cfc73",
+    "building_no": "108",
+    "unit_no": "1502",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "c30f753c-e9ec-4b22-b2af-8d2d38385e05",
+    "building_no": "108",
+    "unit_no": "1503",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4b50b8a4-499d-4aca-9a70-913effdfc38a",
+    "building_no": "108",
+    "unit_no": "1504",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "62ce2e84-bacd-4abe-acc1-ea717e86a72c",
+    "building_no": "108",
+    "unit_no": "1601",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "4fc59662-95b2-4ff5-b886-a41876d0b352",
+    "building_no": "108",
+    "unit_no": "1602",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "a8936e43-c801-4c6f-a81e-973449a86cde",
+    "building_no": "108",
+    "unit_no": "1603",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "07131ba1-39a1-4a6a-888d-ab2c91c22790",
+    "building_no": "108",
+    "unit_no": "1604",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8260e57e-afe0-4141-837a-9317252dd6a1",
+    "building_no": "108",
+    "unit_no": "1701",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "b7ae72eb-3333-407d-9e4c-183cc76812e9",
+    "building_no": "108",
+    "unit_no": "1702",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ed547668-6043-4332-99c0-9e70d344757f",
+    "building_no": "108",
+    "unit_no": "1703",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "be5446a8-a094-4811-a566-41f3b5cbc064",
+    "building_no": "108",
+    "unit_no": "1704",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "75d7cc1a-5bb8-4fae-85d7-ca9d650eeba0",
+    "building_no": "108",
+    "unit_no": "1801",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "5478e59a-b1f2-4b5e-bb40-a41194922ab0",
+    "building_no": "108",
+    "unit_no": "1802",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "1e369167-92ff-4c26-a658-12bd21882c59",
+    "building_no": "108",
+    "unit_no": "1803",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8a85abd8-c127-4536-bad7-c9f92c23e79e",
+    "building_no": "108",
+    "unit_no": "1804",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7c7cff1f-851f-497f-a0c7-359a5936106c",
+    "building_no": "108",
+    "unit_no": "1901",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1d2d3d7a-2954-4599-9ad5-101dfd98d1e8",
+    "building_no": "108",
+    "unit_no": "1902",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "112eccc6-d004-4c2a-838d-b9cef8477ae0",
+    "building_no": "108",
+    "unit_no": "1903",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8d60d180-d38b-4f78-abce-179b60b096c0",
+    "building_no": "108",
+    "unit_no": "1904",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f5a05d90-ee69-449f-a811-9c6b8566bb3f",
+    "building_no": "108",
+    "unit_no": "2001",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "6afa7b92-efd8-47b0-be1f-229583e651bd",
+    "building_no": "108",
+    "unit_no": "2002",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "59cc4206-d45d-49c8-9741-dce72c8eac6e",
+    "building_no": "108",
+    "unit_no": "2003",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "07a68aa7-c478-44e1-a9a0-a174f8de5d79",
+    "building_no": "108",
+    "unit_no": "2004",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1b11e04e-22d1-47a1-ab43-1204233864c7",
+    "building_no": "108",
+    "unit_no": "201",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b5970625-1d9a-4155-9675-ef1019f542c4",
+    "building_no": "108",
+    "unit_no": "202",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "59c72ffd-60f1-439b-9ed5-b780899b3e6a",
+    "building_no": "108",
+    "unit_no": "203",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "2fc8fdd9-c4ce-4219-a881-5d46db07745e",
+    "building_no": "108",
+    "unit_no": "204",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "128dccdc-e2bf-4d86-b27f-65fc29e3ea8e",
+    "building_no": "108",
+    "unit_no": "2101",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ade41cf2-16f3-4956-9f89-759054d2e2d6",
+    "building_no": "108",
+    "unit_no": "2102",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f1dae7f7-0286-439c-8c6a-0f66c5e42a9c",
+    "building_no": "108",
+    "unit_no": "2103",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ea69e004-72cc-43a9-bdc1-39b6836dd181",
+    "building_no": "108",
+    "unit_no": "2104",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "fb114167-0fb3-4188-a265-17bc9673b9a2",
+    "building_no": "108",
+    "unit_no": "2201",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "075c7e08-a4e2-46a0-99e7-97448766e981",
+    "building_no": "108",
+    "unit_no": "2202",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "feebfd65-12c1-48f6-bda9-3eb882e25cb9",
+    "building_no": "108",
+    "unit_no": "2203",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8e2ccd8b-2387-49b1-bade-d5a65c0d6787",
+    "building_no": "108",
+    "unit_no": "2204",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "00bc0cce-d379-4c1a-b9aa-615bac79e589",
+    "building_no": "108",
+    "unit_no": "2301",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3c88b38b-9e29-451b-a229-b63a1fc6f552",
+    "building_no": "108",
+    "unit_no": "2302",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "43256a06-6332-4beb-b290-6a1ee16076b2",
+    "building_no": "108",
+    "unit_no": "2303",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "17ff95ac-b4bf-48b1-ac63-ad9ad48ef70f",
+    "building_no": "108",
+    "unit_no": "2304",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "7594bf2f-48d5-4057-a41e-024365773cf4",
+    "building_no": "108",
+    "unit_no": "2401",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "8ea1d0da-5bde-4475-a58f-b7139db138c7",
+    "building_no": "108",
+    "unit_no": "2402",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "600e5037-2f50-4e96-a62e-f27a5401ca9c",
+    "building_no": "108",
+    "unit_no": "2403",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "907a95fc-baa0-41fe-8923-21fe2fb38f75",
+    "building_no": "108",
+    "unit_no": "2404",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "1debafdd-e267-467f-b620-d68846c3d931",
+    "building_no": "108",
+    "unit_no": "2501",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "f21d15fe-487f-48ec-8a25-ac42632ff462",
+    "building_no": "108",
+    "unit_no": "2502",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "992ab547-3266-4836-92b2-5ec2b7cd3794",
+    "building_no": "108",
+    "unit_no": "2503",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-03 01:54:22.074504+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "8ff84afd-1006-40af-b4a7-394cf88043f3",
+    "building_no": "108",
+    "unit_no": "2504",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-06 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "1107529b-f86d-422d-a0c7-c9cfa6be5bb0",
+    "building_no": "108",
+    "unit_no": "2601",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b7922c8a-e5d0-48c1-bc35-646fdfded6ee",
+    "building_no": "108",
+    "unit_no": "2602",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "432c68ac-cd66-44be-9fc5-586701f3f757",
+    "building_no": "108",
+    "unit_no": "2603",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "010b0842-e30f-440d-8e24-8e4422fcd10c",
+    "building_no": "108",
+    "unit_no": "2604",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "89c52f8c-dff1-4ff8-b2f3-e177228aebc3",
+    "building_no": "108",
+    "unit_no": "2701",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c84e3177-7aa4-4157-a66a-aa842c17efa5",
+    "building_no": "108",
+    "unit_no": "2702",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b591dc03-09b7-480a-add0-7239416f0fab",
+    "building_no": "108",
+    "unit_no": "2703",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f1b3a1e6-c652-426d-a980-a30a6e100c0c",
+    "building_no": "108",
+    "unit_no": "2704",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "ffa0205c-03be-4cc7-84fa-fe9a5cc3c38c",
+    "building_no": "108",
+    "unit_no": "2801",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "63106c73-ac09-45ae-a1c8-105a882f16bf",
+    "building_no": "108",
+    "unit_no": "2802",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5efc7e3c-89ce-4919-8f0a-4dd8767f7a43",
+    "building_no": "108",
+    "unit_no": "2803",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b6f4eab6-25f5-4624-ac9f-f96ea6f1973b",
+    "building_no": "108",
+    "unit_no": "2804",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "fe17096e-e71a-4ac7-a2de-2f9de9f26843",
+    "building_no": "108",
+    "unit_no": "2901",
+    "unit_type": "122A",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "c6319f47-dd3f-4747-ab2b-35234214025d",
+    "building_no": "108",
+    "unit_no": "2903",
+    "unit_type": "122B",
+    "balance_paid_at": "2026-11-04 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "35124d63-68ec-41dc-8f74-a0e2258d1546",
+    "building_no": "108",
+    "unit_no": "301",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c88c8368-6f1d-45e2-a566-730938ecdabb",
+    "building_no": "108",
+    "unit_no": "302",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f9b1310c-dcfd-4be0-9bbb-64e6c96c3419",
+    "building_no": "108",
+    "unit_no": "303",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3a7e5660-fbd2-41c3-b49d-f7ac3dc38ee3",
+    "building_no": "108",
+    "unit_no": "304",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c74959e6-2f7a-47b8-97cb-6df3193ddc27",
+    "building_no": "108",
+    "unit_no": "401",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "7ffefb06-e47d-41b9-b20f-d176196eb93a",
+    "building_no": "108",
+    "unit_no": "402",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "6bb026d4-21cc-4a95-af5f-c6e2acfd4812",
+    "building_no": "108",
+    "unit_no": "403",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "60cee336-d727-4549-9f7d-cda516493da7",
+    "building_no": "108",
+    "unit_no": "404",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "3a98e0db-bf27-45e0-9468-35951613fe93",
+    "building_no": "108",
+    "unit_no": "501",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-06 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "6d8f99be-e202-4e8a-8d05-e91a615409ea",
+    "building_no": "108",
+    "unit_no": "502",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "5115b021-ccfa-4344-a7b9-8a719af8cc72",
+    "building_no": "108",
+    "unit_no": "503",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "0dd1765c-6975-46a1-9acc-8250bf1e8adb",
+    "building_no": "108",
+    "unit_no": "504",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-06 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "4d852e4f-8298-4f9e-be4c-9942be47b9d4",
+    "building_no": "108",
+    "unit_no": "601",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "b75fb1c8-2bba-42fc-8b62-515c855f8fe9",
+    "building_no": "108",
+    "unit_no": "602",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "daa7d457-4f26-42b2-ac37-7e709a184927",
+    "building_no": "108",
+    "unit_no": "603",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d68a56a6-7f54-4d7d-b887-2d64eb58d53a",
+    "building_no": "108",
+    "unit_no": "604",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-06 15:00:00+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "d7872459-3381-46ee-8175-37d6fc1ca6f7",
+    "building_no": "108",
+    "unit_no": "701",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "97192102-d4f0-4069-b1b9-d4933d147745",
+    "building_no": "108",
+    "unit_no": "702",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "c9363120-023f-4e93-9656-12ca8a81265e",
+    "building_no": "108",
+    "unit_no": "703",
+    "unit_type": "84B",
+    "balance_paid_at": "2026-11-03 00:53:40.662474+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "f37d6b5b-d420-4657-836d-4a9649f53e7b",
+    "building_no": "108",
+    "unit_no": "704",
+    "unit_type": "84A",
+    "balance_paid_at": "2026-11-03 00:56:59.222867+00",
+    "move_in_status": "BALANCE_PAID"
+  },
+  {
+    "unit_id": "d206b997-a90d-4cb4-8691-992dcc6acfa5",
+    "building_no": "108",
+    "unit_no": "801",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ffa5f970-f01e-4197-837d-96e909779c82",
+    "building_no": "108",
+    "unit_no": "802",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "f7869467-c1b1-4137-b1fd-f38b63f836fa",
+    "building_no": "108",
+    "unit_no": "803",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "74a7a266-a97d-4630-9b4c-a08a96d4fa66",
+    "building_no": "108",
+    "unit_no": "804",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "39773612-e399-4819-b84b-1840b71981ba",
+    "building_no": "108",
+    "unit_no": "901",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "d8201008-2abf-41d6-bc83-47952d63cfcb",
+    "building_no": "108",
+    "unit_no": "902",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "ff4fdd10-da8a-4548-b7a0-8ad059f1a3c3",
+    "building_no": "108",
+    "unit_no": "903",
+    "unit_type": "84B",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  },
+  {
+    "unit_id": "956b2b94-6a8f-4023-96c9-c4caaaeaa93b",
+    "building_no": "108",
+    "unit_no": "904",
+    "unit_type": "84A",
+    "balance_paid_at": null,
+    "move_in_status": "NOT_CONTACTED"
+  }
+]
