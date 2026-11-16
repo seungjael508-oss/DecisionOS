@@ -25,8 +25,8 @@
 - [x] Add failing regression tests for exact date/time tuples in both screens, released bookings and identity rejection.
 - [x] Generate complete source and minimally propagate time and shared reservation overlay.
 - [x] Run focused tests, full suite, TypeScript and scoped ESLint; inspect rendered components.
-- [ ] Stage production build, verify source hashes and HTTP behavior, then promote and verify the production domain.
-- [ ] Review complete patch, commit, push and verify PR head; update description when permissions permit.
+- [x] Stage production build, verify source hashes and HTTP behavior, then promote and verify the production domain.
+- [x] Review complete patch, commit, push and verify PR head; update description when permissions permit.
 
 ## Execution record
 
@@ -40,3 +40,7 @@
 - Candidate suite: 296 tests passed, including the new 339-booking coverage. The older 282/321 snapshot tests are superseded and excluded from this candidate run. Candidate route type generation, TypeScript and scoped ESLint passed.
 - Independent reviewer: no critical or important findings; verified all 851 identities and all 339 date/time tuples, the one-file production patch and no payment/occupancy mutations.
 - Browser host failed to initialize; authenticated visual browser verification is unavailable. Component-rendering reconciliation and deployed HTTP/source verification provide the available evidence.
+- Completed production release: `dpl_6EVZsJawqbcyKz6rHqNWWBx76WSx`, promoted to `https://stayj.co.kr`. Remote production build READY; all 270 candidate source hashes matched, no extra source files. Production alias confirmed; `/login` returned 200, ledger and floorplan returned 307 to login without authentication.
+- Re-read all 851 live identities immediately before promotion; database and source identity hashes both `8bf4212412030ad52335b8235f4a01bc`. No database writes.
+- Reservation implementation committed and pushed as `a099730ab6833e634e07bbcc8bf3460b19926532`. Existing PR #6 head verified and title/description updated with source, verification and production scope. Draft retained for broader existing changes and pending SQL verification. Production rollout includes only the reviewed reservation data replacement.
+- Detailed source/build/HTTP evidence is retained locally under `outputs/reservation-20261116/`; workbook, names, phone numbers and scratch artifacts are excluded from commits.
