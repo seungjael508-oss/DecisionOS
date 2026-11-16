@@ -22,7 +22,7 @@ export function LedgerCardList({rows,assignees}: {rows:readonly LedgerClientRow[
             <ProblemHouseholdBadges flags={row.problemFlags} released={row.problemLockReleased}/>
             {paid?<BalancePaidBadge remainder={balancePaidRemainder(row)}/>:null}
             {paid&&!row.balancePaidAt?<span className="text-xs">완납일 미확인</span>:null}
-            {reserved?<MoveReservationBadge date={row.management?.movingDate??null}/>:null}
+            {reserved?<MoveReservationBadge date={row.management?.movingDate??null} time={row.management?.movingTime}/>:null}
             <span className="text-lg font-semibold">{cells[at('동/호수')]}</span>
           </span>
           <span className="shrink-0 rounded border border-neutral-500 px-2 text-sm">{cells[at('현재등급')]}</span>

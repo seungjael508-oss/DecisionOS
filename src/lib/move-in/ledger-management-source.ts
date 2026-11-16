@@ -5,6 +5,7 @@ export type LedgerManagement = {
   loanAgreement: SourceTarget;
   moveReservation: MoveReservation;
   movingDate: string | null;
+  movingTime?: string | null;
   problemHousehold: SourceTarget;
   managementReasons: readonly string[];
 };

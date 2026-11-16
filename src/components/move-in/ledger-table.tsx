@@ -25,7 +25,7 @@ export function LedgerTable({rows,assignees}: {rows:readonly LedgerClientRow[];a
             <ProblemHouseholdBadges flags={row.problemFlags} released={row.problemLockReleased}/>
             {paid?<BalancePaidBadge remainder={balancePaidRemainder(row)}/>:null}
             {paid&&!row.balancePaidAt?<span className="text-xs">완납일 미확인</span>:null}
-            {reserved?<MoveReservationBadge date={row.management?.movingDate??null}/>:null}
+            {reserved?<MoveReservationBadge date={row.management?.movingDate??null} time={row.management?.movingTime}/>:null}
             <span>{value}</span>
           </span>:problem&&PROBLEM_TEXT_COLUMNS.has(LEDGER_COLUMNS[i])?<>{value}<ProblemReasonText flags={row.problemFlags} released={row.problemLockReleased}/></>:value}
           {LEDGER_COLUMNS[i]==='입주진행'?<span className="mt-1 block text-xs">잔금완납: {paid ? '완납' : '미완납'} · 실제 입주: {row.actualMoveInDate ? '입주완료' : '미입주'}</span>:null}

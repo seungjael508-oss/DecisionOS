@@ -24,7 +24,7 @@ function FloorplanTile({ projectId, unit }: { projectId: string; unit: Floorplan
     aria-label={`${unit.buildingNo}동 ${unit.unitNo}호${tagLabels.length ? ` · ${tagLabels.join(' · ')}` : ''}`}>
     <span>{unit.unitNo}</span>
     <ProblemHouseholdBadges flags={unit.problemFlags} released={unit.problemLockReleased}/>
-    {reserved ? <MoveReservationBadge date={unit.movingDate ?? null}/> : null}
+    {reserved ? <MoveReservationBadge date={unit.movingDate ?? null} time={unit.movingTime}/> : null}
     {grade || special || unit.sourceTags?.some(tag => tag === 'ASEL' || tag === 'DELINQUENT') ? <span className="flex flex-wrap justify-center gap-1">
       {grade ? <span data-grade={grade} className="rounded border border-current px-1 text-xs">{grade}등급</span> : null}
       <SourceManagementBadges tags={unit.sourceTags}/>

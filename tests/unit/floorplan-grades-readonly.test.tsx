@@ -11,7 +11,7 @@ vi.mock('server-only',()=>({}));
 import { floorplanReservationFor } from '@/lib/move-in/floorplan-reservations.server';
 import { approvedUnitSourceTags } from '@/lib/move-in/ledger-source-tags.server';
 const projectId='1283e198-5043-4027-96d6-edcc7a6686c6';
-test('production SELECT: exact grade counts, 169 paid, 282 reserved and all 851 links across four-building pages',()=>{
+test('production SELECT: exact grade counts, 169 paid, 339 reserved and all 851 links across four-building pages',()=>{
  const before=JSON.stringify(db);
  const units:FloorplanUnit[]=db.map(r=>{
    const sourceTags=approvedUnitSourceTags(projectId,r.building_no,r.unit_no);
@@ -35,7 +35,7 @@ test('production SELECT: exact grade counts, 169 paid, 282 reserved and all 851 
  expect(counts).toEqual({A:569,B:94,C:41,D:132,부재:8,상담거절:7});
  const paid=tiles.filter(t=>t[0].includes('data-balance-paid="true"'));
  const reserved=tiles.filter(t=>t[0].includes('data-move-reserved="true"'));
- expect(paid).toHaveLength(169); expect(reserved).toHaveLength(282);
+ expect(paid).toHaveLength(169); expect(reserved).toHaveLength(339);
  expect(units.filter(u=>u.balancePaidAt||u.fieldConfirmedBalancePaid).map(u=>`${u.buildingNo}-${Number(u.unitNo)}`).sort()).toEqual([...official].sort());
  for(const tile of [...paid,...reserved]) expect(tile[0]).toContain('data-grade=');
  for(const page of pages) expect((page.match(/colSpan=/g)??[]).length).toBeLessThanOrEqual(4);

@@ -20,10 +20,10 @@ export function BalancePaidBadge({remainder}: {remainder: string | null}) {
 }
 
 /** 이사예약(예약현황 예약완료) 배지. 잔금완납 초록과 구분되는 파란색, 예약일(MM.DD)을 함께 표기 */
-export function MoveReservationBadge({date}: {date: string | null}) {
+export function MoveReservationBadge({date, time}: {date: string | null; time?: string | null}) {
   const day = date?.match(/^\d{4}-(\d{2})-(\d{2})$/);
   return <span className="inline-flex items-center gap-0.5 whitespace-nowrap rounded border border-blue-300 bg-blue-50 px-1.5 text-xs font-semibold text-blue-800">
-    <span aria-hidden="true">✓</span>이사예약{day?` ${day[1]}.${day[2]}`:''}
+    <span aria-hidden="true">✓</span>이사예약{day?` ${day[1]}.${day[2]}${time ? ` ${time}` : ''}`:''}
   </span>;
 }
 
