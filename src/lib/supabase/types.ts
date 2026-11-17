@@ -1702,6 +1702,10 @@ export type Database = {
         }
         Returns: string
       }
+      set_move_in_balance_paid: {
+        Args: { p_project_id: string; p_unit_id: string; p_contract_id: string; p_customer_id: string; p_paid: boolean; p_expected_balance_paid_at: string | null; p_paid_at?: string | null; p_reason?: string | null }
+        Returns: Json
+      }
       create_move_in_consultation: {
         Args: {
           p_actual_move_in_date?: string

@@ -1,4 +1,5 @@
 import type { LedgerManagement } from '@/lib/move-in/ledger-management-source';
+import { isConfirmedBalancePaid } from '@/lib/move-in/balance-paid';
 import { gradeSortRank, matchesTodayQueueFilter, parseTodayQueueFilter } from "@/lib/move-in/filters";
 import { digitsOnly, parseDongHoQuery } from "@/lib/move-in/calls";
 import { matchesSpecialManagementFilter, type SpecialManagementFilter } from "@/lib/move-in/intent";
@@ -31,6 +32,8 @@ export type LedgerFilterRow = {
   currentGrade: string | null; customerName: string | null; phone: string | null;
   assigneeId: string | null; effectiveIntent: string | null; rentalType: string | null;
   funding: string | null; moveIn: string | null; nextContact: string | null;
+  balancePaidAt?: string | null;
+  fieldConfirmedBalancePaid?: boolean;
   contactStatus?: string | null;
   /** D등급 관리 사유(서버 판정). D가 아닌 세대는 비어 있다 */
   dGradeReasons?: readonly string[];
@@ -130,6 +133,13 @@ export function parseLedgerQuery(params: URLSearchParams): LedgerQueryState {
 
 const normalized = (value: string | null | undefined) => value?.trim() || LEDGER_BLANK;
 function axisValues(row: LedgerFilterRow, axis: LedgerAxis, now: Date): readonly string[] {
+  // Management completion is independent of raw accounting amounts/status.
+  if (axis === 'payment') return [isConfirmedBalancePaid(row) ? 'PAID' : row.payment === 'PAID' ? 'UNPAID' : normalized(row.payment)];
+  if (axis === 'moveIn') {
+    const values = row.moveIn === 'BALANCE_PAID' ? [] : [normalized(row.moveIn)];
+    if (isConfirmedBalancePaid(row)) values.push('BALANCE_PAID');
+    return values;
+  }
   if (axis === "loanAgreement" || axis === "moveReservation" || axis === "problemHousehold") return [row.management?.[axis] ?? "UNKNOWN"];
   if (axis === "contactStatus") return [row.contactStatus ?? "NONE"];
   // D등급 AND 사유(축 안은 OR). D가 아니면 값이 없어 어떤 사유 선택에도 걸리지 않는다. 빈값 = D이지만 사유 미확인

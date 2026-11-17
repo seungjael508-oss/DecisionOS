@@ -130,12 +130,16 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
     }, 1000) : { data: [], error: false };
     // 계약 변경 이력(현재 계약 외 계약) 판정용. 실패해도 원장은 열고, 이력 미확인 세대는 발코니·옵션을 연결하지 않는다
     const contractIds = async () => summary ? readAllRows((from, to) =>
-      inUnits(supabase.from('contract').select('unit_id,contract_id').eq('project_id', projectId)).order('unit_id').order('contract_id').range(from, to)
-        .returns<{ unit_id: string; contract_id: string }[]>(), 1000) : { data: [], error: false };
-    const [s, d, c, k] = await Promise.all([special(), deals(), contacts(), contractIds()]);
+      inUnits(supabase.from('contract').select('unit_id,contract_id,customer_id,project_id,previous_contract_id,contract_status,cancellation_reason').eq('project_id', projectId)).order('unit_id').order('contract_id').range(from, to)
+        .returns<import('./payment-projection.server').PaymentContractLink[]>(), 1000) : { data: [], error: false };
+    const transferAudits = async () => summary ? readAllRows((from,to) =>
+      inUnits(supabase.from('contract_status_history').select('project_id,unit_id,contract_id,field_changed,previous_value,new_value').eq('project_id',projectId).eq('field_changed','holder_transfer'))
+        .order('history_id').range(from,to).returns<import('./ledger-management-source').ManagementTransferAudit[]>(),1000) : {data:[],error:false};
+    const [s, d, c, k, audits] = await Promise.all([special(), deals(), contacts(), contractIds(), transferAudits()]);
     if (s.error || d.error || c.error) return failure();
     perf.step('related');
     const contractsByUnit = k.error ? null : groupByUnit(k.data);
+    const transfersByUnit = audits.error ? null : groupByUnit(audits.data);
     const recheck = await readCurrent(true);
     if (recheck.error) return failure();
     perf.step('recheck');
@@ -156,7 +160,7 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
       const unitContracts = contractsByUnit?.get(unit.unit_id) ?? [];
       const contractHistory = contractsByUnit && unitContracts.some(k => k.contract_id === result.snapshot.currentContractId)
         ? unitContracts.some(k => k.contract_id !== result.snapshot.currentContractId) : undefined;
-      rows.push(summary ? attachOnlineListing(attachLedgerFinance(attachContractAddress(attachLedgerManagement({ ...toLedgerSummaryRow(unit, result.snapshot, ds.length === 1 ? ds[0] : null, contactByUnit.get(unit.unit_id) ?? []), contractHistory })), access, now)) : result.snapshot);
+      rows.push(summary ? attachOnlineListing(attachLedgerFinance(attachContractAddress(attachLedgerManagement({ ...toLedgerSummaryRow(unit, result.snapshot, ds.length === 1 ? ds[0] : null, contactByUnit.get(unit.unit_id) ?? []), contractHistory }, {contracts:unitContracts,transfers:transfersByUnit?.get(unit.unit_id)??[]})), access, now, contractsByUnit ? unitContracts : [])) : result.snapshot);
     }
     perf.step('build');
     if (!summary) { perf.end({ rows: rows.length }); return finish(rows); }

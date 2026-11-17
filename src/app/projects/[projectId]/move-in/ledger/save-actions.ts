@@ -52,6 +52,7 @@ export async function saveLedgerUnit(request:WorkspaceSaveRequest):Promise<Works
    :change.kind==='balancePaid'?await saveMoveInBalancePaid(change.input)
    :change.kind==='problemHousehold'?await saveMoveInProblemHousehold(change.input):await saveMoveInSpecialCase({...change.input,returnTo:context.returnTo});
   // Legacy actions deliberately collapse transport and SQL failures. Treat an unconfirmed write as unknown, never auto-retry.
+  if(!saved.ok && change.kind==='balancePaid' && 'code' in saved && saved.code==='stale_balance')return {ok:false,code:'stale_balance',committed:false};
   if(!saved.ok)return {ok:false,code:'save_failed',committed:'unknown'};
   const refreshed=await refreshLedgerUnit(request);
   return {...refreshed,...(destination?{destination}:{})};

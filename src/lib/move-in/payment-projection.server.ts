@@ -27,6 +27,8 @@ export type PaymentProjection = {
   projectId: string;
   unitId: string;
   contractId: string;
+  /** Source contractId is immutable; this identifies the authorized current holder. */
+  currentContractId?: string;
   salePrice: number;
   installments: PaymentInstallment[];
   totalPrincipalPaid: number;
@@ -55,6 +57,49 @@ export type PaymentProjectionIdentity = {
   unitId: string;
   contractId: string;
 };
+
+export type PaymentContractLink = {
+  contract_id: string; project_id: string; unit_id: string;
+  previous_contract_id: string | null; contract_status: string;
+  cancellation_reason: string | null;
+  customer_id?: string;
+};
+
+/** Historical contracts must remain visible through the caller's existing RLS session. */
+export async function loadPaymentContractChain(projectId: string, unitId: string): Promise<PaymentContractLink[]> {
+  const client = await createServerClient();
+  const result = await client.from('contract')
+    .select('contract_id,project_id,unit_id,customer_id,previous_contract_id,contract_status,cancellation_reason')
+    .eq('project_id', projectId).eq('unit_id', unitId).limit(1000).returns<PaymentContractLink[]>();
+  return !result.error && result.data.length < 1000 ? result.data : [];
+}
+
+/** RLS-scoped database rows only. Validate the entire chain, including after the source. */
+function paymentChainMatches(input: PaymentProjectionIdentity, sourceId: string, links?: readonly PaymentContractLink[]): boolean {
+  if (!links) return input.contractId === sourceId;
+  if (!links.length || links.length > 1000) return false;
+  const byId = new Map<string, PaymentContractLink>();
+  for (const link of links) {
+    if (link.project_id !== input.projectId || link.unit_id !== input.unitId) return false;
+    const existing = byId.get(link.contract_id);
+    if (existing && (existing.previous_contract_id !== link.previous_contract_id || existing.contract_status !== link.contract_status || existing.cancellation_reason !== link.cancellation_reason)) return false;
+    byId.set(link.contract_id, link);
+  }
+  const active = [...byId.values()].filter(link => link.contract_status === 'ACTIVE');
+  if (active.length !== 1 || active[0].contract_id !== input.contractId) return false;
+  const seen = new Set<string>();
+  let id: string | null = input.contractId;
+  let found = false;
+  while (id !== null) {
+    const link: PaymentContractLink | undefined = byId.get(id);
+    if (!link || seen.has(id)) return false;
+    if (id !== input.contractId && (link.contract_status !== 'CANCELLED' || link.cancellation_reason !== 'HOLDER_CHANGED')) return false;
+    seen.add(id);
+    if (id === sourceId) found = true;
+    id = link.previous_contract_id;
+  }
+  return found;
+}
 
 export type PaymentInstallmentStatus = "PAID" | "PARTIAL" | "OVERDUE" | "UPCOMING";
 
@@ -88,10 +133,27 @@ export function aggregatePaymentRows(input: {
     unrefundedAmount: amount(row.unrefundedAmount),
   }));
   const salePrice = amount(input.salePrice);
+  // One invocation is one bound contract. Ambiguous repeated receipts must be
+  // reconciled at source, never silently discarded or counted as new cash.
+  const seen = new Set<string>();
+  const obligations = new Map<string, { scheduled: number; paid: number; final: boolean }>();
+  for (const row of rows) {
+    const fingerprint = JSON.stringify([row.installmentType, row.dueDate, row.paymentDate, row.scheduledAmount, row.principalPaid, row.actualCashReceived, row.lateFee, row.discountAmount, row.additionalScheduled, row.additionalPaid, row.additionalPrincipal, row.additionalLateFee, row.excessAmount, row.refundAmount, row.unrefundedAmount]);
+    if (seen.has(fingerprint)) throw new Error('duplicate payment row: source reconciliation required');
+    seen.add(fingerprint);
+    const key = JSON.stringify([row.installmentType, row.dueDate]);
+    const obligation = obligations.get(key) ?? { scheduled: 0, paid: 0, final: row.installmentType === '잔금' };
+    // The workbook puts an obligation on its first receipt row only. Repeated
+    // nonzero schedules need reconciliation; their meaning cannot be inferred.
+    if (obligation.scheduled > 0 && row.scheduledAmount > 0) throw new Error('duplicate payment obligation: source reconciliation required');
+    obligation.scheduled += row.scheduledAmount;
+    obligation.paid += row.principalPaid;
+    obligations.set(key, obligation);
+  }
   const totalPrincipalPaid = rows.reduce((sum, row) => sum + row.principalPaid, ZERO);
-  const finalRows = rows.filter((row) => row.installmentType === "잔금");
-  const finalBalanceScheduled = finalRows.length
-    ? finalRows.reduce((sum, row) => sum + Math.max(row.scheduledAmount - row.principalPaid, ZERO), ZERO)
+  const finalObligations = [...obligations.values()].filter(group => group.final);
+  const finalBalanceScheduled = finalObligations.length
+    ? finalObligations.reduce((sum, group) => sum + Math.max(group.scheduled - group.paid, ZERO), ZERO)
     : null;
   return {
     salePrice,
@@ -197,7 +259,9 @@ export async function loadPaymentProjection(
     current.data.contract_id !== identity.contractId ||
     !isPaymentProjectionGrade(current.data.legacy_grade)
   ) return null;
-  const projection = aggregatePaymentRows({ salePrice: source.salePrice, rows: source.rows });
+  let projection: ReturnType<typeof aggregatePaymentRows>;
+  try { projection = aggregatePaymentRows({ salePrice: source.salePrice, rows: source.rows }); }
+  catch { return null; }
   return {
     projectId,
     unitId,
@@ -221,12 +285,14 @@ export type RegisteredPaymentProjection = Omit<PaymentProjection, 'installments'
  */
 export function paymentForCurrentContract(input: PaymentProjectionIdentity & {
   buildingNo: string; unitNo: string;
+  contractChain?: readonly PaymentContractLink[];
 }, now = new Date()): RegisteredPaymentProjection | null {
   if (input.projectId !== PAYMENT_PROJECT_ID || !input.contractId || !input.unitId) return null;
   if (!/^\d+$/.test(input.buildingNo) || !/^\d+$/.test(input.unitNo)) return null;
   const key = `${Number(input.buildingNo)}-${Number(input.unitNo)}`;
-  const binding = PAYMENT_PROJECTION_IDENTITIES[key], source = PAYMENT_SOURCE_PROJECTIONS[key];
-  if (!binding || !source || binding.projectId !== input.projectId || binding.unitId !== input.unitId || binding.contractId !== input.contractId ||
+  const binding = PAYMENT_PROJECTION_IDENTITIES[key];
+  const source: PaymentSourceProjection | undefined = PAYMENT_SOURCE_PROJECTIONS[key];
+  if (!binding || !source || binding.projectId !== input.projectId || binding.unitId !== input.unitId || !paymentChainMatches(input, binding.contractId, input.contractChain) ||
       `${source.buildingNo}-${source.unitNo}` !== key || source.sourceSha256 !== PAYMENT_SOURCE_MANIFEST.sourceSha256) return null;
   // Missing/invalid source is not a known zero. Do not let the legacy aggregate's
   // numeric normalization turn an absent source value into a displayed amount.
@@ -234,7 +300,9 @@ export function paymentForCurrentContract(input: PaymentProjectionIdentity & {
     !/^(계약[12]|[1-6]차|잔금)$/.test(row.installmentType) ||
     ['scheduledAmount','principalPaid','actualCashReceived','lateFee','discountAmount','additionalScheduled','additionalPaid','additionalPrincipal','additionalLateFee','excessAmount','refundAmount','unrefundedAmount']
       .some(field => !Number.isSafeInteger(row[field as keyof PaymentSourceRow]) || Number(row[field as keyof PaymentSourceRow]) < 0))) return null;
-  const aggregate = aggregatePaymentRows(source);
+  let aggregate: ReturnType<typeof aggregatePaymentRows>;
+  try { aggregate = aggregatePaymentRows(source); }
+  catch { return null; }
   const asOfDate = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
   // One obligation can have several receipt rows, with the scheduled amount
   // present only on the first row. Preserve receipts; classify their total.
@@ -248,7 +316,7 @@ export function paymentForCurrentContract(input: PaymentProjectionIdentity & {
     totals.set(key, total);
   }
   return {
-    projectId: input.projectId, unitId: input.unitId, contractId: input.contractId,
+    projectId: input.projectId, unitId: input.unitId, contractId: binding.contractId, currentContractId: input.contractId,
     ...aggregate, sourceSha256: source.sourceSha256, asOfDate,
     totalLateFee: aggregate.installments.reduce((sum, row) => sum + row.lateFee, 0),
     installments: aggregate.installments.map(row => ({ ...row, status: paymentInstallmentStatus({ ...totals.get(installmentKey(row))!, now: asOfDate }) })),

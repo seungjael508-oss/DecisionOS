@@ -3,6 +3,7 @@ import {
   hasMovedIn,
   hasPlannedMoveIn,
 } from "@/lib/move-in/kpis";
+import { balanceByType } from '@/lib/worklog/balance-by-type';
 import type { FundingStatus, MoveInStatus, OccupancyIntent } from "@/lib/move-in/labels";
 import { isInstantInDay, type WorklogDayRange } from "@/lib/worklog/day-range";
 import { VALID_HOLDER_CONTRACT_STATUSES } from "@/lib/move-in/labels";
@@ -40,6 +41,8 @@ export type WorklogUnitRow = {
 };
 
 export type WorklogOccupancyRow = {
+  /** Read-only field confirmation for section 2, not a dated payment event. */
+  fieldConfirmedBalancePaid?: boolean;
   unitId: string;
   contractId?: string | null;
   occupancyIntent: OccupancyIntent;
@@ -119,6 +122,7 @@ export type WorklogDailySections = {
 };
 
 export type MoveInWorklogSnapshot = Partial<WorklogDailySections> & {
+  balanceByType?: ReturnType<typeof balanceByType>;
   date: string;
   timeZone: string;
   summary: {
@@ -321,6 +325,7 @@ export function buildMoveInWorklogSnapshot(
 
   return {
     ...dailySections(units, consultations, range, sources, occupancies),
+    balanceByType: balanceByType(units, occupancies),
     date: range.dateYmd,
     timeZone: range.timeZone,
     summary: {
@@ -379,6 +384,7 @@ export function worklogGeneratedData(snapshot: MoveInWorklogSnapshot) {
     consultations: snapshot.consultations,
     byBuilding: snapshot.byBuilding,
     byUnitType: snapshot.byUnitType,
+    balanceByType: snapshot.balanceByType,
     ...(snapshot.version === 2 ? {
       version: 2, overview: snapshot.overview, sourceReadiness: snapshot.sourceReadiness, balanceManagement: snapshot.balanceManagement,
       salesConsultation: snapshot.salesConsultation,

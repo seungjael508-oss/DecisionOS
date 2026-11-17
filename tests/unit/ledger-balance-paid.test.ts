@@ -9,8 +9,8 @@ const base = { unitId:'u1', buildingNo:'101', unitNo:'2401', currentGrade:'B', p
   funding:'NORMAL', moveIn:'PLANNED', balancePaidAt:null, dealTypes:[], contactStatus:'CONTACTED', lastAttempt:null, lastContact:null, assigneeId:null, specialReasons:[], dGradeReasons:[] };
 const finance = (totalUnpaid: number | null) => ({ status:'PAID', salePrice:1, salePaid:1, saleBalance:0, balcony:null, option:null, totalUnpaid, partial:false, account:null, accountRestricted:true });
 
-test('잔금완납 기준: 입주진행 잔금완납 또는 완납일 있음(평면도 태그와 같음)', () => {
-  expect(isBalancePaid({ moveIn:'BALANCE_PAID', balancePaidAt:null })).toBe(true);
+test('잔금완납 기준: 상태 코드와 독립된 완납일 기준', () => {
+  expect(isBalancePaid({ moveIn:'BALANCE_PAID', balancePaidAt:null })).toBe(false);
   expect(isBalancePaid({ moveIn:'MOVED_IN', balancePaidAt:'2026-10-20T15:00:00Z' })).toBe(true);
   expect(isBalancePaid({ moveIn:'PLANNED', balancePaidAt:null })).toBe(false);
 });
@@ -21,7 +21,7 @@ test('잔여금액: 미납이 남았을 때만 표기', () => {
   expect(balancePaidRemainder({} as never)).toBeNull();
 });
 test('카드·표: 완납 세대만 연두색 강조와 배지', () => {
-  const paid = { ...base, unitId:'p1', moveIn:'BALANCE_PAID', finance: finance(0) } as never;
+  const paid = { ...base, unitId:'p1', moveIn:'BALANCE_PAID', balancePaidAt:'2026-11-05T00:00:00Z', finance: finance(0) } as never;
   const open = { ...base, unitId:'o1' } as never;
   for (const markup of [renderToStaticMarkup(createElement(LedgerCardList, { rows:[paid, open], assignees:{} })), renderToStaticMarkup(createElement(LedgerTable, { rows:[paid, open], assignees:{} }))]) {
     expect(markup.match(/data-balance-paid="true"/g)?.length).toBe(1);
@@ -38,10 +38,10 @@ test('이사예약: 예약완료 세대만 파란 배지와 예약일, 잔금완
     expect(markup).toContain('잔금완납');
   }
 });
-test('금액 자료상 완납도 잔금완납 강조, 배지는 동/호수 앞', () => {
-  expect(isBalancePaid({ moveIn:'PLANNED', balancePaidAt:null, finance: finance(0) } as never)).toBe(true);
+test('회계자료만으로 확정 완납을 만들지 않고 날짜가 있는 배지는 동/호수 앞', () => {
+  expect(isBalancePaid({ moveIn:'PLANNED', balancePaidAt:null, finance: finance(0) } as never)).toBe(false);
   expect(isBalancePaid({ moveIn:'PLANNED', balancePaidAt:null, finance: { ...finance(100), status:'PARTIAL' } } as never)).toBe(false);
-  const row = { ...base, unitId:'f1', finance: finance(0) } as never;
+  const row = { ...base, unitId:'f1', balancePaidAt:'2026-11-05T00:00:00Z', finance: finance(0) } as never;
   for (const markup of [renderToStaticMarkup(createElement(LedgerCardList, { rows:[row], assignees:{} })), renderToStaticMarkup(createElement(LedgerTable, { rows:[row], assignees:{} }))]) {
     expect(markup).toContain('data-balance-paid="true"');
     expect(markup.indexOf('잔금완납</span>')).toBeLessThan(markup.indexOf('>101동 2401호<'));

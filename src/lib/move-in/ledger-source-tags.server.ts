@@ -25,5 +25,6 @@ export function approvedUnitSourceTags(projectId: string, buildingNo: string, un
   if (projectId !== ONLINE_MARKET_PROJECT_ID) return [];
   const key = specialUnitKey(buildingNo, unitNo), source = special.get(key);
   return [...(source?.asel ? ['ASEL' as const] : []), ...(investors.has(key) ? ['INVESTOR' as const] : []),
-    ...(source?.delinquent ? ['DELINQUENT' as const] : []), ...(online.has(key) ? ['ONLINE' as const] : [])];
+    // 원본 명단에는 중도금 미발생·신용하락도 포함된다. 명시된 기연체자만 연체로 표시한다.
+    ...(source?.overdueCategory === '기연체자' ? ['DELINQUENT' as const] : []), ...(online.has(key) ? ['ONLINE' as const] : [])];
 }

@@ -3,6 +3,7 @@ import { loadCurrentUnitSnapshots } from '@/lib/move-in/current-unit-snapshot.se
 import { createServerClient } from '@/lib/supabase/server';
 import { readAllRows } from '@/lib/supabase/read-all';
 import { toFloorplanUnit } from '@/lib/move-in/floorplan-current';
+import { floorplanReservationFor } from '@/lib/move-in/floorplan-reservations.server';
 import type { FloorplanUnit } from '@/lib/move-in/floorplan';
 import type { ProjectionResult, QueryCounts } from '@/lib/move-in/ledger-types';
 
@@ -34,7 +35,7 @@ export async function loadCurrentFloorplanRows(projectId: string, now = new Date
       const row = locations.length === 1 && loc ? toFloorplanUnit(snapshot, {
         projectId: loc.project_id, unitId: loc.unit_id, buildingNo: loc.building_no, unitNo: loc.unit_no, floor: loc.floor,
       }) : null;
-      if (row) rows.push(row); else invalidLocations++;
+      if (row) rows.push({ ...row, ...floorplanReservationFor({ ...snapshot, buildingNo: loc.building_no, unitNo: loc.unit_no }) }); else invalidLocations++;
     }
     return { ...base, rows, anomalyCount: current.anomalyCount + invalidLocations,
       anomalies: invalidLocations ? { ...current.anomalies, invalid_relation: (current.anomalies.invalid_relation ?? 0) + invalidLocations } : current.anomalies };

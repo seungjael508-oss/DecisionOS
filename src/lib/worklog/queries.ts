@@ -1,4 +1,5 @@
 import { createServerClient } from "@/lib/supabase/server";
+import { fieldConfirmedBalancePaid } from '@/lib/move-in/balance-confirmations';
 import { readAllRows } from "@/lib/supabase/read-all";
 import { compareTimestampThenId, readByUuidRanges } from "@/lib/supabase/read-by-uuid-range";
 import type { Database } from "@/lib/supabase/types";
@@ -176,6 +177,7 @@ export async function loadMoveInWorklog(
         fundingStatus: row.funding_status,
         moveInStatus: row.move_in_status,
         balancePaidAt: row.balance_paid_at,
+        fieldConfirmedBalancePaid: fieldConfirmedBalancePaid(projectId, row.unit_id, new Date(range.end.getTime() - 1)),
         actualMoveInDate: row.actual_move_in_date,
         plannedMoveInDate: row.planned_move_in_date,
         nextContactAt: row.next_contact_at,

@@ -1,4 +1,13 @@
 import { PROBLEM_FLAG_LABELS, problemReasonText, type ProblemFlag } from '@/lib/move-in/problem-household';
+import type { SourceTag } from '@/lib/move-in/ledger-types';
+
+/** 승인 원천 태그의 표시 전용 배지. 문제세대 잠금·등급·완납을 변경하거나 추정하지 않는다. */
+export function SourceManagementBadges({tags}: {tags?: readonly SourceTag[]}) {
+  return <>{(['ASEL', 'DELINQUENT'] as const).filter(tag => tags?.includes(tag)).map(tag =>
+    <span key={tag} data-source-tag={tag} className="inline-flex items-center whitespace-nowrap rounded border border-current px-1 text-xs">
+      {tag === 'ASEL' ? '아셀' : '연체'}
+    </span>)}</>;
+}
 
 /** 통합원장 잔금완납 배지(TAS-20261023-01 규격: 배경 #dcfce7, 테두리 #86efac, 글자 #15803d). 잔여금액이 있으면 옆에 함께 표기 */
 export function BalancePaidBadge({remainder}: {remainder: string | null}) {
@@ -11,10 +20,10 @@ export function BalancePaidBadge({remainder}: {remainder: string | null}) {
 }
 
 /** 이사예약(예약현황 예약완료) 배지. 잔금완납 초록과 구분되는 파란색, 예약일(MM.DD)을 함께 표기 */
-export function MoveReservationBadge({date}: {date: string | null}) {
+export function MoveReservationBadge({date, time}: {date: string | null; time?: string | null}) {
   const day = date?.match(/^\d{4}-(\d{2})-(\d{2})$/);
   return <span className="inline-flex items-center gap-0.5 whitespace-nowrap rounded border border-blue-300 bg-blue-50 px-1.5 text-xs font-semibold text-blue-800">
-    <span aria-hidden="true">✓</span>이사예약{day?` ${day[1]}.${day[2]}`:''}
+    <span aria-hidden="true">✓</span>이사예약{day?` ${day[1]}.${day[2]}${time ? ` ${time}` : ''}`:''}
   </span>;
 }
 

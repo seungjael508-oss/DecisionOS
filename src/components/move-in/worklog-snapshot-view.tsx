@@ -4,6 +4,7 @@ import { WORKLOG_CONTACT_TYPES } from "@/lib/worklog/snapshot";
 import type { WorklogActivityCount, WorklogDailySections, WorklogSalesCount } from "@/lib/worklog/snapshot";
 import { LEGACY_GRADE_VALUES } from "@/lib/move-in/consultation";
 import { MARKET_SCOPE_LABELS } from "@/lib/market/labels";
+import { balancePaidPercent } from '@/lib/move-in/balance-paid';
 
 const numeric = (value: number | null) => value === null ? "—" : value.toLocaleString("ko-KR");
 const percent = (value: number | null) => value === null ? "—" : `${value.toFixed(1)}%`;
@@ -74,13 +75,15 @@ function DailyWorklogTables({ snapshot }: { snapshot: MoveInWorklogSnapshot & Wo
       <p className="mt-2 text-xs text-neutral-600">진행률 = 상담진행 ÷ 공급. 등급 비율 = 등급별 세대 ÷ 상담진행. 부재 제외 분모 = 상담진행 − 부재 ({sales.absenceExcludedDenominator}세대). 등급이 없으면 미분류·상담미진행입니다.</p>
       <p className="mt-1 text-xs text-neutral-600">과거 날짜의 공급·계약 상태는 현재 등록 상태를 바탕으로 하며, 이후 해지·명의변경 이전 상태를 복원하지 않습니다.</p>
     </section>
-    <section aria-label="2. 관리대상 동호 현황">
-      <h2 className="mb-3 text-lg font-semibold">2. 관리대상 동호 현황</h2>
-      {snapshot.managementTargets.status === "READY" ? <div className="overflow-x-auto"><table className={tableClass}>
-        <thead><tr>{["구분", "대상", ...LEGACY_GRADE_VALUES, "상담진행", "미진행", "진행률"].map(h => <th key={h} className={headingClass}>{h}</th>)}</tr></thead>
-        <tbody>{[...snapshot.managementTargets.rows, { category: "계 (중복 제외)", ...snapshot.managementTargets.total }].map(row => <tr key={row.category}><th className={headingClass}>{row.category}</th>{[row.supply, ...LEGACY_GRADE_VALUES.map(g => row.grades[g]), row.consulted, row.notConsulted].map((n,i) => <td key={i} className={cellClass}>{numeric(n)}</td>)}<td className={cellClass}>{percent(row.progressPercent)}</td></tr>)}</tbody>
-      </table></div> : <p className="border border-neutral-300 p-4 text-sm">관리대상 데이터 연결 대기</p>}
-      <p className="mt-2 text-xs text-neutral-600">현장에서 확정한 관리대상 분류만 사용합니다. 연체금액·연체료·약정금·납부원금으로 대상을 임의 추정하지 않습니다.</p>
+    <section aria-label="2. 타입별 잔금납부 현황" className="break-inside-avoid">
+      <h2 className="mb-3 text-lg font-semibold">2. 타입별 잔금납부 현황</h2>
+      {snapshot.balanceByType ? <table className={tableClass}>
+        <caption className="sr-only">타입별 잔금납부 현황</caption>
+        <thead><tr>{['타입','전체 세대수','잔금완납','미완납','납부율(%)'].map(h=><th key={h} scope="col" className={headingClass}>{h}</th>)}</tr></thead>
+        <tbody>{snapshot.balanceByType.rows.map(row=><tr key={row.unitType}><th scope="row" className={headingClass}>{row.unitType}</th><td className={cellClass}>{numeric(row.totalUnits)}</td><td className={cellClass}>{numeric(row.balancePaid)}</td><td className={cellClass}>{numeric(row.unpaid)}</td><td className={cellClass}>{balancePaidPercent(row.balancePaid,row.totalUnits)}%</td></tr>)}</tbody>
+        <tfoot><tr className="font-semibold"><th scope="row" className={headingClass}>합계</th><td className={cellClass}>{numeric(snapshot.balanceByType.total.totalUnits)}</td><td className={cellClass}>{numeric(snapshot.balanceByType.total.balancePaid)}</td><td className={cellClass}>{numeric(snapshot.balanceByType.total.unpaid)}</td><td className={cellClass}>{balancePaidPercent(snapshot.balanceByType.total.balancePaid,snapshot.balanceByType.total.totalUnits)}%</td></tr></tfoot>
+      </table> : <p className="border border-neutral-300 p-4 text-sm">이 저장본에는 타입별 잔금납부 집계가 없습니다.</p>}
+      <p className="mt-2 text-xs text-neutral-600">DB 완납 기록 및 승인된 현장 확인 기준 · 잔금납부율 = 잔금완납 ÷ 전체 세대수 × 100. 실제 완납일 미확인 세대는 날짜를 표시하지 않습니다.</p>
     </section>
     <section aria-label="3. 상담 세부 현황">
       <h2 className="mb-3 text-lg font-semibold">3. 상담 세부 현황</h2>

@@ -1,6 +1,7 @@
 # Exclude internal documentation and tests
 docs/
 tests/
+tmp/
 
 # Exclude source data files
 *.xlsx

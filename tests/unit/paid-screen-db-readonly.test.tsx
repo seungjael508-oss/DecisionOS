@@ -1,0 +1,31 @@
+import { expect, test, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+vi.mock('server-only',()=>({}));
+import { approvedUnitSourceTags } from '@/lib/move-in/ledger-source-tags.server';
+import { countLedgerChapters } from '@/lib/move-in/ledger-chapters';
+import { computeMoveInKpis } from '@/lib/move-in/kpis';
+import { balanceByType } from '@/lib/worklog/balance-by-type';
+import { FloorplanBoard } from '@/components/move-in/floorplan-board';
+import type { FloorplanUnit } from '@/lib/move-in/floorplan';
+
+test.skipIf(!process.env.PAID_SCREEN_QA_FILE)('read-only production snapshot: 851 links and same paid count across KPI, floorplan and worklog types',()=>{
+  type Row={unit_id:string;building_no:string;unit_no:string;unit_type:string|null;balance_paid_at:string|null};
+  const db:Row[]=JSON.parse(readFileSync(process.env.PAID_SCREEN_QA_FILE!,'utf8'));
+  const projectId='1283e198-5043-4027-96d6-edcc7a6686c6';
+  const units=db.map(r=>({unitId:r.unit_id,buildingNo:r.building_no,unitNo:r.unit_no,unitType:r.unit_type}));
+  const occupancy=db.map(r=>({unitId:r.unit_id,balancePaidAt:r.balance_paid_at,occupancyIntent:'UNDECIDED' as const,fundingStatus:'NORMAL' as const,moveInStatus:'CONTACTED' as const}));
+  const tiles:FloorplanUnit[]=units.map((u,i)=>({...u,projectId,floor:null,currentGrade:null,funding:'NORMAL',moveIn:'CONTACTED',effectiveIntent:'UNDECIDED',rentalType:null,specialReasons:[],sourceTags:approvedUnitSourceTags(projectId,u.buildingNo,u.unitNo),balancePaidAt:db[i].balance_paid_at,actualMoveInDate:null,revision:'qa',fetchedAt:'2026-11-07'}));
+  const expected=db.filter(r=>r.balance_paid_at!==null).length;
+  const html=renderToStaticMarkup(createElement(FloorplanBoard,{projectId,units:tiles}));
+  expect(units).toHaveLength(851);
+  expect(new Set(units.map(r=>r.unitId)).size).toBe(851);
+  expect(computeMoveInKpis(851,occupancy).balancePaid).toBe(expected);
+  expect(countLedgerChapters(tiles).balance_paid).toBe(expected);
+  expect(balanceByType(units,occupancy).total.balancePaid).toBe(expected);
+  expect((html.match(/data-balance-paid="true"/g)??[]).length).toBe(expected);
+  expect((html.match(/href="\/projects\/[^/]+\/move-in\/units\//g)??[]).length).toBe(851);
+  expect((html.match(/data-source-tag="ASEL"/g)??[]).length).toBe(36);
+  console.log(JSON.stringify({snapshotUnits:851,dbPaid:expected,ledgerPaid:expected,greenTiles:expected,worklogTypePaid:expected,detailLinks:851,aselBadges:36}));
+});

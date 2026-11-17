@@ -51,7 +51,7 @@ describe("입주촉진 집중관리 챕터", () => {
     expect(rows.map(r => matchesLedgerChapter(r, "absence_visit"))).toEqual([false, false, false, true, false, true, false, false]);
   });
   it("세대 수: 같은 세대 중복 행은 1번만", () => {
-    expect(countLedgerChapters([...rows, rows[0], rows[3]])).toEqual({ all: 8, c_undecided: 1, d_undecided: 1, cd_sale_rent: 2, absence_visit: 2 });
+    expect(countLedgerChapters([...rows, rows[0], rows[3]])).toEqual({ all: 8, balance_paid: 0, c_undecided: 1, d_undecided: 1, cd_sale_rent: 2, absence_visit: 2 });
   });
   it("D 장기 부재 사유와 장기 부재 챕터가 같은 규칙", () => {
     for (const r of rows.filter(r => r.currentGrade === "D")) {

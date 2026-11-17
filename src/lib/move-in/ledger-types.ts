@@ -37,6 +37,8 @@ export type ContactRecord = { project_id: string; unit_id: string; customer_id: 
 export type ContactStatus = 'CONTACTED' | 'REFUSED' | 'ABSENT' | 'NONE';
 export type DealSummary = UnitDealTypedFields & { id: string; consentStatus: string; dealStatus: string; enabledTypes: string[]; officeIds: string[]; updatedAt: string };
 export type CurrentUnitSnapshot = {
+  /** Authorized field confirmation without inventing a balancePaidAt timestamp. */
+  fieldConfirmedBalancePaid?: boolean;
   projectId: string; unitId: string; currentContractId: string; currentCustomerId: string;
   currentGrade: string | null; funding: FundingStatus; moveIn: MoveInStatus;
   operationalIntent: OperationalIntent; occupancyIntent: OccupancyIntent;
