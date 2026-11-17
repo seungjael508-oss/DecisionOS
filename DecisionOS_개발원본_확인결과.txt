@@ -1,0 +1,65 @@
+﻿Stay J Decision OS 개발 원본 확인 결과
+확인일: 2026-11-17
+
+[운영 저장소에 연결된 개발 프로젝트]
+경로: C:\Users\user\DecisionOS
+구성: .git, package.json, next.config.ts, src/app 모두 존재
+원격: https://github.com/seungjael508-oss/DecisionOS.git
+브랜치: fix/balance-paid-display-review
+HEAD: f9b4c5f8ee900463415ea7d0e299e9d714a6e255
+Git 상태: 변경·미추적 항목 16개
+비공개 모듈: 4/4개 존재, 모두 빈 파일이 아님
+모듈 위치: C:\Users\user\DecisionOS\src\lib\move-in
+- ledger-management-data.server.ts
+- payment-projection-source.server.ts
+- ledger-finance-data.server.ts
+- contract-address-data.server.ts
+
+[같은 운영 원격에 연결된 추가 저장소]
+경로: C:\Users\user\DecisionOS\tmp\pr-floorplan-grades
+브랜치: fix/floorplan-grades-four-buildings
+HEAD: bb64f94fd90c3810ec784badc892f7887a20f2fb
+원격: https://github.com/seungjael508-oss/DecisionOS.git
+Git 상태: 깨끗함
+비공개 모듈: 4/4개 존재
+
+경로: C:\Users\user\DecisionOS\tmp\release-balance-ui
+브랜치: fix/balance-paid-display-review
+HEAD: 8773a727e8c07e3c4ffc6745744c483e657f424d
+원격: https://github.com/seungjael508-oss/DecisionOS.git
+Git 상태: 변경·미추적 항목 43개
+비공개 모듈: 4/4개 존재
+
+[기타 저장소]
+경로: C:\Users\user\Documents\Codex\2026-11-14\new-chat\outputs\decision-os
+브랜치: main
+HEAD: b7436460c01d5084ccdbbf393a00025d7f007235
+원격: 없음
+Git 상태: 깨끗함
+비공개 모듈: 0/4개
+
+경로: C:\Users\user\Desktop\jaelee\개발\StayJ_Mobile_Commercial_Source_v1\stay-j-mobile
+브랜치: work/v1.2
+HEAD: 83a73034bcab144638ca678e5a6b546196675797
+원격: 없음
+Git 상태: 깨끗함
+비공개 모듈: 0/4개
+
+경로: C:\Users\user\Desktop\아카이브\Cozy Corner Creator (1)
+브랜치: main
+HEAD: bcd479ad83744004b47b889258e6059831931f6e
+원격: https://github.com/seungjael508-oss/cozy-corner-creator.git
+Git 상태: 깨끗함
+비공개 모듈: 0/4개
+
+[기타 확인]
+C:\Users\user\Desktop\jaelee\stay-j-mobile
+.git 폴더는 있으나 유효한 Git 저장소로 인식되지 않음.
+
+C:\Users\user\Desktop\아카이브\DecisionOS-local-data-backup
+비공개 모듈 3/4개 존재. ledger-finance-data.server.ts 없음.
+
+HTML, dist, ZIP, tar.gz를 기존 운영 원본으로 단정하지 않음.
+조사 과정에서 파일 내용이나 고객 개인정보는 출력하지 않았으며,
+파일 복사·수정·커밋·푸시·PR 병합·배포는 하지 않았음.
+이 텍스트 파일은 조사 결과를 전달하기 위해 별도로 생성함.

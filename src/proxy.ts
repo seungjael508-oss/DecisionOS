@@ -1,3 +1,4 @@
+
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { isProtectedPath } from "@/lib/auth/paths";
