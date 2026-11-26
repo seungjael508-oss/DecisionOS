@@ -1,3 +1,5 @@
+import { LEGACY_GRADE_VALUES } from "@/lib/move-in/consultation";
+
 export const TODAY_CHAPTERS = [
   { id:"grade", label:"등급" }, { id:"balance", label:"잔금날짜" }, { id:"paid", label:"잔금완납" }, { id:"move", label:"이사날짜" },
   { id:"unconfirmed", label:"미확정" }, { id:"termination", label:"해지" }, { id:"sale", label:"전매" },
@@ -12,13 +14,13 @@ export type TodayChapterEvidence = {
 };
 export function matchTodayChapter(chapter: TodayChapter, e: TodayChapterEvidence): boolean {
   switch (chapter) {
-    case "grade": return true;
+    case "grade": return !e.paid;
     case "balance": return !e.paid && !!e.balancePlan;
     case "paid": return !!e.paid;
     case "move": return !!(e.reservation || e.movePlan || e.moved);
     case "unconfirmed": return !(e.paid || e.balancePlan || e.reservation || e.movePlan || e.moved || e.review || e.terminationIntent);
     case "termination": return !!(e.review || e.terminationIntent);
-    case "sale": return !!e.sale;
+    case "sale": return !!e.sale && !(e.review || e.terminationIntent);
   }
 }
 export function todayChapterHref(projectId:string, chapter:TodayChapter) {
@@ -41,4 +43,10 @@ export function matchesTerminationUnit(row:{buildingNo:string; unitNo:string},ra
   const key=stripZeros(single[1]);
   return (single[2]!=="호" && key===stripZeros(row.buildingNo)) ||
     (single[2]!=="동" && key===stripZeros(row.unitNo));
+}
+
+export const TODAY_GRADE_OPTIONS=[...LEGACY_GRADE_VALUES,"미분류"] as const;
+export type TodayGrade=(typeof TODAY_GRADE_OPTIONS)[number];
+export function presentTodayGrade(value:string|null|undefined):TodayGrade {
+  return TODAY_GRADE_OPTIONS.find(x=>x===value)??"미분류";
 }

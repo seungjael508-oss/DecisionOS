@@ -6,44 +6,71 @@ import { buildMoveInUnitDetailHref } from "@/lib/move-in/return-to";
 import { loadOperationalLedgerRows } from "@/lib/move-in/ledger-queries.server";
 import { floorplanReservationFor } from "@/lib/move-in/floorplan-reservations.server";
 import { loadFloorplanScheduleBadges } from "@/lib/move-in/floorplan-schedule.server";
-import { loadTerminationReviews } from "@/lib/move-in/termination-review.server";
-import { matchTodayChapter, matchesTerminationUnit, normalizeTerminationUnitQuery, todayChapterHref, TODAY_CHAPTERS, type TodayChapter } from "@/lib/move-in/today-chapters";
+import { loadTerminationReviewKeys, loadTerminationReviews } from "@/lib/move-in/termination-review.server";
+import { matchTodayChapter, matchesTerminationUnit, normalizeTerminationUnitQuery, todayChapterHref, presentTodayGrade, TODAY_CHAPTERS, TODAY_GRADE_OPTIONS, type TodayChapter } from "@/lib/move-in/today-chapters";
 import { QueryError } from "@/components/move-in/status-copy";
 
-export async function TodayChapterPanel({projectId,chapter,mayReview,reviewNotice,unitSearch}:{
-  projectId:string; chapter:Exclude<TodayChapter,"grade">; mayReview:boolean; reviewNotice:string|null; unitSearch?:string|null;
+export async function TodayChapterPanel({projectId,chapter,mayReview,reviewNotice,unitSearch,todayGrade}:{
+  projectId:string; chapter:TodayChapter; mayReview:boolean; reviewNotice:string|null; unitSearch?:string|null; todayGrade?:string|null;
 }) {
   const now=new Date();
   const ledger=await loadOperationalLedgerRows(projectId,now);
   if(ledger.error) return <QueryError/>;
   const dateChapter=chapter==="balance"||chapter==="move"||chapter==="unconfirmed";
-  const [schedules,reviews]=await Promise.all([
+  const needsReviewKeys=chapter==="termination"||chapter==="unconfirmed"||chapter==="sale";
+  const adminReview=chapter==="termination" && mayReview;
+  const [schedules,reviews,reviewKeys]=await Promise.all([
     dateChapter ? loadFloorplanScheduleBadges(projectId,ledger.rows,now,"today") : null,
-    chapter==="termination" && mayReview ? loadTerminationReviews(projectId) : null,
+    adminReview ? loadTerminationReviews(projectId) : null,
+    needsReviewKeys && !adminReview ? loadTerminationReviewKeys(projectId) : null,
   ]);
   const latest=new Map(reviews?.rows.map(r=>[`${r.unit_id}:${r.contract_id}`,r])??[]);
+  const activeKeys=new Set(reviewKeys?.rows.map(r=>`${r.unit_id}:${r.contract_id}`)??[]);
+  const blockClassification=(chapter==="unconfirmed"||chapter==="sale")&&reviewKeys?.error;
   const rows=ledger.rows.flatMap(row=>{
     const reservation=floorplanReservationFor(row);
     const dates=schedules?.dates.get(row.unitId);
-    const review=latest.get(`${row.unitId}:${row.currentContractId}`);
+    const reviewKey=`${row.unitId}:${row.currentContractId}`;
+    const review=latest.get(reviewKey);
     const e={paid:isConfirmedBalancePaid(row),balancePlan:!!dates?.balance,
       reservation:reservation.moveReservation==="BOOKED",movePlan:!!(row.plannedMoveInDate||dates?.moveIn),
-      moved:!!row.actualMoveInDate,review:review?.active,terminationIntent:row.effectiveIntent==="TERMINATION",
+      moved:!!row.actualMoveInDate,review:!!(review?.active||activeKeys.has(reviewKey)),terminationIntent:row.effectiveIntent==="TERMINATION",
       sale:row.effectiveIntent==="SALE_TRANSFER"};
     if(!matchTodayChapter(chapter,e)) return [];
     return [{row,reservation,dates,review,e}];
   });
   const search=chapter==="termination"?normalizeTerminationUnitQuery(unitSearch):"";
-  const visible=search ? rows.filter(({row})=>matchesTerminationUnit(row,search)) : rows;
+  const grade=chapter==="grade" ? TODAY_GRADE_OPTIONS.find(g=>g===todayGrade)??null : null;
+  const visible=search ? rows.filter(({row})=>matchesTerminationUnit(row,search))
+    : grade ? rows.filter(({row})=>presentTodayGrade(row.currentGrade)===grade) : rows;
+  if(chapter==="grade") visible.sort((a,b)=>
+    TODAY_GRADE_OPTIONS.indexOf(presentTodayGrade(a.row.currentGrade))-TODAY_GRADE_OPTIONS.indexOf(presentTodayGrade(b.row.currentGrade))
+    || a.row.buildingNo.localeCompare(b.row.buildingNo,"ko",{numeric:true})
+    || a.row.unitNo.localeCompare(b.row.unitNo,"ko",{numeric:true}));
   const save=changeTerminationReview.bind(null,projectId);
   const label=TODAY_CHAPTERS.find(x=>x.id===chapter)?.label;
   const eligibleForReview=chapter==="termination" && mayReview && !reviews?.error;
   return <section aria-label={label}>
-    <h2 className="text-lg font-semibold">{label} · {rows.length}세대</h2>
+    <h2 className="text-lg font-semibold">{label}{blockClassification ? "" : ` · ${rows.length}세대`}</h2>
+    {chapter==="grade" ? <>
+      <p className="mb-2 text-sm text-neutral-700">통합원장의 현재 등급입니다. 잔금 완납이 확인된 세대는 제외했습니다.</p>
+      <form method="get" action={todayChapterHref(projectId,"grade")} className="my-3 flex flex-wrap items-end gap-2">
+        <label className="grid gap-1 text-sm font-medium">등급 선택
+          <select name="todayGrade" defaultValue={grade??""} className="min-h-10 rounded border px-2">
+            <option value="">전체 등급 ({rows.length})</option>
+            {TODAY_GRADE_OPTIONS.map(g=><option key={g} value={g}>{g} ({rows.filter(({row})=>presentTodayGrade(row.currentGrade)===g).length})</option>)}
+          </select>
+        </label>
+        <button type="submit" className="min-h-10 rounded border px-3">보기</button>
+        {grade ? <span className="mb-2 text-sm">{grade} · {visible.length}세대</span> : null}
+      </form>
+    </> : null}
     {chapter==="balance" ? <p className="mb-2 text-sm text-neutral-700">상담에서 잔금일을 확인했지만 아직 완납이 확인되지 않은 세대입니다.</p> : null}
     {chapter==="paid" ? <p className="mb-2 text-sm text-neutral-700">Decision OS에서 완납이 확인된 세대입니다. 완납일이 없는 경우 날짜를 추정하지 않습니다.</p> : null}
     {chapter==="move" ? <p className="mb-2 text-sm text-neutral-700">이사 예약 {rows.filter(x=>x.e.reservation).length}세대 · 상담·계획 입주일 {rows.filter(x=>x.e.movePlan).length}세대 · 실제 입주 {rows.filter(x=>x.e.moved).length}세대 (중복 포함)</p> : null}
     {schedules?.error ? <p role="status" className="text-sm text-red-800">상담상 날짜를 불러오지 못했습니다. 날짜 확인 전에는 미확정으로 판정하지 않습니다.</p> : null}
+    {blockClassification ? <p role="status" className="text-sm text-red-800">해지 검토 상태를 확인하지 못해 목록을 잠시 표시하지 않습니다.</p> : null}
+    {reviewKeys?.error && chapter==="termination" ? <p role="status" className="text-sm text-red-800">해지 검토 상태를 불러오지 못했습니다. 기존 해지 의향만 표시합니다.</p> : null}
     {reviews?.error ? <p role="status" className="text-sm text-red-800">관리자 해지 검토 목록을 불러오지 못했습니다. 기존 해지 의향만 표시합니다.</p> : null}
     {reviewNotice==="saved" ? <p role="status">해지 검토 상태를 저장했습니다. 계약 상태는 바뀌지 않았습니다.</p> : null}
     {reviewNotice==="error" ? <p role="alert">저장하지 못했습니다. 동·호수, 사유, 현재 계약 상태를 확인해 주세요.</p> : null}
@@ -64,7 +91,7 @@ export async function TodayChapterPanel({projectId,chapter,mayReview,reviewNotic
       <button className="rounded border px-3 py-1" type="submit">해지 검토 추가</button>
       <p className="w-full text-xs text-neutral-600">검토 대상으로만 추가됩니다. 실제 계약 해지가 아닙니다.</p>
     </form> : null}
-    {chapter==="unconfirmed" && schedules?.error ? null : !visible.length ? <p className="mt-3 text-sm">{search ? "검색 조건에 맞는 해지 검토·의향 세대가 없습니다." : "해당 세대가 없습니다."}</p> :
+    {blockClassification || (chapter==="unconfirmed" && schedules?.error) ? null : !visible.length ? <p className="mt-3 text-sm">{search ? "검색 조건에 맞는 해지 검토·의향 세대가 없습니다." : "해당 세대가 없습니다."}</p> :
       <div className="mt-3 overflow-x-auto"><table className="w-full border-collapse text-left text-sm">
         <thead><tr className="border-b">{["동·호수","등급","마지막 상담일","다음 확인일","확인 내용",...(eligibleForReview?["관리"]:[])].map(h=><th key={h} className="p-2 whitespace-nowrap">{h}</th>)}</tr></thead>
         <tbody>{visible.map(({row,reservation,dates,review,e})=>{
@@ -72,6 +99,7 @@ export async function TodayChapterPanel({projectId,chapter,mayReview,reviewNotic
           const detail=buildMoveInUnitDetailHref(projectId,row.unitId,floorplan)+"#consultation-create-form";
           const map=`/projects/${projectId}/move-in/floorplan?${new URLSearchParams({focusUnit:row.unitId})}#floorplan-unit-${encodeURIComponent(row.unitId)}`;
           const notes=[
+            chapter==="grade" ? (typeof row.finance?.saleBalance==="number" && row.finance.saleBalance>0 ? `잔금 ${row.finance.saleBalance.toLocaleString("ko-KR")}원` : "잔금 완납 여부 확인 필요") : null,
             e.paid ? `완납 ${row.balancePaidAt?formatDateTime(row.balancePaidAt):"(일자 미확인)"}`:null,
             dates?.balance ? `상담상 잔금 예정 ${dates.balance}`:null,
             e.reservation ? `노크타운 이사 예약 ${[reservation.movingDate,reservation.movingTime].filter(Boolean).join(" ")}`:null,
@@ -80,7 +108,7 @@ export async function TodayChapterPanel({projectId,chapter,mayReview,reviewNotic
             e.moved ? `실제 입주 ${row.actualMoveInDate}`:null,
             e.sale ? "전매 의향":null,
             e.terminationIntent ? "해지 의향" : null,
-            review?.active ? `관리자 해지 검토: ${review.reason}`:null,
+            review?.active ? `관리자 해지 검토: ${review.reason}` : e.review ? "관리자 해지 검토" : null,
           ].filter(Boolean);
           return <tr key={row.unitId} className="border-b">
             <td className="p-2 whitespace-nowrap"><Link prefetch={false} className="font-semibold underline" href={detail}>{formatUnitLabel(row.buildingNo,row.unitNo)}</Link>{" "}<Link prefetch={false} className="text-xs underline" href={map}>배치도</Link></td>
