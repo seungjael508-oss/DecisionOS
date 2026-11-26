@@ -38,7 +38,8 @@ export async function TodayChapterPanel({projectId,chapter,mayReview,reviewNotic
   const eligibleForReview=chapter==="termination" && mayReview && !reviews?.error;
   return <section aria-label={label}>
     <h2 className="text-lg font-semibold">{label} · {rows.length}세대</h2>
-    {chapter==="balance" ? <p className="mb-2 text-sm text-neutral-700">완납 확인 {rows.filter(x=>x.e.paid).length}세대 · 상담상 잔금 예정 {rows.filter(x=>x.e.balancePlan && !x.e.paid).length}세대</p> : null}
+    {chapter==="balance" ? <p className="mb-2 text-sm text-neutral-700">상담에서 잔금일을 확인했지만 아직 완납이 확인되지 않은 세대입니다.</p> : null}
+    {chapter==="paid" ? <p className="mb-2 text-sm text-neutral-700">Decision OS에서 완납이 확인된 세대입니다. 완납일이 없는 경우 날짜를 추정하지 않습니다.</p> : null}
     {chapter==="move" ? <p className="mb-2 text-sm text-neutral-700">이사 예약 {rows.filter(x=>x.e.reservation).length}세대 · 상담·계획 입주일 {rows.filter(x=>x.e.movePlan).length}세대 · 실제 입주 {rows.filter(x=>x.e.moved).length}세대 (중복 포함)</p> : null}
     {schedules?.error ? <p role="status" className="text-sm text-red-800">상담상 날짜를 불러오지 못했습니다. 날짜 확인 전에는 미확정으로 판정하지 않습니다.</p> : null}
     {reviews?.error ? <p role="status" className="text-sm text-red-800">관리자 해지 검토 목록을 불러오지 못했습니다. 기존 해지 의향만 표시합니다.</p> : null}

@@ -1,5 +1,5 @@
 export const TODAY_CHAPTERS = [
-  { id:"grade", label:"등급" }, { id:"balance", label:"잔금날짜" }, { id:"move", label:"이사날짜" },
+  { id:"grade", label:"등급" }, { id:"balance", label:"잔금날짜" }, { id:"paid", label:"잔금완납" }, { id:"move", label:"이사날짜" },
   { id:"unconfirmed", label:"미확정" }, { id:"termination", label:"해지" }, { id:"sale", label:"전매" },
 ] as const;
 export type TodayChapter = (typeof TODAY_CHAPTERS)[number]["id"];
@@ -13,7 +13,8 @@ export type TodayChapterEvidence = {
 export function matchTodayChapter(chapter: TodayChapter, e: TodayChapterEvidence): boolean {
   switch (chapter) {
     case "grade": return true;
-    case "balance": return !!(e.paid || e.balancePlan);
+    case "balance": return !e.paid && !!e.balancePlan;
+    case "paid": return !!e.paid;
     case "move": return !!(e.reservation || e.movePlan || e.moved);
     case "unconfirmed": return !(e.paid || e.balancePlan || e.reservation || e.movePlan || e.moved || e.review || e.terminationIntent);
     case "termination": return !!(e.review || e.terminationIntent);
