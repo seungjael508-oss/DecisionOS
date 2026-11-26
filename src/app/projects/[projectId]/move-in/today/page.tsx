@@ -54,7 +54,7 @@ export default async function MoveInTodayPage({ params, searchParams }: {
     return <main className="p-4 md:p-8">
       <h1 className="mb-6 text-2xl font-semibold">오늘 관리대상</h1>
       <TodayFilters projectId={projectId} chapter={chapter}/>
-      <TodayChapterPanel projectId={projectId} chapter={chapter} mayReview={access.role==="PROJECT_ADMIN"} reviewNotice={one(query.review)}/>
+      <TodayChapterPanel projectId={projectId} chapter={chapter} mayReview={access.role==="PROJECT_ADMIN"} reviewNotice={one(query.review)} unitSearch={one(query.unitSearch)}/>
     </main>;
   }
   const rawNotice = Array.isArray(query.moveInNotice) ? query.moveInNotice[0] : query.moveInNotice;

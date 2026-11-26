@@ -1,7 +1,7 @@
 "use server";
 import { redirect } from "next/navigation";
 import { requireMoveInAccess, requireProjectAdmin } from "@/lib/move-in/access";
-import { todayChapterHref } from "@/lib/move-in/today-chapters";
+import { normalizeTerminationUnitQuery, todayChapterHref } from "@/lib/move-in/today-chapters";
 import { loadTerminationReviews, saveTerminationReview } from "@/lib/move-in/termination-review.server";
 import { createServerClient } from "@/lib/supabase/server";
 
@@ -13,7 +13,8 @@ export async function changeTerminationReview(projectId:string,data:FormData):Pr
   const access=await requireMoveInAccess(projectId);
   if(!requireProjectAdmin(access)) return;
   const href=todayChapterHref(projectId,"termination");
-  const done=(status:"saved"|"error")=>redirect(`${href}&review=${status}`);
+  const unitSearch=normalizeTerminationUnitQuery(parsed(data,"unitSearch"));
+  const done=(status:"saved"|"error")=>redirect(`${href}&review=${status}${unitSearch ? `&unitSearch=${encodeURIComponent(unitSearch)}` : ""}`);
   const reason=parsed(data,"reason");
   if(!reason || reason.length>500) return done("error");
   let unitId:string, contractId:string, expected:string|null;

@@ -24,3 +24,21 @@ export function matchTodayChapter(chapter: TodayChapter, e: TodayChapterEvidence
 export function todayChapterHref(projectId:string, chapter:TodayChapter) {
   return `/projects/${projectId}/move-in/today${chapter === "grade" ? "" : `?todayChapter=${chapter}`}`;
 }
+
+/** Only a location filter, never a scope selector or a contract identifier. */
+export function normalizeTerminationUnitQuery(raw: string | null | undefined): string {
+  const clipped=Array.from(raw ?? "").slice(0, 100).join("").normalize("NFKC").trim();
+  return Array.from(clipped).slice(0, 40).join("");
+}
+export function matchesTerminationUnit(row:{buildingNo:string; unitNo:string},raw:string):boolean {
+  const input=normalizeTerminationUnitQuery(raw);
+  if(!input) return true;
+  const stripZeros=(v:string)=>v.replace(/^0+(?=\d)/,"");
+  const pair=input.match(/^(\d{1,6})(?:\s*동\s*|\s*[-–—]\s*|\s+)(\d{1,6})\s*호?$/);
+  if(pair) return stripZeros(row.buildingNo)===stripZeros(pair[1]) && stripZeros(row.unitNo)===stripZeros(pair[2]);
+  const single=input.match(/^(\d{1,6})\s*(동|호)?$/);
+  if(!single) return false;
+  const key=stripZeros(single[1]);
+  return (single[2]!=="호" && key===stripZeros(row.buildingNo)) ||
+    (single[2]!=="동" && key===stripZeros(row.unitNo));
+}
