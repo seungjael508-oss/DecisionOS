@@ -8,10 +8,11 @@ import { FloorplanBoard } from "@/components/move-in/floorplan-board";
 import { listBuildings, type FloorplanColorMode, type FloorplanUnit } from "@/lib/move-in/floorplan";
 
 // All buildings reuse the authorized DTO and share the same floor rows.
-export function FloorplanClient({ projectId, units, initialBuildingNo }: {
+export function FloorplanClient({ projectId, units, initialBuildingNo, todayUnitIds, focusUnitId }: {
   projectId: string; units: FloorplanUnit[]; initialBuildingNo: string;
   /** Accepted for old callers; confirmed paid units receive color. */
   initialColorBy?: FloorplanColorMode;
+  todayUnitIds?: readonly string[]; focusUnitId?: string;
 }) {
   const router = useRouter();
   const paid = units.filter(isConfirmedBalancePaid).length;
@@ -34,12 +35,13 @@ export function FloorplanClient({ projectId, units, initialBuildingNo }: {
     <p className="mb-4 flex flex-wrap items-center gap-3 text-sm">
       <span>전체 {units.length}세대 · 잔금완납 {paid}세대 · 미완납 {units.length - paid}세대 · 이사예약 {reserved}세대 · 완납률 {balancePaidPercent(paid, units.length)}%</span>
       <Link prefetch={false} className="font-medium text-green-800 underline" href={`/projects/${projectId}/move-in/ledger?chapter=balance_paid`}>잔금완납 챕터 보기</Link>
+      <Link prefetch={false} className="font-medium underline" href={`/projects/${projectId}/move-in/today`}>오늘 관리 대상 보기</Link>
     </p>
     <nav aria-label="동호배치도 페이지" className="mb-4 flex items-center gap-3 text-sm">
       <button type="button" className="rounded border px-3 py-1 disabled:opacity-40" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)} aria-label="이전 4개 동">이전</button>
       <span role="status">{currentPage + 1} / {pages} · {visibleBuildings.map(building => `${building}동`).join(' · ')}</span>
       <button type="button" className="rounded border px-3 py-1 disabled:opacity-40" disabled={currentPage >= pages - 1} onClick={() => setPage(currentPage + 1)} aria-label="다음 4개 동">다음</button>
     </nav>
-    <FloorplanBoard projectId={projectId} units={visibleUnits} />
+    <FloorplanBoard projectId={projectId} units={visibleUnits} returnBuildingNo={visibleBuildings[0]} todayUnitIds={todayUnitIds} focusUnitId={focusUnitId} />
   </>;
 }

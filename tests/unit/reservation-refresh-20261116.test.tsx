@@ -70,7 +70,7 @@ test('ledger table, cards and floorplan render the same 339 dates and times and 
     const reserved = [...document.querySelectorAll('[data-move-reserved="true"]')];
     expect(reserved).toHaveLength(339);
     const actual = reserved.map(node => {
-      const unitId = node.getAttribute('data-unit-id') ?? node.getAttribute('href')?.split('/').pop();
+      const unitId = node.getAttribute('data-unit-id') ?? new URL(node.getAttribute('href') ?? '/', 'https://decisionos.invalid').pathname.split('/').pop();
       const row = rows.find(row => row.unitId === unitId)!;
       const source = expected.get(key(row))!;
       expect(node.textContent).toContain(`${source.movingDate.slice(5).replace('-','.')} ${source.movingTime}`);
@@ -83,7 +83,7 @@ test('ledger table, cards and floorplan render the same 339 dates and times and 
   expect(links).toHaveLength(851);
   expect(new Set(links.map(link => link.href)).size).toBe(851);
   for (const link of links) {
-    const row = rows.find(row => row.unitId === link.getAttribute('href')?.split('/').pop())!;
+    const row = rows.find(row => row.unitId === new URL(link.getAttribute('href') ?? '/', 'https://decisionos.invalid').pathname.split('/').pop())!;
     expect(link.getAttribute('data-balance-paid') === 'true').toBe(Boolean(row.balancePaidAt));
     expect(link.querySelector('[data-grade]')?.getAttribute('data-grade')).toBe(row.currentGrade);
   }

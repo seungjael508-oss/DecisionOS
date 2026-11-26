@@ -1,0 +1,2 @@
+# Today: six chapters and termination review
+Replace the old filter wall with six chapters, retaining the selected chapter, consultation recording and floorplan links. Admit dated rows using existing separate signals, with no inferred dates. Add an administrator-only review event stream that changes no contract or ledger status. Use active-current-contract checks, optimistic write concurrency, read-only release validation and reversible additions. No cleanup or deletion of business records.

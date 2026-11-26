@@ -48,7 +48,7 @@ export async function createMoveInConsultation(
 
   const returnContext = getMoveInReturnContext(input.projectId, input.returnTo);
   let nextUnitId: string | null = null;
-  if (input.afterSave === "next") {
+  if (input.afterSave === "next" && returnContext.kind !== "floorplan") {
     // Resolve from the same server-authorized projection that powers the list
     // before mutating. A grade/status change in this consultation must not
     // move the operator to an unrelated row after a successful save.
@@ -84,7 +84,7 @@ export async function createMoveInConsultation(
     }
   }
 
-  if (input.afterSave === "next") {
+  if (input.afterSave === "next" && returnContext.kind !== "floorplan") {
     const destination = nextUnitId
       ? buildMoveInUnitDetailHref(input.projectId, nextUnitId, returnContext.returnTo)
       : withMoveInReturnNotice(returnContext.returnTo, "last");

@@ -1,4 +1,5 @@
 import 'server-only';
+import { loadFloorplanScheduleBadges } from '@/lib/move-in/floorplan-schedule.server';
 import { loadCurrentUnitSnapshots } from '@/lib/move-in/current-unit-snapshot.server';
 import { createServerClient } from '@/lib/supabase/server';
 import { readAllRows } from '@/lib/supabase/read-all';
@@ -9,6 +10,7 @@ import type { ProjectionResult, QueryCounts } from '@/lib/move-in/ledger-types';
 
 export type FloorplanCurrentResult = Omit<ProjectionResult<FloorplanUnit>, 'queryCounts'> & {
   queryCounts: QueryCounts & { locations: number };
+  scheduleUnavailable?: boolean;
 };
 
 /** Current state exclusively comes from Task 2. Extra queries read location, never state/history. */
@@ -37,7 +39,13 @@ export async function loadCurrentFloorplanRows(projectId: string, now = new Date
       }) : null;
       if (row) rows.push({ ...row, ...floorplanReservationFor({ ...snapshot, buildingNo: loc.building_no, unitNo: loc.unit_no }) }); else invalidLocations++;
     }
-    return { ...base, rows, anomalyCount: current.anomalyCount + invalidLocations,
+    const schedules = await loadFloorplanScheduleBadges(projectId, current.rows, now);
+    queryCounts.contacts += schedules.queryCount;
+    for (const row of rows) {
+      const badge = schedules.badges.get(row.unitId);
+      if (badge) row.scheduleBadge = badge;
+    }
+    return { ...base, rows, scheduleUnavailable: schedules.error, anomalyCount: current.anomalyCount + invalidLocations,
       anomalies: invalidLocations ? { ...current.anomalies, invalid_relation: (current.anomalies.invalid_relation ?? 0) + invalidLocations } : current.anomalies };
   } catch { return { ...base, error: true }; }
 }

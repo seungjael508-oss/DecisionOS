@@ -90,7 +90,9 @@ export function ConsultationCreateForm({
   const workspace = useUnitDetailWorkspace();
   const safeReturnTo = getSafeMoveInReturnTo(projectId, returnTo);
   // 오늘 관리대상에서 연 상담만 저장 성공 후 오늘 업무를 완료 처리한다(createMoveInConsultation과 같은 판정)
-  const fromToday = getMoveInReturnContext(projectId, returnTo).kind === "today";
+  const context = getMoveInReturnContext(projectId, returnTo);
+  const fromToday = context.kind === "today";
+  const fromFloorplan = context.kind === "floorplan";
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [moveInStatus, setMoveInStatus] = useState("");
@@ -189,7 +191,7 @@ export function ConsultationCreateForm({
       id="consultation-create-form"
       onSubmit={onSubmit}
       onChange={() => saving?saving.markDirty('consultation'):workspace?.setDirty(true)}
-      className="mt-4 flex max-w-xl flex-col gap-3 border border-neutral-300 p-4"
+      className="mt-4 scroll-mt-36 flex max-w-xl flex-col gap-3 border border-neutral-300 p-4"
     >
       <h3 className="text-lg font-semibold">새 상담 등록</h3>
       <label className="flex flex-col gap-1 text-sm">
@@ -353,18 +355,18 @@ export function ConsultationCreateForm({
           type="submit"
           data-after-save="list"
           disabled={pending || saveDisabled}
-          className="border border-neutral-800 px-3 py-1 max-[1099px]:min-h-12 max-[1099px]:font-semibold"
+          className={`border border-neutral-800 px-3 py-1 max-[1099px]:min-h-12 max-[1099px]:font-semibold ${fromFloorplan ? "max-[1099px]:col-span-2" : ""}`}
         >
-          {pending ? "저장 중…" : "저장 후 목록으로"}
+          {pending ? "저장 중…" : fromFloorplan ? "저장 후 배치도로" : "저장 후 목록으로"}
         </button>
-        <button
+        {!fromFloorplan ? <button
           type="submit"
           data-after-save="next"
           disabled={pending || saveDisabled}
           className="border border-neutral-800 px-3 py-1 max-[1099px]:min-h-12 max-[1099px]:bg-neutral-900 max-[1099px]:font-semibold max-[1099px]:text-white max-[1099px]:disabled:opacity-50"
         >
           저장 후 다음 세대
-        </button>
+        </button> : null}
         <button
           type="button"
           disabled={pending}

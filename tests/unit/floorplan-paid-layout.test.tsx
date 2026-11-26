@@ -11,7 +11,7 @@ test('all buildings share floor rows and only paid units have color', () => {
   expect(html).toContain('102동');
   expect(html).toContain('data-floor="3"');
   expect(html).toContain('data-floor="2"');
-  const unpaidTile = html.match(/<a\b[^>]*href="\/projects\/p\/move-in\/units\/a"[^>]*>[\s\S]*?<\/a>/)?.[0];
+  const unpaidTile = html.match(/<a\b[^>]*href="\/projects\/p\/move-in\/units\/a\?[^"]*"[^>]*>[\s\S]*?<\/a>/)?.[0];
   expect(unpaidTile).toContain('bg-white');
   expect(unpaidTile).not.toContain('bg-green-100');
   expect(html).toContain('bg-green-100');

@@ -24,6 +24,7 @@ import {
 import { LEGACY_GRADE_VALUES, type LegacyGrade } from "@/lib/move-in/consultation";
 
 export type MoveInReturnContext =
+  | { kind: "floorplan"; returnTo: string }
   | {
       kind: "units";
       returnTo: string;
@@ -54,7 +55,7 @@ export function getSafeMoveInListUrl(projectId: string, raw: string | null | und
     }
     const base = `/projects/${projectId}/move-in`;
     const path = raw.split(/[?#]/, 1)[0];
-    if (!["units", "today", "deals", "ledger"].some(route => path === `${base}/${route}`)) return null;
+    if (!["units", "today", "deals", "ledger", "floorplan"].some(route => path === `${base}/${route}`)) return null;
     const candidate = new URL(raw, "https://decisionos.invalid");
     if (candidate.origin !== "https://decisionos.invalid" || candidate.pathname !== path) return null;
     const query = raw.split("#", 1)[0].split("?").slice(1).join("?");
@@ -149,6 +150,8 @@ export function getMoveInReturnContext(
   const returnTo = getSafeMoveInReturnTo(projectId, raw);
   const url = new URL(returnTo, "https://decisionos.invalid");
 
+  if (url.pathname === `/projects/${projectId}/move-in/floorplan`) return { kind: "floorplan", returnTo };
+
   if (url.pathname === `/projects/${projectId}/move-in/today`) {
     return {
       kind: "today",
@@ -210,6 +213,7 @@ export function resolveMoveInAdjacentUnitIds(
   context: MoveInReturnContext,
   now = new Date(),
 ): MoveInAdjacentUnitIds {
+  if (context.kind === "floorplan") return { previousUnitId: null, nextUnitId: null };
   // Ledger multi-axis context must go through the workspace helper, never the old Units parser.
   if (new URL(context.returnTo, "https://decisionos.invalid").pathname.endsWith("/ledger")) {
     return { previousUnitId: null, nextUnitId: null };

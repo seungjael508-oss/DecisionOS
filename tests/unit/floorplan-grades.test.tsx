@@ -65,7 +65,7 @@ test('all 851 synthetic households remain reachable through the actual client pa
   const ids:string[]=[];
   for(let page=0;page<2;page++){
     expect(view.container.querySelectorAll('thead th[colspan]')).toHaveLength(4);
-    ids.push(...Array.from(view.container.querySelectorAll('a[href*="/units/"]')).map(a=>a.getAttribute('href')!));
+    ids.push(...Array.from(view.container.querySelectorAll('a[href*="/units/"]')).map(a=>new URL(a.getAttribute('href')!, 'https://decisionos.invalid').pathname));
     if(page===0) fireEvent.click(view.getByRole('button',{name:'다음 4개 동'}));
   }
   expect(new Set(ids).size).toBe(851);

@@ -1,3 +1,4 @@
+import type { ConsultationScheduleBadge } from '@/lib/move-in/consultation-schedule';
 import type { LegacyGrade } from "@/lib/move-in/consultation";
 import { isConfirmedBalancePaid } from '@/lib/move-in/balance-paid';
 import type { MoveReservation } from '@/lib/move-in/ledger-management-source';
@@ -30,7 +31,7 @@ export function isFloorplanColorMode(value: string): value is FloorplanColorMode
 export type FloorplanUnit = Pick<CurrentUnitSnapshot,
   "projectId" | "unitId" | "currentGrade" | "funding" | "moveIn" | "effectiveIntent" | "rentalType" |
   "specialReasons" | "balancePaidAt" | "fieldConfirmedBalancePaid" | "actualMoveInDate" | "revision" | "fetchedAt"
-> & { buildingNo: string; unitNo: string; floor: number | null; moveReservation?: MoveReservation; movingDate?: string | null; movingTime?: string | null; problemFlags?: readonly ProblemFlag[]; problemLockReleased?: boolean; sourceTags?: CurrentUnitSnapshot['sourceTags'] };
+> & { scheduleBadge?: ConsultationScheduleBadge; buildingNo: string; unitNo: string; floor: number | null; moveReservation?: MoveReservation; movingDate?: string | null; movingTime?: string | null; problemFlags?: readonly ProblemFlag[]; problemLockReleased?: boolean; sourceTags?: CurrentUnitSnapshot['sourceTags'] };
 
 export type ParsedHo = {
   floor: number;

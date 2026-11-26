@@ -85,7 +85,7 @@ export default async function MoveInUnitDetailPage({
     if (!queueResult.error) {
       adjacent = resolveTodayQueueAdjacentUnitIds(queueResult.rows, unitId, returnContext);
     }
-  } else {
+  } else if (returnContext.kind !== "floorplan") {
     const listResult = await loadUnitRows(projectId);
     contextError = listResult.error;
     if (!listResult.error) {
@@ -134,10 +134,11 @@ export default async function MoveInUnitDetailPage({
       previousHref={previousHref}
       nextHref={nextHref}
       lastNextHref={lastNextHref}
+      hideAdjacent={returnContext.kind === "floorplan"}
     >
     {/* 모바일: 요약 헤더 + 기본/계약·상담/방문·납부/미납 탭(data-tab). 오늘 관리대상에서 오면 상담 탭부터. 하단 고정 바만큼 아래 여백 */}
     <main className="p-8 max-[1099px]:p-4 max-[1099px]:pb-36">
-      <MobileDetailTabs defaultTab={returnContext.kind === "today" ? "consult" : "info"} header={<MobileUnitHeader
+      <MobileDetailTabs defaultTab={returnContext.kind === "today" || returnContext.kind === "floorplan" ? "consult" : "info"} header={<MobileUnitHeader
         unitLabel={formatUnitLabel(detail.buildingNo, detail.unitNo)} unitType={detail.unitType ?? "타입 미등록"} customerName={detail.customerName ?? "계약자 미등록"}
         phone={detail.customerId ? <CustomerPhone raw={detail.customerPhone} status={detail.phoneQuality} /> : "—"} grade={latestGrade}
         dReasonText={latestGrade === "D" ? (dReasons?.byUnit.get(unitId)?.length ? dReasons.byUnit.get(unitId)!.map((r) => D_GRADE_REASON_LABELS[r]).join(" · ") : "사유 미확인") : null}

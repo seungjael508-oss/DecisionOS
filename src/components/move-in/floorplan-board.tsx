@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { buildMoveInUnitDetailHref } from "@/lib/move-in/return-to";
 import { isConfirmedBalancePaid } from '@/lib/move-in/balance-paid';
 import {
   buildFloorplanGrid, cellKey, listBuildings, type FloorplanColorMode, type FloorplanUnit,
@@ -7,23 +8,31 @@ import { floorplanSelection } from "@/lib/move-in/floorplan-current";
 import { MoveReservationBadge, ProblemHouseholdBadges, SourceManagementBadges } from './ledger-badges';
 import { problemReasonText } from '@/lib/move-in/problem-household';
 
-function FloorplanTile({ projectId, unit }: { projectId: string; unit: FloorplanUnit }) {
+function FloorplanTile({ projectId, unit, returnBuildingNo, today, focused }: { projectId: string; unit: FloorplanUnit; returnBuildingNo?: string; today: boolean; focused: boolean }) {
   const selection = floorplanSelection(projectId, unit);
   if (!selection) return null;
   const paid = isConfirmedBalancePaid(unit);
   const reserved = unit.moveReservation === 'BOOKED';
+  const schedule = unit.currentGrade === 'A' && unit.scheduleBadge
+    && !(unit.scheduleBadge.kind === 'balance' && paid)
+    && !(unit.scheduleBadge.kind === 'moveIn' && unit.actualMoveInDate) ? unit.scheduleBadge : null;
   const grade = unit.currentGrade || null;
   const special = unit.specialReasons.length > 0;
   const problemLabel = unit.problemFlags?.length ? `문제세대 ${problemReasonText(unit.problemFlags)} · ${unit.problemLockReleased ? '해제승인' : '입주잠금'}` : '';
-  const tagLabels = [grade ? `${grade}등급` : '', problemLabel, ...(unit.sourceTags ?? []).filter(tag => tag === 'ASEL' || tag === 'DELINQUENT').map(tag => tag === 'ASEL' ? '아셀' : '연체'), special ? '특별관리' : '', reserved ? '이사예약' : '', paid ? '잔금완납' : '', paid && !unit.balancePaidAt ? '완납일 미확인' : ''].filter(Boolean);
-  return <Link prefetch={false} href={selection.detailHref}
+  const tagLabels = [schedule?.label ?? '', grade ? `${grade}등급` : '', problemLabel, ...(unit.sourceTags ?? []).filter(tag => tag === 'ASEL' || tag === 'DELINQUENT').map(tag => tag === 'ASEL' ? '아셀' : '연체'), special ? '특별관리' : '', reserved ? '이사예약' : '', paid ? '잔금완납' : '', paid && !unit.balancePaidAt ? '완납일 미확인' : '', today ? '오늘 관리 대상' : ''].filter(Boolean);
+  const returnTo = `/projects/${projectId}/move-in/floorplan?${new URLSearchParams({ buildingNo: returnBuildingNo ?? unit.buildingNo })}`;
+  return <Link prefetch={false} href={`${buildMoveInUnitDetailHref(projectId, unit.unitId, returnTo)}#consultation-create-form`}
+    id={`floorplan-unit-${unit.unitId}`}
+    data-today-target={today || undefined} data-focused-unit={focused || undefined}
     data-move-reserved={reserved ? 'true' : undefined}
     data-balance-paid={paid ? 'true' : undefined}
-    className={`flex min-h-9 min-w-16 flex-col items-center justify-center border border-neutral-400 px-2 py-1 text-center text-neutral-900 hover:outline hover:outline-2 focus-visible:outline focus-visible:outline-2 ${paid ? 'bg-green-100' : 'bg-white'}`}
+    className={`flex min-h-9 min-w-16 flex-col items-center justify-center border border-neutral-400 px-2 py-1 text-center text-neutral-900 hover:outline hover:outline-2 focus-visible:outline focus-visible:outline-2 ${paid ? 'bg-green-100' : 'bg-white'} ${focused ? 'outline outline-2 outline-indigo-700' : ''}`}
     title={tagLabels.join(' · ') || undefined}
     aria-label={`${unit.buildingNo}동 ${unit.unitNo}호${tagLabels.length ? ` · ${tagLabels.join(' · ')}` : ''}`}>
     <span>{unit.unitNo}</span>
+    {today ? <span className="rounded border border-amber-400 bg-amber-50 px-1 text-xs text-amber-950">오늘 관리</span> : null}
     <ProblemHouseholdBadges flags={unit.problemFlags} released={unit.problemLockReleased}/>
+    {schedule ? <span data-schedule-kind={schedule.kind} className="inline-flex whitespace-nowrap rounded border border-violet-300 bg-violet-50 px-1 text-xs text-violet-900">{schedule.label}</span> : null}
     {reserved ? <MoveReservationBadge date={unit.movingDate ?? null} time={unit.movingTime}/> : null}
     {grade || special || unit.sourceTags?.some(tag => tag === 'ASEL' || tag === 'DELINQUENT') ? <span className="flex flex-wrap justify-center gap-1">
       {grade ? <span data-grade={grade} className="rounded border border-current px-1 text-xs">{grade}등급</span> : null}
@@ -33,9 +42,12 @@ function FloorplanTile({ projectId, unit }: { projectId: string; unit: Floorplan
   </Link>;
 }
 
-export function FloorplanBoard({ projectId, units, buildingNo }: {
+export function FloorplanBoard({ projectId, units, buildingNo, returnBuildingNo, todayUnitIds = [], focusUnitId }: {
   projectId: string; units: FloorplanUnit[]; buildingNo?: string; colorBy?: FloorplanColorMode;
+  returnBuildingNo?: string; todayUnitIds?: readonly string[]; focusUnitId?: string;
 }) {
+  const today = new Set(todayUnitIds);
+  const tile = (unit: FloorplanUnit) => <FloorplanTile projectId={projectId} unit={unit} returnBuildingNo={returnBuildingNo} today={today.has(unit.unitId)} focused={focusUnitId === unit.unitId} />;
   const grids = (buildingNo ? [buildingNo] : listBuildings(units)).map(building => buildFloorplanGrid(units, building));
   const registeredFloors = grids.flatMap(grid => grid.floors);
   const highest = registeredFloors.length ? Math.max(...registeredFloors) : 0;
@@ -54,12 +66,12 @@ export function FloorplanBoard({ projectId, units, buildingNo }: {
         <tbody>{floors.map(floor => <tr key={floor} data-floor={floor}>
           <th className="h-9 px-2 text-left font-normal text-neutral-500">{floor}F</th>
           {grids.map(grid => (grid.lines.length ? grid.lines : [0]).map((line, index, lines) => { const cell = grid.cells.get(cellKey(floor, line)); return <td key={`${grid.buildingNo}:${line}`} className={`p-0 ${index === 0 ? 'border-l-8 border-white' : ''} ${index === lines.length - 1 ? 'border-r-8 border-white' : ''}`}>
-            {cell ? <FloorplanTile projectId={projectId} unit={cell} /> : null}
+            {cell ? tile(cell) : null}
           </td>; }))}
         </tr>)}</tbody>
       </table></div>}
     {grids.map(grid => grid.unparsed.length > 0 ? <ul key={grid.buildingNo} className="mt-4 flex flex-wrap gap-2" aria-label={`${grid.buildingNo}동 기타 세대`}>
-      {grid.unparsed.map(unit => <li key={unit.unitId}><FloorplanTile projectId={projectId} unit={unit} /></li>)}
+      {grid.unparsed.map(unit => <li key={unit.unitId}>{tile(unit)}</li>)}
     </ul> : null)}
   </section>;
 }

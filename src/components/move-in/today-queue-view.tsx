@@ -34,6 +34,7 @@ export function TodayQueueView({ projectId, rows, doneRows, doneError, visitTarg
   for (const [key, value] of searchParams.entries()) (query[key] ??= []).push(value);
   const returnTo = buildMoveInPathWithSearch(`/projects/${projectId}/move-in/today`, query, NOTICE_KEYS);
   const unitHref = (unitId: string) => buildMoveInUnitDetailHref(projectId, unitId, returnTo);
+  const floorplanHref = (unitId: string) => `/projects/${projectId}/move-in/floorplan?${new URLSearchParams({ focusUnit: unitId })}#floorplan-unit-${encodeURIComponent(unitId)}`;
   const visible = selectTodayViewRows(rows, view);
   const done = !doneError && showTodayDoneRows(view) ? doneRows : [];
   const { filter, task } = view;
@@ -48,7 +49,7 @@ export function TodayQueueView({ projectId, rows, doneRows, doneError, visitTarg
         {TODAY_COLUMNS.map((label) => <th key={label} className="py-2 pr-3 font-medium whitespace-nowrap">{label}</th>)}
       </tr></thead><tbody>{visible.map((row) => (
         <tr key={row.key} className={`border-b border-neutral-200 ${row.rowClassName}`}>
-          <td className="border-l-4 py-2 pr-3 font-semibold" style={{ borderLeftColor: "currentColor" }}><span className={`mr-2 inline-block h-3 w-1 ${row.barClassName}`} aria-hidden="true"/><Link prefetch={false} className="underline" href={unitHref(row.unitId)}>{row.unitLabel}</Link></td>
+          <td className="border-l-4 py-2 pr-3 font-semibold" style={{ borderLeftColor: "currentColor" }}><span className={`mr-2 inline-block h-3 w-1 ${row.barClassName}`} aria-hidden="true"/><Link prefetch={false} className="underline" href={unitHref(row.unitId)}>{row.unitLabel}</Link><Link prefetch={false} className="ml-2 whitespace-nowrap text-xs underline" aria-label={`${row.unitLabel} 배치도에서 보기`} href={floorplanHref(row.unitId)}>배치도</Link></td>
           <td className="py-2 pr-3">{row.customerName ?? "—"}</td>
           <td className="py-2 pr-3 whitespace-nowrap">{row.phone}</td>
           <td className="py-2 pr-3">{row.grade}</td>
@@ -80,6 +81,7 @@ export function TodayQueueView({ projectId, rows, doneRows, doneError, visitTarg
                 <span className="block text-sm text-neutral-700">마지막 상담 {row.lastContact} · 담당 {row.assignee} · 미처리</span>
               </span>
             </Link>
+            <Link prefetch={false} className="block px-4 py-2 text-sm underline" aria-label={`${row.unitLabel} 배치도에서 보기`} href={floorplanHref(row.unitId)}>배치도에서 보기</Link>
           </li>
         ))}
       </ul>
