@@ -1,7 +1,7 @@
 import type { ManagementContractLink, ManagementIdentity, ManagementTransferAudit } from "./ledger-management-source";
 
 const KINDS = { SALE: "매매", GIFT: "증여", INHERITANCE: "상속" } as const;
-export type RecordedTitleChange = { kind: (typeof KINDS)[TransferKind]; recordedDate: string };
+export type RecordedTitleChange = { kind: (typeof KINDS)[keyof typeof KINDS]; recordedDate: string };
 const kstDay = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit" });
 
 /** An audit event is history about this contract, not evidence of a later resale intention being fulfilled. */
