@@ -54,3 +54,18 @@ test("grade view uses the current ledger grade and excludes verified paid, inclu
  expect(out).toContain("20,000,000원");
  expect(matchTodayChapter("grade",{paid:true})).toBe(false);
 });
+
+test("resale displays the confirmed history as a separate dated badge without changing membership",async()=>{
+ ledger.mockResolvedValue({rows:[
+   {...unit("a","101","SALE_TRANSFER"),recordedTitleChange:{kind:"증여",recordedDate:"2025-10-22"}},
+   unit("b","102","SALE_TRANSFER"),
+   {...unit("c","103","MOVE_IN"),recordedTitleChange:{kind:"매매",recordedDate:"2026-11-01"}},
+ ]});
+ keys.mockResolvedValue({rows:[],error:false});
+ const sale=await html("sale");
+ expect(sale).toContain("전매 의향 · 2세대");
+ expect(sale).toContain("확인 · 증여 · 원장 등록 2025-10-22");
+ expect(sale).toContain("명의변경 원장 이력 미확인");
+ expect(sale).not.toContain("2026-11-01");
+ expect(sale).not.toContain("101동 103호");
+});

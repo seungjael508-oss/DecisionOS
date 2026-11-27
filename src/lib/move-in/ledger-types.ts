@@ -61,6 +61,7 @@ export type LedgerSummaryRow = LedgerFilterRow & CurrentUnitSnapshot & {
   absenceStreak: number;
   /** 같은 세대에 현재 계약 외 계약이 있음(명의변경·해지 등). 발코니·옵션을 자동 연결하지 않는다 */
   contractHistory?: boolean;
+  recordedTitleChange?: import("./today-title-change").RecordedTitleChange | null;
   /** 금액·잔금 가상계좌(서버 판정). 계좌는 권한 있는 역할에게만 채운다 */
   finance?: LedgerFinance;
 };
@@ -83,7 +84,7 @@ export type LedgerFinance = {
   accountRestricted: boolean;
 };
 /** 브라우저로 직렬화하지 않는 서버 전용 필드(851세대 초기 HTML 크기 절감). 클라이언트에서 읽으면 타입 오류. */
-export const LEDGER_SERVER_ONLY_KEYS = ['revision', 'sourceUpdatedAt', 'fetchedAt', 'paymentAvailability', 'dealSummary'] as const;
+export const LEDGER_SERVER_ONLY_KEYS = ['revision', 'sourceUpdatedAt', 'fetchedAt', 'paymentAvailability', 'dealSummary', 'recordedTitleChange'] as const;
 export type LedgerClientRow = Omit<LedgerSummaryRow, (typeof LEDGER_SERVER_ONLY_KEYS)[number]>;
 export type AnomalyReason = 'no_active_contract' | 'multiple_active_contracts' | 'invalid_relation' | 'duplicate_unit' | 'changed_during_read';
 export type QueryCounts = { current: number; contacts: number; deals: number; special: number; recheck: number };

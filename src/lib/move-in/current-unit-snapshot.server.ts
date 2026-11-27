@@ -1,4 +1,5 @@
 import 'server-only';
+import { confirmedTitleChange } from './today-title-change';
 import { attachLedgerManagement } from '@/lib/move-in/ledger-management.server';
 import { attachContractAddress } from '@/lib/move-in/contract-address.server';
 import { attachLedgerFinance } from '@/lib/move-in/ledger-finance.server';
@@ -133,7 +134,7 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
       inUnits(supabase.from('contract').select('unit_id,contract_id,customer_id,project_id,previous_contract_id,contract_status,cancellation_reason').eq('project_id', projectId)).order('unit_id').order('contract_id').range(from, to)
         .returns<import('./payment-projection.server').PaymentContractLink[]>(), 1000) : { data: [], error: false };
     const transferAudits = async () => summary ? readAllRows((from,to) =>
-      inUnits(supabase.from('contract_status_history').select('project_id,unit_id,contract_id,field_changed,previous_value,new_value').eq('project_id',projectId).eq('field_changed','holder_transfer'))
+      inUnits(supabase.from('contract_status_history').select('project_id,unit_id,contract_id,field_changed,previous_value,new_value,reason,changed_at').eq('project_id',projectId).eq('field_changed','holder_transfer'))
         .order('history_id').range(from,to).returns<import('./ledger-management-source').ManagementTransferAudit[]>(),1000) : {data:[],error:false};
     const [s, d, c, k, audits] = await Promise.all([special(), deals(), contacts(), contractIds(), transferAudits()]);
     if (s.error || d.error || c.error) return failure();
@@ -160,7 +161,9 @@ export async function readAuthorizedCurrentProjection(projectId: string, now: Da
       const unitContracts = contractsByUnit?.get(unit.unit_id) ?? [];
       const contractHistory = contractsByUnit && unitContracts.some(k => k.contract_id === result.snapshot.currentContractId)
         ? unitContracts.some(k => k.contract_id !== result.snapshot.currentContractId) : undefined;
-      rows.push(summary ? attachOnlineListing(attachLedgerFinance(attachContractAddress(attachLedgerManagement({ ...toLedgerSummaryRow(unit, result.snapshot, ds.length === 1 ? ds[0] : null, contactByUnit.get(unit.unit_id) ?? []), contractHistory }, {contracts:unitContracts,transfers:transfersByUnit?.get(unit.unit_id)??[]})), access, now, contractsByUnit ? unitContracts : [])) : result.snapshot);
+      const recordedTitleChange = summary && result.snapshot.effectiveIntent === "SALE_TRANSFER" && contractsByUnit && transfersByUnit
+        ? confirmedTitleChange(result.snapshot, unitContracts, transfersByUnit.get(unit.unit_id) ?? []) : null;
+      rows.push(summary ? attachOnlineListing(attachLedgerFinance(attachContractAddress(attachLedgerManagement({ ...toLedgerSummaryRow(unit, result.snapshot, ds.length === 1 ? ds[0] : null, contactByUnit.get(unit.unit_id) ?? []), contractHistory, recordedTitleChange }, {contracts:unitContracts,transfers:transfersByUnit?.get(unit.unit_id)??[]})), access, now, contractsByUnit ? unitContracts : [])) : result.snapshot);
     }
     perf.step('build');
     if (!summary) { perf.end({ rows: rows.length }); return finish(rows); }

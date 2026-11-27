@@ -15,7 +15,7 @@ export type ManagementIdentity = {
 };
 export type ManagementSourceRecord = ManagementIdentity & LedgerManagement;
 export type ManagementContractLink = {project_id:string;unit_id:string;contract_id:string;customer_id?:string;previous_contract_id:string|null;contract_status:string;cancellation_reason:string|null};
-export type ManagementTransferAudit = {project_id:string;unit_id:string;contract_id:string;field_changed:string;previous_value:string|null;new_value:string|null};
+export type ManagementTransferAudit = {project_id:string;unit_id:string;contract_id:string;field_changed:string;previous_value:string|null;new_value:string|null;reason?:string|null;changed_at?:string|null};
 export type ManagementContinuity = {contracts:readonly ManagementContractLink[];transfers:readonly ManagementTransferAudit[]};
 const unknown = (): LedgerManagement => ({loanAgreement:'UNKNOWN',moveReservation:'UNKNOWN',movingDate:null,problemHousehold:'UNKNOWN',managementReasons:[]});
 

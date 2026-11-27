@@ -2,7 +2,7 @@ import { LEGACY_GRADE_VALUES } from "@/lib/move-in/consultation";
 
 export const TODAY_CHAPTERS = [
   { id:"grade", label:"등급" }, { id:"balance", label:"잔금날짜" }, { id:"paid", label:"잔금완납" }, { id:"move", label:"이사날짜" },
-  { id:"unconfirmed", label:"미확정" }, { id:"termination", label:"해지" }, { id:"sale", label:"전매" },
+  { id:"unconfirmed", label:"미확정" }, { id:"termination", label:"해지" }, { id:"sale", label:"전매 의향" },
 ] as const;
 export type TodayChapter = (typeof TODAY_CHAPTERS)[number]["id"];
 export function chooseTodayChapter(value: string | null | undefined): TodayChapter {

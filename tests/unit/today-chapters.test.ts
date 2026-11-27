@@ -2,7 +2,7 @@ import { expect,test } from "vitest";
 import { TODAY_CHAPTERS, chooseTodayChapter, matchTodayChapter } from "@/lib/move-in/today-chapters";
 
 test("seven fixed tabs and default grade",()=>{
- expect(TODAY_CHAPTERS.map(x=>x.label)).toEqual(["등급","잔금날짜","잔금완납","이사날짜","미확정","해지","전매"]);
+ expect(TODAY_CHAPTERS.map(x=>x.label)).toEqual(["등급","잔금날짜","잔금완납","이사날짜","미확정","해지","전매 의향"]);
  expect(chooseTodayChapter("untrusted")).toBe("grade");
 });
 test("reservation, consultation, and paid evidence do not stand in for each other",()=>{

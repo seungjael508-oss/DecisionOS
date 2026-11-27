@@ -65,6 +65,7 @@ export async function TodayChapterPanel({projectId,chapter,mayReview,reviewNotic
         {grade ? <span className="mb-2 text-sm">{grade} · {visible.length}세대</span> : null}
       </form>
     </> : null}
+    {chapter==="sale" ? <p className="mb-2 text-sm text-neutral-700">전매·매매 의향이 기록된 세대입니다. 해지 의향·검토 세대는 제외합니다. 명의변경 확인 배지는 원장에 등록된 변경 이력이며, 현재 전매 의향의 거래가 끝났다는 뜻은 아닙니다.</p> : null}
     {chapter==="balance" ? <p className="mb-2 text-sm text-neutral-700">상담에서 잔금일을 확인했지만 아직 완납이 확인되지 않은 세대입니다.</p> : null}
     {chapter==="paid" ? <p className="mb-2 text-sm text-neutral-700">Decision OS에서 완납이 확인된 세대입니다. 완납일이 없는 경우 날짜를 추정하지 않습니다.</p> : null}
     {chapter==="move" ? <p className="mb-2 text-sm text-neutral-700">이사 예약 {rows.filter(x=>x.e.reservation).length}세대 · 상담·계획 입주일 {rows.filter(x=>x.e.movePlan).length}세대 · 실제 입주 {rows.filter(x=>x.e.moved).length}세대 (중복 포함)</p> : null}
@@ -106,7 +107,7 @@ export async function TodayChapterPanel({projectId,chapter,mayReview,reviewNotic
             row.plannedMoveInDate ? `등록 이사 예정일 ${row.plannedMoveInDate}`:null,
             dates?.moveIn ? `상담상 입주 예정 ${dates.moveIn}`:null,
             e.moved ? `실제 입주 ${row.actualMoveInDate}`:null,
-            e.sale ? "전매 의향":null,
+            e.sale && chapter!=="sale" ? "전매 의향":null,
             e.terminationIntent ? "해지 의향" : null,
             review?.active ? `관리자 해지 검토: ${review.reason}` : e.review ? "관리자 해지 검토" : null,
           ].filter(Boolean);
@@ -115,7 +116,12 @@ export async function TodayChapterPanel({projectId,chapter,mayReview,reviewNotic
             <td className="p-2">{row.currentGrade??"—"}</td>
             <td className="p-2 whitespace-nowrap">{formatDateTime(row.lastContact)}</td>
             <td className="p-2 whitespace-nowrap">{formatDateTime(row.nextContact)}</td>
-            <td className="p-2">{notes.length ? notes.map(n=><span className="block" key={n}>{n}</span>):"잔금·이사 일정 확인 필요"}</td>
+            <td className="p-2">
+              {notes.map(n=><span className="block" key={n}>{n}</span>)}
+              {chapter==="sale" && row.recordedTitleChange ? <span className="inline-block rounded bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-900">
+                명의변경 확인 · {row.recordedTitleChange.kind} · 원장 등록 {row.recordedTitleChange.recordedDate}
+              </span> : chapter==="sale" ? <span className="block text-neutral-600">명의변경 원장 이력 미확인</span> : !notes.length ? "잔금·이사 일정 확인 필요" : null}
+            </td>
             {eligibleForReview ? <td className="p-2">{review?.active ? <form action={save} className="flex gap-1">
               <input type="hidden" name="mode" value="remove"/><input type="hidden" name="unitSearch" value={search}/><input type="hidden" name="unitId" value={row.unitId}/><input type="hidden" name="contractId" value={row.currentContractId}/><input type="hidden" name="eventId" value={review.event_id}/>
               <input name="reason" aria-label={`${formatUnitLabel(row.buildingNo,row.unitNo)} 해제 사유`} placeholder="해제 사유" className="w-28 rounded border px-1" required maxLength={500}/>
